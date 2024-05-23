@@ -6,23 +6,23 @@ start: (decl | stmt)*
 
 // Declarations
 
-decl: accessibility? (mod_decl | fn_decl | class_field)
+decl: accessibility? (mod_decl | fn_decl)
 mod_decl: "mod" NAME "{" decl* "}"
 
 global_var: "var" "mut"? NAME (":" type)? ":=" expr
 
-class_decl: "class" NAME "{" decl* "}"
+class_decl: "class" NAME "{" (accessibility? class_field | decl)* "}"
 class_field: "mut"? NAME ":" type (":=" expr)?
 
-fn_decl: "fn" NAME fn_args "{" stmt* "}"
-fn_args: "(" ( fn_self | fn_self "," fn_args_list | fn_args_list )? ")"
+fn_decl: "fn" NAME fn_args ("!" | type)? "{" stmt* "}"
+fn_args: "(" ( fn_self ("," fn_args_list)? | fn_args_list )? ")"
 fn_args_list: fn_arg ("," fn_arg)*
 fn_arg: "mut"? NAME ":" type (":=" expr)?
 fn_self: "mut"? "self"
 
 accessibility: "pub" | "prot"
 
-type: "string" | "number"
+type: "string" | "number" | NAME ("." NAME)* | "?" type
 
 // Statements
 
