@@ -4,6 +4,17 @@ mod std {
     }
 }
 
+var my_var := 9
+
+class Person {
+    name: string := 2
+    mut age: number
+
+    fn setAge(mut self, age: number) {
+        self.age = age
+    }
+}
+
 fn main() {
     x := -0
     y := undefined

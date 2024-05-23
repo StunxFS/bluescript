@@ -6,9 +6,23 @@ start: (decl | stmt)*
 
 // Declarations
 
-decl: "pub"? (mod_decl | fn_decl)
+decl: accessibility? (mod_decl | fn_decl | class_field)
 mod_decl: "mod" NAME "{" decl* "}"
-fn_decl: "fn" NAME "(" ")" "{" stmt* "}"
+
+global_var: "var" "mut"? NAME (":" type)? ":=" expr
+
+class_decl: "class" NAME "{" decl* "}"
+class_field: "mut"? NAME ":" type (":=" expr)?
+
+fn_decl: "fn" NAME fn_args "{" stmt* "}"
+fn_args: "(" ( fn_self | fn_self "," fn_args_list | fn_args_list )? ")"
+fn_args_list: fn_arg ("," fn_arg)*
+fn_arg: "mut"? NAME ":" type (":=" expr)?
+fn_self: "mut"? "self"
+
+accessibility: "pub" | "prot"
+
+type: "string" | "number"
 
 // Statements
 
@@ -33,7 +47,7 @@ switch_branches: switch_branch ("," switch_branch)*
 switch_branch: expr ("," expr)* "->" stmt
        | "else" "->" stmt
 
-literal: STRING | number | "true" | "false" | "nil" | "undefined" | NAME | tuple_literal
+literal: STRING | number | "true" | "false" | "nil" | "undefined" | "self" | NAME | tuple_literal
 tuple_literal: "(" expr ("," expr)* ")"
 number: DEC_NUMBER | HEX_NUMBER | OCT_NUMBER | SIGNED_NUMBER
 
