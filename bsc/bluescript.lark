@@ -2,35 +2,39 @@
 // source code is governed by an MIT license that can be found in the 
 // LICENSE file.
 
-start: (fn_decl | statement)*
+start: (decl | stmt)*
 
 // Declarations
 
-fn_decl: "fn" NAME "(" ")" "{" statement* "}"
+decl: "pub"? (mod_decl | fn_decl)
+mod_decl: "mod" NAME "{" decl* "}"
+fn_decl: "fn" NAME "(" ")" "{" stmt* "}"
 
 // Statements
 
-statement: expression
+stmt: expr
        | assignment
        | block
-       | "while" "(" expression ")" statement
+       | "while" "(" expr ")" stmt
 
-block: "{" statement* "}"
-assignment: "mut"? NAME ("," "mut"? NAME)* op_assign expression
+block: "{" stmt* "}"
+assignment: "mut"? NAME ("," "mut"? NAME)* op_assign expr
 op_assign: "=" | ":=" | "+=" | "-=" | "/=" | "*=" | "%=" | "|=" | "^=" | "&="
 
 // Expressions
 
-expression: literal
-       | "if" "(" expression ")" statement ("else" statement)?
-       | "switch" ("(" expression ")")? "{" switch_branches "}"
+expr: literal
+       | expr "." NAME
+       | expr "(" (expr ("," expr)*)? ")"
+       | "if" "(" expr ")" stmt ("else" stmt)?
+       | "switch" ("(" expr ")")? "{" switch_branches "}"
 
 switch_branches: switch_branch ("," switch_branch)*
-switch_branch: expression ("," expression)* "->" statement
-       | "else" "->" statement
+switch_branch: expr ("," expr)* "->" stmt
+       | "else" "->" stmt
 
 literal: STRING | number | "true" | "false" | "nil" | "undefined" | NAME | tuple_literal
-tuple_literal: "(" expression ("," expression)* ")"
+tuple_literal: "(" expr ("," expr)* ")"
 number: DEC_NUMBER | HEX_NUMBER | OCT_NUMBER | SIGNED_NUMBER
 
 // Tokens

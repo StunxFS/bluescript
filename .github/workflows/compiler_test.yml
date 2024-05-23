@@ -1,0 +1,21 @@
+name: Compiler Tests
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths: ['bsc/**.py']
+  pull_request:
+    paths: ['bsc/**.py']
+    types: [opened, synchronize]
+
+jobs:
+  ubuntu-clang:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run passing tests
+        run: |
+          sudo pip3 install lark
+          python3 bsc

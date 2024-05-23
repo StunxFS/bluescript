@@ -1,3 +1,9 @@
+mod std {
+    pub fn my_func() {
+        println("hello!")
+    }
+}
+
 fn main() {
     x := -0
     y := undefined
@@ -5,7 +11,9 @@ fn main() {
     mut q, mut m, c := (99, true, nil)
     name := "StunxFS"
     name = 999
-    //println("Hello World!)
+    println("Hello World!")
+    _ = math.pow(2)
+    std.my_func()
     if (true) q := 3
     if (false) {
         s := undefined
