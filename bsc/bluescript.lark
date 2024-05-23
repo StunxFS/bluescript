@@ -6,10 +6,11 @@ start: (decl | stmt)*
 
 // Declarations
 
-decl: accessibility? (mod_decl | fn_decl)
+decl: accessibility? (mod_decl | fn_decl | const_decl | global_var_decl)
 mod_decl: "mod" NAME "{" decl* "}"
 
-global_var: "var" "mut"? NAME (":" type)? ":=" expr
+global_var_decl: "var" "mut"? NAME (":" type)? ":=" expr
+const_decl: "const" NAME (":" type)? ":=" expr
 
 class_decl: "class" NAME "{" (accessibility? class_field | decl)* "}"
 class_field: "mut"? NAME ":" type (":=" expr)?
@@ -18,7 +19,7 @@ fn_decl: "fn" NAME fn_args ("!" | type)? "{" stmt* "}"
 fn_args: "(" ( fn_self ("," fn_args_list)? | fn_args_list )? ")"
 fn_args_list: fn_arg ("," fn_arg)*
 fn_arg: "mut"? NAME ":" type (":=" expr)?
-fn_self: "mut"? "self"
+fn_self: "mut"? KW_SELF
 
 accessibility: "pub" | "prot"
 
@@ -40,6 +41,7 @@ op_assign: "=" | ":=" | "+=" | "-=" | "/=" | "*=" | "%=" | "|=" | "^=" | "&="
 expr: literal
        | expr "." NAME
        | expr "(" (expr ("," expr)*)? ")"
+       | "@" NAME "(" (expr ("," expr)*)? ")"
        | "if" "(" expr ")" stmt ("else" stmt)?
        | "switch" ("(" expr ")")? "{" switch_branches "}"
 
@@ -47,12 +49,13 @@ switch_branches: switch_branch ("," switch_branch)*
 switch_branch: expr ("," expr)* "->" stmt
        | "else" "->" stmt
 
-literal: STRING | number | "true" | "false" | "nil" | "undefined" | "self" | NAME | tuple_literal
+literal: STRING | number | "true" | "false" | "nil" | "undefined" | KW_SELF | NAME | tuple_literal
 tuple_literal: "(" expr ("," expr)* ")"
 number: DEC_NUMBER | HEX_NUMBER | OCT_NUMBER | SIGNED_NUMBER
 
 // Tokens
 
+KW_SELF: "self"
 DEC_NUMBER: /[1-9]\d*l?/i
 HEX_NUMBER: /0x[\da-f]*l?/i
 OCT_NUMBER: /0o?[0-7]*l?/i
