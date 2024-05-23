@@ -1,0 +1,52 @@
+// Copyright (C) 2024 Jose Mendoza. All rights reserved. Use of this 
+// source code is governed by an MIT license that can be found in the 
+// LICENSE file.
+
+start: (fn_decl | statement)*
+
+// Declarations
+
+fn_decl: "fn" NAME "(" ")" "{" statement* "}"
+
+// Statements
+
+statement: expression
+       | assignment
+       | block
+       | "while" "(" expression ")" statement
+
+block: "{" statement* "}"
+assignment: "mut"? NAME ("," "mut"? NAME)* op_assign expression
+op_assign: "=" | ":=" | "+=" | "-=" | "/=" | "*=" | "%=" | "|=" | "^=" | "&="
+
+// Expressions
+
+expression: literal
+       | "if" "(" expression ")" statement ("else" statement)?
+       | "switch" ("(" expression ")")? "{" switch_branches "}"
+
+switch_branches: switch_branch ("," switch_branch)*
+switch_branch: expression ("," expression)* "->" statement
+       | "else" "->" statement
+
+literal: STRING | number | "true" | "false" | "nil" | "undefined" | NAME | tuple_literal
+tuple_literal: "(" expression ("," expression)* ")"
+number: DEC_NUMBER | HEX_NUMBER | OCT_NUMBER | SIGNED_NUMBER
+
+// Tokens
+
+DEC_NUMBER: /[1-9]\d*l?/i
+HEX_NUMBER: /0x[\da-f]*l?/i
+OCT_NUMBER: /0o?[0-7]*l?/i
+COMMENT: "//" /[^\n]*/ // single-line comments
+       | "/*" /(.|\n|\r)+/ "*/" // multiline comments
+
+%import common.FLOAT -> FLOAT
+%import common.INT -> _INT
+%import common.CNAME -> NAME
+%import common.ESCAPED_STRING -> STRING
+%import common.SIGNED_NUMBER
+%import common.WS
+
+%ignore COMMENT
+%ignore WS

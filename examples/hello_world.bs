@@ -1,0 +1,31 @@
+fn main() {
+    x := -0
+    y := undefined
+    mut a := 123
+    mut q, mut m, c := (99, true, nil)
+    name := "StunxFS"
+    name = 999
+    //println("Hello World!)
+    if (true) q := 3
+    if (false) {
+        s := undefined
+        s = if (true) {
+            99
+        } else {
+            100
+        }
+    }
+    while (nil) m += 4
+    switch (name) {
+        "holaa" -> m = 99,
+        "wb", "js" -> m = 1000,
+        else -> exit
+    }
+    switch {
+        true -> true,
+        false -> false
+    }
+}
+
+poppet := fnaf
+poppet += "\n99\"99\0"
