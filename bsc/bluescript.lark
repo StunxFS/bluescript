@@ -6,56 +6,86 @@ start: (decl | stmt)*
 
 // Declarations
 
-decl: accessibility? (mod_decl | fn_decl | const_decl | global_var_decl)
-mod_decl: "mod" NAME "{" decl* "}"
+decl: access_modifier? (global_var_decl | const_decl | class_decl | fn_decl)
 
-global_var_decl: "var" "mut"? NAME (":" type)? ":=" expr
-const_decl: "const" NAME (":" type)? ":=" expr
+global_var_decl: KW_VAR NAME (COLON type)? ASSIGN_DECL expr
+const_decl: KW_CONST NAME (COLON type)? ASSIGN_DECL expr
 
-class_decl: "class" NAME "{" (accessibility? class_field | decl)* "}"
-class_field: "mut"? NAME ":" type (":=" expr)?
+class_decl: KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
+class_field: access_modifier? NAME COLON type (ASSIGN_DECL expr)?
 
-fn_decl: "fn" NAME fn_args ("!" | type)? "{" stmt* "}"
-fn_args: "(" ( fn_self ("," fn_args_list)? | fn_args_list )? ")"
-fn_args_list: fn_arg ("," fn_arg)*
-fn_arg: "mut"? NAME ":" type (":=" expr)?
-fn_self: "mut"? KW_SELF
+fn_decl: KW_FN NAME LPAREN fn_args? RPAREN (BANG | type)? LBRACE stmt* RBRACE
+fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)* 
+fn_arg: NAME COLON type (ASSIGN_DECL expr)?
 
-accessibility: "pub" | "prot"
+access_modifier: KW_PUB | KW_PROT
 
-type: "string" | "number" | NAME ("." NAME)* | "?" type
+type: "string" | "number" | "bool" | NAME (DOT NAME)* | LBRACKET expr? RBRACKET type | QUESTION type
 
 // Statements
 
 stmt: expr
        | assignment
        | block
-       | "while" "(" expr ")" stmt
+       | KW_WHILE LPAREN expr RPAREN stmt
 
-block: "{" stmt* "}"
-assignment: "mut"? NAME ("," "mut"? NAME)* op_assign expr
-op_assign: "=" | ":=" | "+=" | "-=" | "/=" | "*=" | "%=" | "|=" | "^=" | "&="
+block: LBRACE stmt* RBRACE
+assignment: expr (COMMA expr)* op_assign expr
+op_assign: "=" | ASSIGN_DECL | "+=" | "-=" | "/=" | "*=" | "%=" | "|=" | "^=" | "&="
 
 // Expressions
 
 expr: literal
-       | expr "." NAME
-       | expr "(" (expr ("," expr)*)? ")"
-       | "@" NAME "(" (expr ("," expr)*)? ")"
-       | "if" "(" expr ")" stmt ("else" stmt)?
-       | "switch" ("(" expr ")")? "{" switch_branches "}"
+       | LBRACKET (expr (COMMA expr)*)? RBRACKET BANG?
+       | LPAREN expr RPAREN
+       | expr DOT NAME
+       | expr LPAREN (expr (COMMA expr)*)? RPAREN
+       | AT NAME LPAREN (expr (COMMA expr)*)? RPAREN
+       | KW_IF LPAREN expr RPAREN stmt (KW_ELSE stmt)?
+       | KW_SWITCH (LPAREN expr RPAREN)? LBRACE switch_branches RBRACE
 
-switch_branches: switch_branch ("," switch_branch)*
-switch_branch: expr ("," expr)* "->" stmt
-       | "else" "->" stmt
+switch_branches: switch_branch (COMMA switch_branch)*
+switch_branch: expr (COMMA expr)* ARROW stmt
+       | KW_ELSE ARROW stmt
 
-literal: STRING | number | "true" | "false" | "nil" | "undefined" | KW_SELF | NAME | tuple_literal
-tuple_literal: "(" expr ("," expr)* ")"
+literal: STRING | number | KW_TRUE | KW_FALSE | KW_NIL | KW_UNDEFINED | KW_SELF | NAME | tuple_literal
+tuple_literal: LPAREN expr (COMMA expr)* RPAREN
 number: DEC_NUMBER | HEX_NUMBER | OCT_NUMBER | SIGNED_NUMBER
 
 // Tokens
 
+AT: "@"
+ARROW: "->"
+COMMA: ","
+DOT: "."
+COLON: ":"
+BANG: "!"
+QUESTION: "?"
+LPAREN: "("
+RPAREN: ")"
+LBRACE: "{"
+RBRACE: "}"
+LBRACKET: "["
+RBRACKET: "]"
+
+ASSIGN_DECL: ":="
+
+KW_TRUE: "true"
+KW_FALSE: "false"
+KW_NIL: "nil"
+KW_UNDEFINED: "undefined"
+KW_ELSE: "else"
+KW_IF: "if"
+KW_SWITCH: "switch"
+KW_WHILE: "while"
+KW_PROT: "prot"
+KW_PUB: "pub"
+KW_FN: "fn"
+KW_CONST: "const"
+KW_CLASS: "class"
+KW_VAR: "var"
 KW_SELF: "self"
+
 DEC_NUMBER: /[1-9]\d*l?/i
 HEX_NUMBER: /0x[\da-f]*l?/i
 OCT_NUMBER: /0o?[0-7]*l?/i

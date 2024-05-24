@@ -7,7 +7,7 @@ from lark import Lark, Transformer, v_args
 with open("bsc/bluescript.lark", "r") as bs_grammar_file:
     bs_grammar = bs_grammar_file.read()
 
-bs_parser = Lark(bs_grammar, parser='lalr')
+bs_parser = Lark(bs_grammar, parser='earley')
 # Disabling propagate_positions and placeholders slightly improves speed
 #propagate_positions=False,
 #maybe_placeholders=False,

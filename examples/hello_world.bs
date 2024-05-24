@@ -1,5 +1,17 @@
+var my_var := 9
+
+const ALPHA := 0x0
+
+class Item {}
+
 class Person {
-    fn setAge(mut self, age: number) {
+    name: string
+    age: number := 15
+
+    items: []Item := [Item()]
+    magic: [4]number := [1, 2, 3, 4]!
+
+    fn setAge(self, age: number) {
         self.age = age
     }
 
@@ -8,19 +20,11 @@ class Person {
     }
 }
 
-mod std {
-    pub fn my_func() {
-        println("hello!")
-    }
-}
-
-var my_var := 9
-
 fn main() {
     x := -0
     y := undefined
-    mut a := 123
-    mut q, mut m, c := (99, true, nil)
+    a := 123
+    q, m, c := (99, true, nil)
     name := "StunxFS"
     name = 999
     println("Hello World!")
@@ -30,6 +34,8 @@ fn main() {
     if (false) {
         s := undefined
         s = if (true) {
+            99
+        } else if (99) {
             99
         } else {
             100
@@ -49,3 +55,5 @@ fn main() {
 
 poppet := fnaf
 poppet += "\n99\"99\0"
+
+x := (9)
