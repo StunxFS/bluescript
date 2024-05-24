@@ -1,3 +1,5 @@
+import core/test;
+
 var my_var := 9
 
 const ALPHA := 0x0
@@ -9,10 +11,10 @@ class Person {
     age: number := 15
 
     items: []Item := [Item()]
-    magic: [4]number := [1, 2, 3, 4]!
+    magic: [4]number := [1, 2, 3, 4]!;
 
     fn setAge(self, age: number) {
-        self.age = age
+        self.age = age;
     }
 
     fn mkdir(path: string := "/") number {

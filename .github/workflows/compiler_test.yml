@@ -10,7 +10,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  ubuntu-clang:
+  ubuntu-python:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
