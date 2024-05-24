@@ -1,5 +1,5 @@
-// Copyright (C) 2024 Jose Mendoza. All rights reserved. Use of this 
-// source code is governed by an MIT license that can be found in the 
+// Copyright (C) 2024 Jose Mendoza. All rights reserved. Use of this
+// source code is governed by an MIT license that can be found in the
 // LICENSE file.
 
 start: (decl | stmt)*
@@ -20,12 +20,20 @@ class_decl: KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
 class_field: access_modifier? NAME COLON type (ASSIGN_DECL expr)? SEMICOLON?
 
 fn_decl: KW_FN NAME LPAREN fn_args? RPAREN (BANG | type)? LBRACE stmt* RBRACE
-fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)* 
+fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)*
 fn_arg: NAME COLON type (ASSIGN_DECL expr)?
 
 access_modifier: KW_PUB | KW_PROT
 
-type: "string" | "number" | "bool" | NAME (DOT NAME)* | LBRACKET expr? RBRACKET type | QUESTION type
+type: "bool"
+       | "number"
+       | "string"
+       | "thread"
+       | "userdata"
+       | NAME (DOT NAME)*
+       | LBRACKET expr? RBRACKET type
+       | QUESTION type
+       | type PIPE type (PIPE type)*
 
 // Statements
 
@@ -69,6 +77,7 @@ COLON: ":"
 SEMICOLON: ";"
 BANG: "!"
 QUESTION: "?"
+PIPE: "|"
 LPAREN: "("
 RPAREN: ")"
 LBRACE: "{"

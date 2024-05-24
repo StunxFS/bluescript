@@ -8,6 +8,8 @@ const ALPHA := 0x0
 
 class Item {}
 
+fn sumtype(x: number | string | Item) {}
+
 class Person {
     name: string
     age: number := 15
