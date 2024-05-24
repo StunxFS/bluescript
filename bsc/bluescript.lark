@@ -8,7 +8,10 @@ start: (decl | stmt)*
 
 decl: access_modifier? (import_decl | global_var_decl | const_decl | class_decl | fn_decl)
 
-import_decl: KW_IMPORT NAME (SLASH NAME)* SEMICOLON?
+import_decl: KW_IMPORT (custom_symbol_import KW_FROM)? STRING SEMICOLON?
+custom_symbol_import: LBRACE NAME (COMMA NAME)* RBRACE
+       | NAME
+       | MUL
 
 global_var_decl: KW_VAR NAME (COLON type)? ASSIGN_DECL expr SEMICOLON?
 const_decl: KW_CONST NAME (COLON type)? ASSIGN_DECL expr SEMICOLON?
@@ -56,6 +59,7 @@ number: DEC_NUMBER | HEX_NUMBER | OCT_NUMBER | SIGNED_NUMBER
 
 // Tokens
 
+MUL: "*"
 AT: "@"
 SLASH: "/"
 ARROW: "->"
@@ -74,6 +78,7 @@ RBRACKET: "]"
 
 ASSIGN_DECL: ":="
 
+KW_FROM: "from"
 KW_IMPORT: "import"
 KW_TRUE: "true"
 KW_FALSE: "false"

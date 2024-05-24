@@ -1,0 +1,63 @@
+import "core/test";
+import { Directory, File } from "std/fs"
+import * from "std/math"
+
+var my_var := 9
+
+const ALPHA := 0x0
+
+class Item {}
+
+class Person {
+    name: string
+    age: number := 15
+
+    items: []Item := [Item()]
+    magic: [4]number := [1, 2, 3, 4]!;
+
+    fn setAge(self, age: number) {
+        self.age = age;
+    }
+
+    fn mkdir(path: string := "/") number {
+        @assert(path)
+    }
+}
+
+fn main() {
+    x := -0
+    y := undefined
+    a := 123
+    q, m, c := (99, true, nil)
+    name := "StunxFS"
+    name = 999
+    println("Hello World!")
+    _ = math.pow(2)
+    std.my_func()
+    if (true) q := 3
+    if (false) {
+        s := undefined
+        s = if (true) {
+            99
+        } else if (99) {
+            99
+        } else {
+            100
+        }
+    }
+    while (nil) m += 4
+    switch (name) {
+        "holaa" -> m = 99,
+        "wb", "js" -> m = 1000,
+        else -> exit
+    }
+    switch {
+        true -> true,
+        false -> false
+    }
+}
+
+poppet := fnaf
+poppet += "\n99\"99\0"
+
+x := (9)
