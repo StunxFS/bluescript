@@ -38,8 +38,16 @@ class AccessModifier(IntEnum):
     protected = auto()
 
 class FnDecl:
-    def __init__(self, name):
+    def __init__(self, name, args, ret_type):
         self.name = name
+        self.args=ret_type
+        self.ret_type=ret_type
+
+class FnArg:
+    def __init__(self, name, type, default_value):
+        self.name=name
+        self.type=type
+        self.default_value=default_value
 
 # Statements
 
@@ -109,6 +117,9 @@ class SelectorExpr:
         return f"{self.left}.{self.name}"
 
 # Types
+class VoidType:
+    pass
+
 class BasicType:
     def __init__(self, expr,pos):
         self.expr=expr

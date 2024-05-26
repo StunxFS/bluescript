@@ -28,8 +28,28 @@ class AstGen(Transformer):
     def mkpos(self, token):
         return Pos.from_token(self.file, token)
 
-    def fn_arg(self, name, b_, type, a_, default_value):
-        pass
+    # Declarations
+    def fn_decl(self, *nodes):
+        name = nodes[1]
+        args = nodes[3]
+        if isinstance(args, Token):
+            is_method = False
+            args = []
+        else:
+            is_method = args[0]
+            args = list(args[1])
+        ret_type = nodes[5]
+        if isinstance(ret_type, Token) or not ret_type:
+            ret_type = VoidType()
+        print(ret_type)
+        return FnDecl(name, args, ret_type)
+
+    def fn_args(self, *nodes):
+        is_method = str(nodes[0]) == "self"
+        return (is_method, nodes[2:] if is_method else nodes)
+
+    def fn_arg(self, *nodes):
+        return FnArg(nodes[1], nodes[3], nodes[-1])
 
     # Expressions
     def par_expr(self, *children):
