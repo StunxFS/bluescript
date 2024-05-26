@@ -42,6 +42,34 @@ class FnDecl:
 
 # Expressions
 
+class ParExpr:
+    def __init__(self, expr, pos):
+        self.expr=expr
+        self.pos=pos
+
+class NilLiteral:
+    def __init__(self, pos):
+        self.pos=pos
+
+class BoolLiteral:
+    def __init__(self, value, pos):
+        self.value=value
+        self.pos=pos
+
+class NumberLiteral:
+    def __init__(self, value, pos):
+        self.value=value
+        self.pos=pos
+
+class StringLiteral:
+    def __init__(self, value, pos):
+        self.value=value
+        self.pos=pos
+
+class SelfLiteral:
+    def __init__(self, pos):
+        self.pos=pos
+
 class Ident:
     def __init__(self, name, pos):
         self.name = name
@@ -52,4 +80,4 @@ class SelectorExpr:
         self.left=left
         self.name=name
         self.pos=pos
-        print(self.pos)
+

@@ -8,7 +8,7 @@ from lark import Lark, v_args, Transformer
 
 from AST import *
 
-bs_parser = Lark.open("bluescript.lark", rel_to=__file__, parser='earley')
+bs_parser = Lark.open("grammar.lark", rel_to=__file__, parser='earley', start="module", ambiguity="explicit")
 
 @v_args(inline=True)
 class AstGen(Transformer):
@@ -23,8 +23,33 @@ class AstGen(Transformer):
         self.source_file = SourceFile(self.file)
         return self.transform(bs_parser.parse(open(file).read()))
 
+    def mkpos(self, token):
+        return Pos.from_token(self.file,token)
+
     #def fn_arg(self, name, _, type, _, default_value):
     #    print(name, type, default_value)
+
+    # Expressions
+    def par_expr(self, *children):
+        return ParExpr(children[1], self.mkpos(children[0])+self.mkpos(children[2]))
+
+    def KW_NIL(self, lit):
+        return NilLiteral(self.mkpos(lit))
+
+    def bool_lit(self, lit):
+        return BoolLiteral(lit.value == "true", self.mkpos(lit))
+
+    def number_lit(self, lit):
+        return NumberLiteral(lit.value, self.mkpos(lit))
+
+    def STRING(self, lit):
+        return StringLiteral(lit.value, self.mkpos(lit))
+
+    def KW_SELF(self, lit):
+        return SelfLiteral(self.mkpos(lit))
+
+    def NAME(self, lit):
+        return Ident(lit.value, self.mkpos(lit))
 
     # Modifiers
     def access_modifier(self, modifier):
@@ -36,10 +61,9 @@ class AstGen(Transformer):
 
     # Types
     def user_type(self, *names):
-        left = Ident(names[0].value, Pos.from_token(self.file,names[0]))
+        left = names[0]
         for name in names[1:]:
-            left = SelectorExpr(
-                left, Ident(name.value, Pos.from_token(self.file, name)),
-                left.pos + Pos.from_token(self.file,name)
-            )
-        print(left.__dict__)
+            if not isinstance(name, Ident):
+                continue
+            left = SelectorExpr(left, name, left.pos + name.pos)
+        return left

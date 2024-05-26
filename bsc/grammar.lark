@@ -2,12 +2,23 @@
 // source code is governed by an MIT license that can be found in the
 // LICENSE file.
 
-start: decl*
+%import common.CPP_COMMENT
+%import common.C_COMMENT
+%import common.NUMBER
+%import common.CNAME -> NAME
+%import common.ESCAPED_STRING -> STRING
+%import common.WS
+
+%ignore CPP_COMMENT
+%ignore C_COMMENT
+%ignore WS
+
+?module: decl*
 
 // Declarations
 
-decl: access_modifier? (import_decl
-       | global_var_decl
+?decl: access_modifier? (import_decl
+       | var_decl
        | const_decl
        | extern_decl
        | class_decl
@@ -18,18 +29,18 @@ custom_symbol_import: LBRACE NAME (COMMA NAME)* RBRACE
        | NAME
        | MUL
 
-global_var_decl: KW_VAR NAME (COLON type)? ASSIGN_DECL expr
-const_decl: KW_CONST NAME (COLON type)? ASSIGN_DECL expr
+var_decl: KW_VAR NAME [COLON type] ASSIGN_DECL expr
+const_decl: KW_CONST NAME [COLON type] ASSIGN_DECL expr
 
 extern_decl: KW_EXTERN decl
 
 class_decl: KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
-class_field: access_modifier? NAME COLON type (ASSIGN_DECL expr)?
+class_field: access_modifier? NAME COLON type [ASSIGN_DECL expr]
 
-fn_decl: KW_FN NAME LPAREN fn_args? RPAREN (BANG | type)? fn_body?
-fn_body: LBRACE stmt* RBRACE
+fn_decl: KW_FN NAME LPAREN fn_args? RPAREN [BANG | type] fn_body?
 fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)*
-fn_arg: NAME COLON type (ASSIGN_DECL expr)?
+fn_arg: NAME COLON type [ASSIGN_DECL expr]
+fn_body: LBRACE stmt* RBRACE
 
 access_modifier: KW_PUB | KW_PROT
 
@@ -48,10 +59,10 @@ type: "any"
 
 // Statements
 
-stmt: expr
+?stmt: expr
        | assignment
        | block
-       | KW_WHILE LPAREN expr RPAREN stmt
+       | KW_WHILE LPAREN expr RPAREN stmt -> while_stmt
 
 block: LBRACE stmt* RBRACE
 assignment: expr (COMMA expr)* op_assign expr
@@ -59,33 +70,36 @@ op_assign: "=" | ASSIGN_DECL | "+=" | "-=" | "/=" | "*=" | "%=" | "|=" | "^=" | 
 
 // Expressions
 
-expr: literal
-       | LPAREN expr RPAREN
-       | expr DOT NAME
-       | LBRACKET (expr (COMMA expr)*)? RBRACKET BANG?
-       | LBRACE expr COLON expr (COMMA expr COLON expr)* RBRACE
-       | expr LPAREN (expr (COMMA expr)*)? RPAREN
-       | AT NAME LPAREN (expr (COMMA expr)*)? RPAREN
-       | KW_IF LPAREN expr RPAREN stmt (KW_ELSE stmt)?
-       | KW_SWITCH (LPAREN expr RPAREN)? LBRACE switch_branches RBRACE
+?expr: literal
+       | par_expr
+       | AT NAME -> builtin_var
+       | expr DOT NAME -> selector_expr
+       | LBRACKET [expr (COMMA expr)*] RBRACKET BANG? -> array_literal
+       | LBRACE expr COLON expr (COMMA expr COLON expr)* RBRACE -> map_literal
+       | LPAREN expr (COMMA expr)* RPAREN -> tuple_literal
+       | expr LPAREN [expr (COMMA expr)*] RPAREN -> call_expr
+       | KW_IF LPAREN expr RPAREN stmt [KW_ELSE stmt] -> if_expr
+       | KW_SWITCH [LPAREN expr RPAREN] LBRACE switch_branches RBRACE -> switch_expr
+
+par_expr: LPAREN expr RPAREN
 
 switch_branches: switch_branch (COMMA switch_branch)*
 switch_branch: expr (COMMA expr)* ARROW stmt
        | KW_ELSE ARROW stmt
 
-literal: STRING
-       | number
-       | KW_TRUE
-       | KW_FALSE
-       | KW_NIL
-       | KW_UNDEFINED
+?literal: KW_NIL
+       | bool_lit
+       | number_lit
+       | STRING
        | KW_SELF
        | NAME
-       | tuple_literal
-tuple_literal: LPAREN expr (COMMA expr)* RPAREN
-number: DEC_NUMBER | HEX_NUMBER | OCT_NUMBER | SIGNED_NUMBER
+bool_lit: KW_TRUE | KW_FALSE
+number_lit: NUMBER | HEX_NUMBER | OCT_NUMBER
 
 // Tokens
+
+HEX_NUMBER: /0x[\da-f]*l?/i
+OCT_NUMBER: /0o?[0-7]*l?/i
 
 MUL: "*"
 AT: "@"
@@ -106,37 +120,21 @@ RBRACKET: "]"
 
 ASSIGN_DECL: ":="
 
-KW_EXTERN: "extern"
-KW_FROM: "from"
-KW_IMPORT: "import"
-KW_TRUE: "true"
-KW_FALSE: "false"
-KW_NIL: "nil"
-KW_UNDEFINED: "undefined"
+KW_CLASS: "class"
+KW_CONST: "const"
 KW_ELSE: "else"
+KW_EXTERN: "extern"
+KW_FALSE: "false"
+KW_FN: "fn"
+KW_FROM: "from"
 KW_IF: "if"
-KW_SWITCH: "switch"
-KW_WHILE: "while"
+KW_IMPORT: "import"
+KW_NIL: "nil"
 KW_PROT: "prot"
 KW_PUB: "pub"
-KW_FN: "fn"
-KW_CONST: "const"
-KW_CLASS: "class"
-KW_VAR: "var"
 KW_SELF: "self"
+KW_SWITCH: "switch"
+KW_TRUE: "true"
+KW_VAR: "var"
+KW_WHILE: "while"
 
-DEC_NUMBER: /[1-9]\d*l?/i
-HEX_NUMBER: /0x[\da-f]*l?/i
-OCT_NUMBER: /0o?[0-7]*l?/i
-COMMENT: "//" /[^\n]*/ // single-line comments
-       | "/*" /(.|\n|\r)+/ "*/" // multiline comments
-
-%import common.FLOAT -> FLOAT
-%import common.INT -> _INT
-%import common.CNAME -> NAME
-%import common.ESCAPED_STRING -> STRING
-%import common.SIGNED_NUMBER
-%import common.WS
-
-%ignore COMMENT
-%ignore WS

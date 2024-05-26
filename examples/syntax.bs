@@ -36,8 +36,7 @@ class Person {
 }
 
 fn main() {
-    x := -0
-    y := undefined
+    x := 0222_666.0e4
     a := 123
     q, m, c := (99, true, nil)
     name := "StunxFS"
@@ -47,8 +46,7 @@ fn main() {
     std.my_func()
     if (true) q := 3
     if (false) {
-        s := undefined
-        s = if (true) {
+        s := if (true) {
             99
         } else if (99) {
             99
@@ -67,3 +65,4 @@ fn main() {
         false -> false
     }
 }
+
