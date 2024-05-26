@@ -5,19 +5,22 @@
 from enum import IntEnum, auto
 
 class Pos:
-    def __init__(self,file, line, column, len, pos):
-        self.file=file
-        self.line=line
-        self.column=column
-        self.len=len
-        self.pos=pos
+    def __init__(self, file, line, column, len, pos):
+        self.file = file
+        self.line = line
+        self.column = column
+        self.len = len
+        self.pos = pos
 
     @staticmethod
     def from_token(file, token):
-        return Pos(file, token.line,token.column,len(token), token.start_pos)
+        return Pos(file, token.line, token.column, len(token), token.start_pos)
 
     def __add__(self, other):
-        return Pos(self.file, other.line, other.column, other.pos - self.pos + other.len, self.pos)
+        return Pos(
+            self.file, other.line, other.column,
+            other.pos - self.pos + other.len, self.pos
+        )
 
     def __str__(self):
         return f"Pos(file='{self.file}', line={self.line}, column={self.column}, len={self.len}, pos={self.pos})"
@@ -36,7 +39,7 @@ class AccessModifier(IntEnum):
 
 class FnDecl:
     def __init__(self, name):
-        self.name=name
+        self.name = name
 
 # Statements
 
@@ -44,40 +47,39 @@ class FnDecl:
 
 class ParExpr:
     def __init__(self, expr, pos):
-        self.expr=expr
-        self.pos=pos
+        self.expr = expr
+        self.pos = pos
 
 class NilLiteral:
     def __init__(self, pos):
-        self.pos=pos
+        self.pos = pos
 
 class BoolLiteral:
     def __init__(self, value, pos):
-        self.value=value
-        self.pos=pos
+        self.value = value
+        self.pos = pos
 
 class NumberLiteral:
     def __init__(self, value, pos):
-        self.value=value
-        self.pos=pos
+        self.value = value
+        self.pos = pos
 
 class StringLiteral:
     def __init__(self, value, pos):
-        self.value=value
-        self.pos=pos
+        self.value = value
+        self.pos = pos
 
 class SelfLiteral:
     def __init__(self, pos):
-        self.pos=pos
+        self.pos = pos
 
 class Ident:
     def __init__(self, name, pos):
         self.name = name
-        self.pos=pos
+        self.pos = pos
 
 class SelectorExpr:
     def __init__(self, left, name, pos):
-        self.left=left
-        self.name=name
-        self.pos=pos
-
+        self.left = left
+        self.name = name
+        self.pos = pos

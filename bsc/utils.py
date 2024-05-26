@@ -138,7 +138,6 @@ def escape_nonascii(original):
             sb.write(chr(c))
     return str(sb)
 
-
 class OrderedDepMap:
     def __init__(self, keys = [], data = {}):
         self.keys = keys.copy()

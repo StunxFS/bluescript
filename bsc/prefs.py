@@ -13,9 +13,9 @@ class Prefs:
 
     def parse_args(self):
         parser = argparse.ArgumentParser(
-                    prog='bsc',
-                    description='The BlueScript compiler')
-        parser.add_argument('input', help="the input file")
+            prog = 'bsc', description = 'The BlueScript compiler'
+        )
+        parser.add_argument('input', help = "the input file")
         args = parser.parse_args()
 
         # check input file

@@ -8,9 +8,12 @@ from lark import Lark, v_args, Transformer
 
 from AST import *
 
-bs_parser = Lark.open("grammar.lark", rel_to=__file__, parser='earley', start="module", ambiguity="explicit")
+bs_parser = Lark.open(
+    "grammar.lark", rel_to = __file__, parser = 'earley', start = "module",
+    ambiguity = "explicit"
+)
 
-@v_args(inline=True)
+@v_args(inline = True)
 class AstGen(Transformer):
     def __init__(self, ctx):
         super().__init__()
@@ -24,14 +27,17 @@ class AstGen(Transformer):
         return self.transform(bs_parser.parse(open(file).read()))
 
     def mkpos(self, token):
-        return Pos.from_token(self.file,token)
+        return Pos.from_token(self.file, token)
 
     #def fn_arg(self, name, _, type, _, default_value):
     #    print(name, type, default_value)
 
     # Expressions
     def par_expr(self, *children):
-        return ParExpr(children[1], self.mkpos(children[0])+self.mkpos(children[2]))
+        return ParExpr(
+            children[1],
+            self.mkpos(children[0]) + self.mkpos(children[2])
+        )
 
     def KW_NIL(self, lit):
         return NilLiteral(self.mkpos(lit))
