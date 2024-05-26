@@ -44,18 +44,19 @@ fn_body: LBRACE stmt* RBRACE
 
 access_modifier: KW_PUB | KW_PROT
 
-type: "any"
-       | "bool"
-       | "number"
-       | "string"
-       | "thread"
-       | "userdata"
+?type: primitive_type
        | NAME (DOT NAME)* -> user_type
        | QUESTION type -> option_type
        | LBRACKET expr? RBRACKET type -> array_type
        | LBRACE type COLON type RBRACE -> map_type
        | type PIPE type (PIPE type)* -> sum_type
        | LPAREN type COMMA type (COMMA type)* RPAREN -> tuple_type
+
+primitive_type: "any"
+       | "bool"
+       | "number"
+       | "string"
+       // | "thread"
 
 // Statements
 

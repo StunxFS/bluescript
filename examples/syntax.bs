@@ -30,7 +30,7 @@ class Person {
         self.age = age
     }
 
-    fn mkdir(path: string := "/") number {
+    fn mkdir(path: lua.string := "/") number {
         @assert(path)
     }
 }

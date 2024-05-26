@@ -4,13 +4,12 @@
 
 import os
 
-from lark import Lark, v_args, Transformer
+from lark import Lark, v_args, Transformer, Token
 
 from AST import *
 
 bs_parser = Lark.open(
-    "grammar.lark", rel_to = __file__, parser = 'earley', start = "module",
-    ambiguity = "explicit"
+    "grammar.lark", rel_to = __file__, parser = 'earley', start = "module"
 )
 
 @v_args(inline = True)
@@ -29,8 +28,8 @@ class AstGen(Transformer):
     def mkpos(self, token):
         return Pos.from_token(self.file, token)
 
-    #def fn_arg(self, name, _, type, _, default_value):
-    #    print(name, type, default_value)
+    def fn_arg(self, name, b_, type, a_, default_value):
+        pass
 
     # Expressions
     def par_expr(self, *children):
@@ -59,17 +58,34 @@ class AstGen(Transformer):
 
     # Modifiers
     def access_modifier(self, modifier):
-        if modifier.value == "pub":
-            return AccessModifier.public
-        elif modifier.value == "prot":
-            return AccessModifier.protected
+        match modifier.value:
+            case "pub": return AccessModifier.public
+            case "prot": return AccessModifier.protected
         return AccessModifier.private
 
     # Types
+    def primitive_type(self, *nodes):
+        return BasicType(nodes[0].value, self.mkpos(nodes[0]))
+
     def user_type(self, *names):
         left = names[0]
         for name in names[1:]:
             if not isinstance(name, Ident):
                 continue
             left = SelectorExpr(left, name, left.pos + name.pos)
-        return left
+        return BasicType(left, left.pos)
+
+    def option_type(self, *nodes):
+        return OptionType(nodes[1], self.mkpos(nodes[0])+nodes[1].pos)
+
+    def array_type(self, *nodes):
+        has_size = not isinstance(nodes[1], Token)
+        size = nodes[1] if has_size else None
+        return ArrayType(size, nodes[3 if has_size else 2], self.mkpos(nodes[0])+nodes[-1].pos)
+
+    def map_type(self, *nodes):
+        return MapType(nodes[1], nodes[3], self.mkpos(nodes[0])+self.mkpos(nodes[-1]))
+
+    def sum_type(self, *nodes):
+        types = list(filter(lambda node: not isinstance(node, Token), nodes))
+        return SumType(types, nodes[0].pos+nodes[-1].pos)
