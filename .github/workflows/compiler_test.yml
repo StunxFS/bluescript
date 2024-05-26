@@ -18,4 +18,4 @@ jobs:
       - name: Run passing tests
         run: |
           sudo pip3 install lark
-          python3 bsc
+          python3 bsc examples/syntax.bs

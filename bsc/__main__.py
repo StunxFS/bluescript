@@ -1,14 +1,21 @@
-# Copyright (C) 2024 Jose Mendoza. All rights reserved. Use of this 
-# source code is governed by an MIT license that can be found in the 
+# Copyright (C) 2024 Jose Mendoza. All rights reserved. Use of this
+# source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
-from lark import Lark
-
+from prefs import Prefs
 from astgen import AstGen
 
-with open("bsc/bluescript.lark", "r") as bs_grammar_file:
-    bs_grammar = bs_grammar_file.read()
+class Context:
+    def __init__(self):
+        self.prefs = Prefs()
+        self.astgen = AstGen(self)
 
-bs_parser = Lark(bs_grammar, parser='earley')
-ast = AstGen(True).transform(bs_parser.parse(open("examples/syntax.bs").read()))
-print(ast)
+        self.prefs.parse_args()
+
+        self.source_files = []
+
+    def parse_files(self):
+        self.source_files.append(self.astgen.parse_file(self.prefs.input))
+
+ctx = Context()
+ctx.parse_files()
