@@ -2,11 +2,16 @@
 // source code is governed by an MIT license that can be found in the
 // LICENSE file.
 
-start: (decl | stmt)*
+start: decl*
 
 // Declarations
 
-decl: access_modifier? (import_decl | global_var_decl | const_decl | class_decl | fn_decl)
+decl: access_modifier? (import_decl
+       | global_var_decl
+       | const_decl
+       | extern_decl
+       | class_decl
+       | fn_decl)
 
 import_decl: KW_IMPORT (custom_symbol_import KW_FROM)? STRING
 custom_symbol_import: LBRACE NAME (COMMA NAME)* RBRACE
@@ -16,26 +21,30 @@ custom_symbol_import: LBRACE NAME (COMMA NAME)* RBRACE
 global_var_decl: KW_VAR NAME (COLON type)? ASSIGN_DECL expr
 const_decl: KW_CONST NAME (COLON type)? ASSIGN_DECL expr
 
+extern_decl: KW_EXTERN decl
+
 class_decl: KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
 class_field: access_modifier? NAME COLON type (ASSIGN_DECL expr)?
 
-fn_decl: KW_FN NAME LPAREN fn_args? RPAREN (BANG | type)? LBRACE stmt* RBRACE
+fn_decl: KW_FN NAME LPAREN fn_args? RPAREN (BANG | type)? fn_body?
+fn_body: LBRACE stmt* RBRACE
 fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)*
 fn_arg: NAME COLON type (ASSIGN_DECL expr)?
 
 access_modifier: KW_PUB | KW_PROT
 
-type: "bool"
+type: "any"
+       | "bool"
        | "number"
        | "string"
        | "thread"
        | "userdata"
-       | NAME (DOT NAME)*
-       | QUESTION type
-       | LBRACKET expr? RBRACKET type
-       | LBRACE type COLON type RBRACE
-       | type PIPE type (PIPE type)*
-       | LPAREN type COMMA type (COMMA type)* RPAREN
+       | NAME (DOT NAME)* -> user_type
+       | QUESTION type -> option_type
+       | LBRACKET expr? RBRACKET type -> array_type
+       | LBRACE type COLON type RBRACE -> map_type
+       | type PIPE type (PIPE type)* -> sum_type
+       | LPAREN type COMMA type (COMMA type)* RPAREN -> tuple_type
 
 // Statements
 
@@ -64,7 +73,15 @@ switch_branches: switch_branch (COMMA switch_branch)*
 switch_branch: expr (COMMA expr)* ARROW stmt
        | KW_ELSE ARROW stmt
 
-literal: STRING | number | KW_TRUE | KW_FALSE | KW_NIL | KW_UNDEFINED | KW_SELF | NAME | tuple_literal
+literal: STRING
+       | number
+       | KW_TRUE
+       | KW_FALSE
+       | KW_NIL
+       | KW_UNDEFINED
+       | KW_SELF
+       | NAME
+       | tuple_literal
 tuple_literal: LPAREN expr (COMMA expr)* RPAREN
 number: DEC_NUMBER | HEX_NUMBER | OCT_NUMBER | SIGNED_NUMBER
 
@@ -89,6 +106,7 @@ RBRACKET: "]"
 
 ASSIGN_DECL: ":="
 
+KW_EXTERN: "extern"
 KW_FROM: "from"
 KW_IMPORT: "import"
 KW_TRUE: "true"

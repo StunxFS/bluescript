@@ -2,13 +2,15 @@ import "core/test"
 import { Directory, File } from "std/fs"
 import * from "std/math"
 
+extern fn require(path: string) any
+
 var my_var := 9
 
 const ALPHA := 0x0
 
 class Item {}
 
-fn sumtype(x: number | string | Item) {}
+pub fn sumtype(x: number | string | Item) {}
 
 class Person {
     name: string
@@ -22,7 +24,7 @@ class Person {
         "Second Key": 100
     }
 
-    tuple: (number, ?string) := (1, nil)
+    tuple: (number, ?lua.string) := (1, nil)
 
     fn setAge(self, age: number) {
         self.age = age
@@ -65,8 +67,3 @@ fn main() {
         false -> false
     }
 }
-
-poppet := fnaf
-poppet += "\n99\"99\0"
-
-x := (9)

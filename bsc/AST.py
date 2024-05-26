@@ -2,7 +2,54 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
+from enum import IntEnum, auto
+
+class Pos:
+    def __init__(self,file, line, column, len, pos):
+        self.file=file
+        self.line=line
+        self.column=column
+        self.len=len
+        self.pos=pos
+
+    @staticmethod
+    def from_token(file, token):
+        return Pos(file, token.line,token.column,len(token), token.start_pos)
+
+    def __add__(self, other):
+        return Pos(self.file, other.line, other.column, other.pos - self.pos + other.len, self.pos)
+
+    def __str__(self):
+        return f"Pos(file='{self.file}', line={self.line}, column={self.column}, len={self.len}, pos={self.pos})"
+
 class SourceFile:
     def __init__(self, file):
         self.file = file
         self.nodes = []
+
+# Declarations
+
+class AccessModifier(IntEnum):
+    private = auto()
+    public = auto()
+    protected = auto()
+
+class FnDecl:
+    def __init__(self, name):
+        self.name=name
+
+# Statements
+
+# Expressions
+
+class Ident:
+    def __init__(self, name, pos):
+        self.name = name
+        self.pos=pos
+
+class SelectorExpr:
+    def __init__(self, left, name, pos):
+        self.left=left
+        self.name=name
+        self.pos=pos
+        print(self.pos)
