@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/logo.png" alt="BlueScript logo" width="200" height="200"/>
+<img src="assets/logo.png" alt="BlueScript logo" width="250" height="250"/>
 
 # The BlueScript programming language
 A general-purpose programming language that generates Lua code with a simple,
