@@ -29,17 +29,17 @@ custom_symbol_import: LBRACE NAME (COMMA NAME)* RBRACE
        | NAME
        | MUL
 
-var_decl: KW_VAR NAME [COLON type] ASSIGN_DECL expr
-const_decl: KW_CONST NAME [COLON type] ASSIGN_DECL expr
+var_decl: KW_VAR NAME [COLON type] OP_DECL expr
+const_decl: KW_CONST NAME [COLON type] OP_DECL expr
 
 extern_decl: KW_EXTERN decl
 
 class_decl: KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
-class_field: access_modifier? NAME COLON type [ASSIGN_DECL expr]
+class_field: access_modifier? NAME COLON type [OP_DECL expr]
 
 fn_decl: KW_FN NAME LPAREN fn_args? RPAREN [BANG | type] fn_body?
 fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)*
-fn_arg: NAME COLON type [ASSIGN_DECL expr]
+fn_arg: NAME COLON type [OP_DECL expr]
 fn_body: LBRACE stmt* RBRACE
 
 access_modifier: KW_PUB | KW_PROT
@@ -67,7 +67,16 @@ primitive_type: "any"
 
 block: LBRACE stmt* RBRACE
 assignment: expr (COMMA expr)* op_assign expr
-op_assign: "=" | ASSIGN_DECL | "+=" | "-=" | "/=" | "*=" | "%=" | "|=" | "^=" | "&="
+op_assign: OP_DECL
+       | OP_ASSIGN
+       | OP_PLUS_ASSIGN
+       | OP_MINUS_ASSIGN
+       | OP_DIV_ASSIGN
+       | OP_MUL_ASSIGN
+       | OP_MOD_ASSIGN
+       | OP_AND_ASSIGN
+       | OP_OR_ASSIGN
+       | OP_XOR_ASSIGN
 
 // Expressions
 
@@ -79,10 +88,14 @@ op_assign: "=" | ASSIGN_DECL | "+=" | "-=" | "/=" | "*=" | "%=" | "|=" | "^=" | 
        | LBRACE expr COLON expr (COMMA expr COLON expr)* RBRACE -> map_literal
        | LPAREN expr (COMMA expr)* RPAREN -> tuple_literal
        | expr LPAREN [expr (COMMA expr)*] RPAREN -> call_expr
-       | KW_IF LPAREN expr RPAREN stmt [KW_ELSE stmt] -> if_expr
+       | if_expr
        | KW_SWITCH [LPAREN expr RPAREN] LBRACE switch_branches RBRACE -> switch_expr
 
 par_expr: LPAREN expr RPAREN
+if_expr: if_header else_if_expr* else_stmt?
+if_header: KW_IF LPAREN expr RPAREN stmt
+else_if_expr: KW_ELSE KW_IF LPAREN expr RPAREN stmt
+else_stmt: KW_ELSE stmt
 
 switch_branches: switch_branch (COMMA switch_branch)*
 switch_branch: expr (COMMA expr)* ARROW stmt
@@ -119,7 +132,16 @@ RBRACE: "}"
 LBRACKET: "["
 RBRACKET: "]"
 
-ASSIGN_DECL: ":="
+OP_DECL: ":="
+OP_ASSIGN: "="
+OP_PLUS_ASSIGN: "+="
+OP_MINUS_ASSIGN: "-="
+OP_DIV_ASSIGN: "/="
+OP_MUL_ASSIGN: "*="
+OP_MOD_ASSIGN: "%="
+OP_AND_ASSIGN: "&="
+OP_OR_ASSIGN: "|="
+OP_XOR_ASSIGN: "^="
 
 KW_CLASS: "class"
 KW_CONST: "const"

@@ -4,7 +4,7 @@
 
 import os
 
-from lark import Lark, v_args, Transformer, Token
+from lark import Lark, v_args, Transformer, Token, Tree
 
 from AST import *
 
@@ -41,8 +41,13 @@ class AstGen(Transformer):
         ret_type = nodes[5]
         if isinstance(ret_type, Token) or not ret_type:
             ret_type = VoidType()
-        print(ret_type)
-        return FnDecl(name, args, ret_type)
+        stmts = []
+        if not isinstance(nodes[-1], Token):
+            print(nodes[-1])
+        return FnDecl(
+            name, args, ret_type, stmts, name == "main"
+            and self.file == self.ctx.prefs.input
+        )
 
     def fn_args(self, *nodes):
         is_method = str(nodes[0]) == "self"
@@ -51,12 +56,66 @@ class AstGen(Transformer):
     def fn_arg(self, *nodes):
         return FnArg(nodes[1], nodes[3], nodes[-1])
 
-    # Expressions
-    def par_expr(self, *children):
-        return ParExpr(
-            children[1],
-            self.mkpos(children[0]) + self.mkpos(children[2])
+    def fn_body(self, *nodes):
+        stmts = []
+        if len(nodes) != 2:
+            stmts = nodes[1:-1]
+        return BlockStmt(stmts, self.mkpos(nodes[0]))
+
+    # Statements
+    def assignment(self, *nodes):
+        lefts = []
+        op_assign = ""
+        for node in nodes:
+            if str(node) == ",":
+                continue
+            if isinstance(node, OpAssign):
+                break
+            lefts.append(node)
+        right = nodes[-1]
+        return AssignStmt(lefts, op_assign, right, lefts[0].pos + nodes[-1].pos)
+
+    def op_assign(self, *nodes):
+        op_assign = str(nodes[0])
+        match op_assign:
+            case ":=":
+                op_assign = OpAssign.Decl
+            case "=":
+                op_assign = OpAssign.Assign
+            case "+=":
+                op_assign = OpAssign.PlusAssign
+            case "-=":
+                op_assign = OpAssign.MinusAssign
+            case "/=":
+                op_assign = OpAssign.DivAssign
+            case "*=":
+                op_assign = OpAssign.MulAssign
+            case "%=":
+                op_assign = OpAssign.ModAssign
+            case "&=":
+                op_assign = OpAssign.AndAssign
+            case "|=":
+                op_assign = OpAssign.OrAssign
+            case "^=":
+                op_assign = OpAssign.XorAssign
+        return op_assign
+
+    def block(self, *nodes):
+        stmts = list(nodes[1:-1])
+        return BlockStmt(stmts, self.mkpos(nodes[0])+self.mkpos(nodes[-1]))
+
+    def while_stmt(self, *nodes):
+        return WhileStmt(
+            nodes[1], nodes[3],
+            self.mkpos(nodes[0]) + self.mkpos(nodes[-1])
         )
+
+    # Expressions
+    def par_expr(self, *nodes):
+        return ParExpr(nodes[1], self.mkpos(nodes[0]) + self.mkpos(nodes[2]))
+
+    def builtin_var(self, *nodes):
+        return BuiltinVar(nodes[1].name, self.mkpos(nodes[0]) + nodes[1].pos)
 
     def KW_NIL(self, lit):
         return NilLiteral(self.mkpos(lit))
@@ -76,11 +135,64 @@ class AstGen(Transformer):
     def NAME(self, lit):
         return Ident(lit.value, self.mkpos(lit))
 
+    def selector_expr(self, *nodes):
+        return SelectorExpr(
+            nodes[0], nodes[2].name, nodes[0].pos + nodes[2].pos
+        )
+
+    def array_literal(self, *nodes):
+        elems = []
+        for node in nodes[1:]:
+            if str(node) == ",":
+                continue
+            if str(node) == "]":
+                break
+            elems.append(node)
+        is_fixed = str(nodes[-1]) == "!"
+        return ArrayLiteral(
+            elems, is_fixed,
+            self.mkpos(nodes[0]) + self.mkpos(nodes[-1])
+        )
+
+    def tuple_literal(self, *nodes):
+        elems = []
+        for node in nodes[1:]:
+            if str(node) == ",":
+                continue
+            if str(node) == ")":
+                break
+            elems.append(node)
+        return TupleLiteral(elems, self.mkpos(nodes[0]) + self.mkpos(nodes[-1]))
+
+    def call_expr(self, *nodes):
+        left = nodes[0]
+        args = list(nodes[2:-2])
+        return CallExpr(left, args, left.pos + self.mkpos(nodes[-1]))
+
+    def if_expr(self, *nodes):
+        branches=list(nodes)
+        return IfExpr(list(nodes), nodes[0].pos+nodes[-1].pos)
+
+    def if_header(self, *nodes):
+        cond = nodes[2]
+        stmt = nodes[4]
+        return IfBranch(cond, False, stmt, self.mkpos(nodes[0])+nodes[-1].pos)
+
+    def else_if_expr(self, *nodes):
+        cond = nodes[3]
+        stmt = nodes[4]
+        return IfBranch(cond, False, stmt, self.mkpos(nodes[0])+nodes[-1].pos)
+
+    def else_stmt(self, *nodes):
+        return IfBranch(None, True, nodes[1], self.mkpos(nodes[0])+nodes[-1].pos)
+
     # Modifiers
     def access_modifier(self, modifier):
         match modifier.value:
-            case "pub": return AccessModifier.public
-            case "prot": return AccessModifier.protected
+            case "pub":
+                return AccessModifier.public
+            case "prot":
+                return AccessModifier.protected
         return AccessModifier.private
 
     # Types
@@ -96,16 +208,22 @@ class AstGen(Transformer):
         return BasicType(left, left.pos)
 
     def option_type(self, *nodes):
-        return OptionType(nodes[1], self.mkpos(nodes[0])+nodes[1].pos)
+        return OptionType(nodes[1], self.mkpos(nodes[0]) + nodes[1].pos)
 
     def array_type(self, *nodes):
         has_size = not isinstance(nodes[1], Token)
         size = nodes[1] if has_size else None
-        return ArrayType(size, nodes[3 if has_size else 2], self.mkpos(nodes[0])+nodes[-1].pos)
+        return ArrayType(
+            size, nodes[3 if has_size else 2],
+            self.mkpos(nodes[0]) + nodes[-1].pos
+        )
 
     def map_type(self, *nodes):
-        return MapType(nodes[1], nodes[3], self.mkpos(nodes[0])+self.mkpos(nodes[-1]))
+        return MapType(
+            nodes[1], nodes[3],
+            self.mkpos(nodes[0]) + self.mkpos(nodes[-1])
+        )
 
     def sum_type(self, *nodes):
         types = list(filter(lambda node: not isinstance(node, Token), nodes))
-        return SumType(types, nodes[0].pos+nodes[-1].pos)
+        return SumType(types, nodes[0].pos + nodes[-1].pos)

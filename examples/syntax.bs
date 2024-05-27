@@ -36,7 +36,7 @@ class Person {
 }
 
 fn main() {
-    x := 0222_666.0e4
+    x := 666.0e4
     a := 123
     q, m, c := (99, true, nil)
     name := "StunxFS"
