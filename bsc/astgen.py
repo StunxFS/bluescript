@@ -102,7 +102,7 @@ class AstGen(Transformer):
 
     def block(self, *nodes):
         stmts = list(nodes[1:-1])
-        return BlockStmt(stmts, self.mkpos(nodes[0])+self.mkpos(nodes[-1]))
+        return BlockStmt(stmts, self.mkpos(nodes[0]) + self.mkpos(nodes[-1]))
 
     def while_stmt(self, *nodes):
         return WhileStmt(
@@ -170,21 +170,24 @@ class AstGen(Transformer):
         return CallExpr(left, args, left.pos + self.mkpos(nodes[-1]))
 
     def if_expr(self, *nodes):
-        branches=list(nodes)
-        return IfExpr(list(nodes), nodes[0].pos+nodes[-1].pos)
+        branches = list(nodes)
+        return IfExpr(list(nodes), nodes[0].pos + nodes[-1].pos)
 
     def if_header(self, *nodes):
         cond = nodes[2]
         stmt = nodes[4]
-        return IfBranch(cond, False, stmt, self.mkpos(nodes[0])+nodes[-1].pos)
+        return IfBranch(cond, False, stmt, self.mkpos(nodes[0]) + nodes[-1].pos)
 
     def else_if_expr(self, *nodes):
         cond = nodes[3]
         stmt = nodes[4]
-        return IfBranch(cond, False, stmt, self.mkpos(nodes[0])+nodes[-1].pos)
+        return IfBranch(cond, False, stmt, self.mkpos(nodes[0]) + nodes[-1].pos)
 
     def else_stmt(self, *nodes):
-        return IfBranch(None, True, nodes[1], self.mkpos(nodes[0])+nodes[-1].pos)
+        return IfBranch(
+            None, True, nodes[1],
+            self.mkpos(nodes[0]) + nodes[-1].pos
+        )
 
     # Modifiers
     def access_modifier(self, modifier):

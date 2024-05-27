@@ -223,7 +223,7 @@ class CallExpr:
 class IfExpr:
     def __init__(self, branches, pos):
         self.branches = branches
-        self.pos=pos
+        self.pos = pos
 
     def __str__(self):
         s = ""
@@ -237,11 +237,11 @@ class IfExpr:
         return s
 
 class IfBranch:
-    def __init__(self, cond, is_else, stmt,pos):
-        self.cond=cond
-        self.is_else=is_else
-        self.stmt=stmt
-        self.pos=pos
+    def __init__(self, cond, is_else, stmt, pos):
+        self.cond = cond
+        self.is_else = is_else
+        self.stmt = stmt
+        self.pos = pos
 
 # Types
 class VoidType:
