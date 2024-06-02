@@ -6,6 +6,7 @@ import os
 from lark import Lark, v_args, Transformer, Token, Tree
 
 from bsc.AST import *
+from bsc.sym import AccessModifier
 
 bs_parser = Lark.open(
     "grammar.lark", rel_to = __file__, parser = 'earley', start = "module"
