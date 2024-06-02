@@ -203,6 +203,15 @@ class Ident:
     def __str__(self):
         return self.name
 
+class PathExpr:
+    def __init__(self, left, name, pos):
+        self.left = left
+        self.name = name
+        self.pos = pos
+
+    def __str__(self):
+        return f"{self.left}::{self.name}"
+
 class SelectorExpr:
     def __init__(self, left, name, pos):
         self.left = left

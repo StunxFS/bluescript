@@ -147,6 +147,11 @@ class AstGen(Transformer):
     def NAME(self, lit):
         return Ident(lit.value, self.mkpos(lit))
 
+    def path_expr(self, *nodes):
+        return PathExpr(
+            nodes[0], nodes[2].name, nodes[0].pos + nodes[2].pos
+        )
+
     def selector_expr(self, *nodes):
         return SelectorExpr(
             nodes[0], nodes[2].name, nodes[0].pos + nodes[2].pos

@@ -27,7 +27,10 @@
 
 extern_pkg: KW_EXTERN KW_PKG NAME [KW_AS NAME]
 
-use_decl: KW_USE NAME (DOT NAME)* [KW_AS NAME]
+use_decl: KW_USE use_tree
+use_tree: simple_path DOUBLE_COLON MUL
+       | simple_path DOUBLE_COLON LBRACE [use_tree (COMMA use_tree)*] RBRACE
+       | simple_path [KW_AS NAME]
 
 mod_decl: KW_MOD NAME [LBRACE decl* RBRACE]
 
@@ -86,6 +89,7 @@ op_assign: OP_DECL
        | par_expr
        | AT NAME -> builtin_var
        | expr DOT NAME -> selector_expr
+       | simple_path
        | LBRACKET [expr (COMMA expr)*] RBRACKET BANG? -> array_literal
        | LBRACE expr COLON expr (COMMA expr COLON expr)* RBRACE -> map_literal
        | LPAREN expr (COMMA expr)* RPAREN -> tuple_literal
@@ -94,6 +98,8 @@ op_assign: OP_DECL
        | KW_SWITCH [LPAREN expr RPAREN] LBRACE switch_branches RBRACE -> switch_expr
 
 par_expr: LPAREN expr RPAREN
+
+simple_path: NAME (DOUBLE_COLON NAME)*
 
 if_expr: if_header else_if_expr* else_stmt?
 if_header: KW_IF LPAREN expr RPAREN stmt
@@ -125,6 +131,7 @@ SLASH: "/"
 ARROW: "->"
 COMMA: ","
 DOT: "."
+DOUBLE_COLON: "::"
 COLON: ":"
 BANG: "!"
 QUESTION: "?"

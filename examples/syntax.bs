@@ -1,13 +1,16 @@
 extern pkg core
 
-use core.fs.File
-
 mod asset_manager
 
-use pkg.asset_manager.AssetManager
+use core::fs
+use core::io as lua_io
+use love::filesystem::*
+use love::graphics::{ draw, draw_arc }
+
+use pkg::asset_manager::{ AssetManager }
 
 mod tests {
-    use core.testing.assert
+    use core::testing::assert
 
     fn test0() {
         @assert(0x1)
