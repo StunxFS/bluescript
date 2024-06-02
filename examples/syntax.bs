@@ -1,6 +1,18 @@
-import "core/test"
-import { Directory, File } from "std/fs"
-import * from "std/math"
+extern pkg core
+
+use core.fs.File
+
+mod asset_manager
+
+use pkg.asset_manager.AssetManager
+
+mod tests {
+    use core.testing.assert
+
+    fn test0() {
+        @assert(0x1)
+    }
+}
 
 extern fn require(path: string) any
 

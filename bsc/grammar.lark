@@ -13,21 +13,23 @@
 %ignore C_COMMENT
 %ignore WS
 
-?module: decl*
+?module: extern_pkg* decl*
 
 // Declarations
 
-?decl: access_modifier? (import_decl
+?decl: access_modifier? (use_decl
+       | mod_decl
        | var_decl
        | const_decl
        | extern_decl
        | class_decl
        | fn_decl)
 
-import_decl: KW_IMPORT (custom_symbol_import KW_FROM)? STRING
-custom_symbol_import: LBRACE NAME (COMMA NAME)* RBRACE
-       | NAME
-       | MUL
+extern_pkg: KW_EXTERN KW_PKG NAME [KW_AS NAME]
+
+use_decl: KW_USE NAME (DOT NAME)* [KW_AS NAME]
+
+mod_decl: KW_MOD NAME [LBRACE decl* RBRACE]
 
 var_decl: KW_VAR NAME [COLON type] OP_DECL expr
 const_decl: KW_CONST NAME [COLON type] OP_DECL expr
@@ -74,9 +76,9 @@ op_assign: OP_DECL
        | OP_DIV_ASSIGN
        | OP_MUL_ASSIGN
        | OP_MOD_ASSIGN
-       | OP_AND_ASSIGN
-       | OP_OR_ASSIGN
-       | OP_XOR_ASSIGN
+       | OP_BIT_AND_ASSIGN
+       | OP_BIT_OR_ASSIGN
+       | OP_BIT_XOR_ASSIGN
 
 // Expressions
 
@@ -139,25 +141,27 @@ OP_MINUS_ASSIGN: "-="
 OP_DIV_ASSIGN: "/="
 OP_MUL_ASSIGN: "*="
 OP_MOD_ASSIGN: "%="
-OP_AND_ASSIGN: "&="
-OP_OR_ASSIGN: "|="
-OP_XOR_ASSIGN: "^="
+OP_BIT_AND_ASSIGN: "&="
+OP_BIT_OR_ASSIGN: "|="
+OP_BIT_XOR_ASSIGN: "^="
 
+KW_AS: "as"
 KW_CLASS: "class"
 KW_CONST: "const"
 KW_ELSE: "else"
 KW_EXTERN: "extern"
 KW_FALSE: "false"
 KW_FN: "fn"
-KW_FROM: "from"
 KW_IF: "if"
-KW_IMPORT: "import"
+KW_MOD: "mod"
 KW_NIL: "nil"
+KW_PKG: "pkg"
 KW_PROT: "prot"
 KW_PUB: "pub"
 KW_SELF: "self"
 KW_SWITCH: "switch"
 KW_TRUE: "true"
+KW_USE: "use"
 KW_VAR: "var"
 KW_WHILE: "while"
 
