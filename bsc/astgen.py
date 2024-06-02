@@ -181,10 +181,90 @@ class AstGen(Transformer):
 
     def and_expr(self, *nodes):
         left = nodes[0]
-        print(nodes)
+        i = 0
+        nodes = nodes[1:]
+        while i < len(nodes):
+            if isinstance(tok, BinaryOp):
+                right = nodes[i + 1]
+                left = BinaryExpr(left, tok, right, left.pos + right.pos)
+                i += 1
+            i += 1
+        print(left)
+        return left
+
+    def or_expr(self, *nodes):
+        left = nodes[0]
+        i = 0
+        nodes = nodes[1:]
+        while i < len(nodes):
+            if isinstance(tok, BinaryOp):
+                right = nodes[i + 1]
+                left = BinaryExpr(left, tok, right, left.pos + right.pos)
+                i += 1
+            i += 1
+        return left
+
+    def compare_expr(self, *nodes):
+        left = nodes[0]
+        if len(nodes) == 3:
+            return BinaryExpr(left, nodes[2], nodes[3], left.pos + nodes[3].pos)
+        return left
+
+    def bitwise_expr(self, *nodes):
+        left = nodes[0]
+        i = 0
+        nodes = nodes[1:]
+        while i < len(nodes):
+            if isinstance(tok, BinaryOp):
+                right = nodes[i + 1]
+                left = BinaryExpr(left, tok, right, left.pos + right.pos)
+                i += 1
+            i += 1
+        return left
+
+    def bitshift_expr(self, *nodes):
+        left = nodes[0]
+        i = 0
+        nodes = nodes[1:]
+        while i < len(nodes):
+            if isinstance(tok, BinaryOp):
+                right = nodes[i + 1]
+                left = BinaryExpr(left, tok, right, left.pos + right.pos)
+                i += 1
+            i += 1
+        return left
+
+    def addition_expr(self, *nodes):
+        left = nodes[0]
+        i = 0
+        nodes = nodes[1:]
+        while i < len(nodes):
+            if isinstance(tok, BinaryOp):
+                right = nodes[i + 1]
+                left = BinaryExpr(left, tok, right, left.pos + right.pos)
+                i += 1
+            i += 1
+        return left
+
+    def multiply_expr(self, *nodes):
+        left = nodes[0]
+        i = 0
+        nodes = nodes[1:]
+        while i < len(nodes):
+            if isinstance(tok, BinaryOp):
+                right = nodes[i + 1]
+                left = BinaryExpr(left, tok, right, left.pos + right.pos)
+                i += 1
+            i += 1
+        return left
 
     def unary_expr(self, *nodes):
-        return UnaryExpr(nodes[0], nodes[1], nodes[0].pos + nodes[1].pos)
+        if len(nodes) == 1:
+            return nodes[0]
+        right = nodes[-1]
+        for op in nodes[:-1]:
+            right = UnaryExpr(op, right, right.pos)
+        return right
 
     def unary_op(self, *nodes):
         match nodes[0].value:
