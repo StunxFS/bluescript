@@ -85,8 +85,16 @@ op_assign: OP_DECL
 
 // Expressions
 
-?expr: literal
-       | par_expr
+?expr: and_expr
+and_expr: or_expr (LOGICAL_OR or_expr)*
+or_expr: compare_expr (LOGICAL_AND compare_expr)*
+compare_expr: bitwise_expr (compare_op bitwise_expr)?
+bitwise_expr: bitshift_expr (bitwise_op bitshift_expr)*
+bitshift_expr: addition_expr (bitshift_op addition_expr)*
+addition_expr: multiply_expr (addition_op multiply_expr)*
+multiply_expr: unary_expr (multiply_op unary_expr)*
+unary_expr: unary_op* primary_expr
+?primary_expr: literal
        | AT NAME -> builtin_var
        | expr DOT NAME -> selector_expr
        | simple_path
@@ -96,6 +104,14 @@ op_assign: OP_DECL
        | expr LPAREN [expr (COMMA expr)*] RPAREN -> call_expr
        | if_expr
        | KW_SWITCH [LPAREN expr RPAREN] LBRACE switch_branches RBRACE -> switch_expr
+       | par_expr
+
+compare_op: LT | GT | LE | GE | EQ | NEQ
+bitwise_op: BIT_AND | BIT_OR | BIT_XOR
+bitshift_op: LSHIFT | RSHIFT
+addition_op: PLUS | MINUS
+multiply_op: MUL | DIV | MOD
+unary_op: BANG | BIT_NOT | MINUS
 
 par_expr: LPAREN expr RPAREN
 
@@ -125,7 +141,11 @@ BIN_NUMBER: /0b?[0-1]*l?/
 OCT_NUMBER: /0o?[0-7]*l?/ii
 HEX_NUMBER: /0x[\da-f]*l?/i
 
+PLUS: "+"
+MINUS: "-"
 MUL: "*"
+DIV: "/"
+MOD: "%"
 AT: "@"
 SLASH: "/"
 ARROW: "->"
@@ -136,6 +156,21 @@ COLON: ":"
 BANG: "!"
 QUESTION: "?"
 PIPE: "|"
+LSHIFT: "<<"
+RSHIFT: ">>"
+EQ: "=="
+NEQ: "!="
+LT: "<"
+GT: ">"
+LE: "<="
+GE: ">="
+LOGICAL_OR: "||"
+LOGICAL_AND: "&&"
+BIT_AND: "&"
+BIT_OR: "|"
+BIT_XOR: "^"
+BIT_NOT: "~"
+
 LPAREN: "("
 RPAREN: ")"
 LBRACE: "{"

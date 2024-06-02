@@ -230,6 +230,48 @@ class CallExpr:
     def __str__(self):
         return f"{self.left}({', '.join([str(arg) for arg in self.args])})"
 
+class UnaryOp(IntEnum):
+    bang = auto()
+    bit_not = auto()
+    minus = auto()
+
+class BinaryOp(IntEnum):
+    lt = auto()
+    gt = auto()
+    le = auto()
+    ge = auto()
+    eq = auto()
+    neq = auto()
+    bit_and = auto()
+    bit_or = auto()
+    bit_xor = auto()
+    lshift = auto()
+    rshift = auto()
+    plus = auto()
+    minus = auto()
+    mul = auto()
+    div = auto()
+    mod = auto()
+
+class UnaryExpr:
+    def __init__(self, op, right, pos):
+        self.op = op
+        self.right = right
+        self.pos = pos
+
+    def __str__(self):
+        return f"{self.op}{self.right}"
+
+class BinaryExpr:
+    def __init__(self, left, op, right, pos):
+        self.left = left
+        self.op = op
+        self.right = right
+        self.pos = pos
+
+    def __str__(self):
+        return f"{self.left} {self.op} {self.right}"
+
 class IfExpr:
     def __init__(self, branches, pos):
         self.branches = branches

@@ -148,9 +148,7 @@ class AstGen(Transformer):
         return Ident(lit.value, self.mkpos(lit))
 
     def path_expr(self, *nodes):
-        return PathExpr(
-            nodes[0], nodes[2].name, nodes[0].pos + nodes[2].pos
-        )
+        return PathExpr(nodes[0], nodes[2].name, nodes[0].pos + nodes[2].pos)
 
     def selector_expr(self, *nodes):
         return SelectorExpr(
@@ -180,6 +178,87 @@ class AstGen(Transformer):
                 break
             elems.append(node)
         return TupleLiteral(elems, self.mkpos(nodes[0]) + self.mkpos(nodes[-1]))
+
+    def and_expr(self, *nodes):
+        left = nodes[0]
+        print(nodes)
+
+    def unary_expr(self, *nodes):
+        return UnaryExpr(nodes[0], nodes[1], nodes[0].pos + nodes[1].pos)
+
+    def unary_op(self, *nodes):
+        match nodes[0].value:
+            case "!":
+                return UnaryOp.bang
+            case "~":
+                return UnaryOp.bit_not
+            case "-":
+                return UnaryOp.minus
+            case _:
+                assert False # unreachable
+
+    def compare_op(self, *nodes):
+        match nodes[0].value:
+            case "<":
+                return BinaryExpr.lt
+            case ">":
+                return BinaryExpr.gt
+            case "<=":
+                return BinaryExpr.le
+            case ">=":
+                return BinaryExpr.ge
+            case "==":
+                return BinaryExpr.eq
+            case "!=":
+                return BinaryExpr.neq
+            case _:
+                assert False # unreachable
+
+    def bitwise_op(self, *nodes):
+        match nodes[0].value:
+            case "&":
+                return BinaryOp.bit_and
+            case "|":
+                return BinaryOp.bit_or
+            case "^":
+                return BinaryOp.bit_xor
+            case _:
+                assert False # unreachable
+
+    def bitshift_op(self, *nodes):
+        match nodes[0].value:
+            case "<<":
+                return BinaryOp.lshift
+            case ">>":
+                return BinaryOp.rshift
+            case _:
+                assert False # unreachable
+
+    def addition_op(self, *nodes):
+        match nodes[0].value:
+            case "+":
+                return BinaryOp.plus
+            case "-":
+                return BinaryOp.minus
+            case "*":
+                return BinaryOp.mul
+            case "/":
+                return BinaryOp.div
+            case "%":
+                return BinaryOp.mod
+            case _:
+                assert False # unreachable
+
+    def multiply_op(self, *nodes):
+        match nodes[0].value:
+            case "*":
+                return BinaryOp.mul
+            case "/":
+                return BinaryOp.div
+            case "%":
+                return BinaryOp.mod
+            case _:
+                assert False # unreachable
 
     def call_expr(self, *nodes):
         left = nodes[0]
