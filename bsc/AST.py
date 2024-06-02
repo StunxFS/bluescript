@@ -32,10 +32,11 @@ class SourceFile:
 
 # Declarations
 
-class AccessModifier(IntEnum):
-    private = auto()
-    public = auto()
-    protected = auto()
+class ExternPkg:
+    def __init__(self, pkg_name, alias_name, pos):
+        self.pkg_name = pkg_name
+        self.alias_name = alias_name
+        self.pos = pos
 
 class FnDecl:
     def __init__(self, name, args, ret_type, stmts, is_main):

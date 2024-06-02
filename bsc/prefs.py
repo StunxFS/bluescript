@@ -2,10 +2,9 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
-import os
-import argparse
+import os, argparse
 
-import utils
+from bsc import utils
 
 class Prefs:
     def __init__(self):

@@ -2,20 +2,12 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
-from prefs import Prefs
-from astgen import AstGen
+import os, sys
 
-class Context:
-    def __init__(self):
-        self.prefs = Prefs()
-        self.astgen = AstGen(self)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
 
-        self.prefs.parse_args()
-
-        self.source_files = []
-
-    def parse_files(self):
-        self.source_files.append(self.astgen.parse_file(self.prefs.input))
+from bsc import Context
 
 ctx = Context()
 ctx.parse_files()

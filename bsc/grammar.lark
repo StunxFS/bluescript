@@ -54,11 +54,11 @@ access_modifier: KW_PUB | KW_PROT
        | type PIPE type (PIPE type)* -> sum_type
        | LPAREN type COMMA type (COMMA type)* RPAREN -> tuple_type
 
+// TODO: do we implement thread as a generic type? `thread[T]` or "thread"
 primitive_type: "any"
        | "bool"
        | "number"
        | "string"
-       // | "thread"
 
 // Statements
 

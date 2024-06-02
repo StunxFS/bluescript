@@ -3,10 +3,9 @@
 # LICENSE file.
 
 import os
-
 from lark import Lark, v_args, Transformer, Token, Tree
 
-from AST import *
+from bsc.AST import *
 
 bs_parser = Lark.open(
     "grammar.lark", rel_to = __file__, parser = 'earley', start = "module"
@@ -29,8 +28,17 @@ class AstGen(Transformer):
         return Pos.from_token(self.file, token)
 
     # Declarations
+    def extern_pkg(self, *nodes):
+        pos = self.mkpos(nodes[0]) + nodes[2].pos
+        pkg_name = nodes[2].name
+        alias_name = pkg_name
+        if nodes[-1]:
+            alias_name = nodes[-1].name
+            pos += nodes[-1].pos
+        return ExternPkg(pkg_name, alias_name, pos)
+
     def fn_decl(self, *nodes):
-        name = nodes[1]
+        name = nodes[1].name
         args = nodes[3]
         if isinstance(args, Token):
             is_method = False
@@ -39,11 +47,13 @@ class AstGen(Transformer):
             is_method = args[0]
             args = list(args[1])
         ret_type = nodes[5]
-        if isinstance(ret_type, Token) or not ret_type:
+        if isinstance(ret_type, BlockStmt) or isinstance(ret_type, Token) or not ret_type:
             ret_type = VoidType()
         stmts = []
         if not isinstance(nodes[-1], Token):
-            print(nodes[-1])
+            stmts = nodes[-1]
+            if stmts == ret_type: # no body
+                stmts = None
         return FnDecl(
             name, args, ret_type, stmts, name == "main"
             and self.file == self.ctx.prefs.input
@@ -196,6 +206,7 @@ class AstGen(Transformer):
                 return AccessModifier.public
             case "prot":
                 return AccessModifier.protected
+        print(modifier)
         return AccessModifier.private
 
     # Types
