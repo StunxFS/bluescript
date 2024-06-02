@@ -94,6 +94,7 @@ op_assign: OP_DECL
        | KW_SWITCH [LPAREN expr RPAREN] LBRACE switch_branches RBRACE -> switch_expr
 
 par_expr: LPAREN expr RPAREN
+
 if_expr: if_header else_if_expr* else_stmt?
 if_header: KW_IF LPAREN expr RPAREN stmt
 else_if_expr: KW_ELSE KW_IF LPAREN expr RPAREN stmt
@@ -110,12 +111,13 @@ switch_branch: expr (COMMA expr)* ARROW stmt
        | KW_SELF
        | NAME
 bool_lit: KW_TRUE | KW_FALSE
-number_lit: NUMBER | HEX_NUMBER | OCT_NUMBER
+number_lit: NUMBER | BIN_NUMBER | OCT_NUMBER | HEX_NUMBER
 
 // Tokens
 
+BIN_NUMBER: /0b?[0-1]*l?/
+OCT_NUMBER: /0o?[0-7]*l?/ii
 HEX_NUMBER: /0x[\da-f]*l?/i
-OCT_NUMBER: /0o?[0-7]*l?/i
 
 MUL: "*"
 AT: "@"
