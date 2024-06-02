@@ -7,6 +7,9 @@ import os, sys, subprocess
 
 VERSION = "0.1.0a"
 
+class CompilerError(Exception):
+    pass
+
 def supports_escape_sequences(fd):
     if sys.platform == "nt":
         return False

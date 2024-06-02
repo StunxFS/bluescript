@@ -10,4 +10,5 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 from bsc import Context
 
 ctx = Context()
+ctx.parse_args()
 ctx.parse_files()

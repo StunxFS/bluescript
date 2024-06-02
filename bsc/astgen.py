@@ -47,8 +47,9 @@ class AstGen(Transformer):
             is_method = args[0]
             args = list(args[1])
         ret_type = nodes[5]
-        if isinstance(ret_type, BlockStmt) or isinstance(ret_type, Token) or not ret_type:
-            ret_type = VoidType()
+        if isinstance(ret_type, BlockStmt
+                      ) or isinstance(ret_type, Token) or not ret_type:
+            ret_type = self.ctx.void_type
         stmts = []
         if not isinstance(nodes[-1], Token):
             stmts = nodes[-1]
@@ -206,12 +207,21 @@ class AstGen(Transformer):
                 return AccessModifier.public
             case "prot":
                 return AccessModifier.protected
-        print(modifier)
         return AccessModifier.private
 
     # Types
     def primitive_type(self, *nodes):
-        return BasicType(nodes[0].value, self.mkpos(nodes[0]))
+        match nodes[0].value:
+            case "any":
+                return self.ctx.any_type
+            case "bool":
+                return self.ctx.bool_type
+            case "number":
+                return self.ctx.number_type
+            case "string":
+                return self.ctx.string_type
+            case _:
+                assert False # unreachable
 
     def user_type(self, *names):
         left = names[0]

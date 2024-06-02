@@ -245,15 +245,21 @@ class IfBranch:
         self.pos = pos
 
 # Types
-class VoidType:
-    pass
-
 class BasicType:
     def __init__(self, expr, pos):
         self.expr = expr
+        self.typesym = None
         self.pos = pos
 
+    @staticmethod
+    def with_typesym(typesym, pos = None):
+        res = BasicType(None, pos)
+        res.typesym = typesym
+        return res
+
     def __str__(self):
+        if self.typesym:
+            return str(self.typesym)
         return str(self.expr)
 
 class OptionType:
