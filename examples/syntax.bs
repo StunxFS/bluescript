@@ -18,7 +18,7 @@ extern fn require(path: string) any
 
 var my_var := 9
 
-const ALPHA := 0b00101010110101
+const ALPHA := 0b001010101101013
 
 class Item {}
 
