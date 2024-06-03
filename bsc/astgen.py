@@ -179,11 +179,19 @@ class AstGen(Transformer):
             elems.append(node)
         return TupleLiteral(elems, self.mkpos(nodes[0]) + self.mkpos(nodes[-1]))
 
+    def LOGICAL_AND(self, *nodes):
+        return BinaryOp.logical_and
+
+    def LOGICAL_OR(self, *nodes):
+        return BinaryOp.logical_or
+
     def and_expr(self, *nodes):
         left = nodes[0]
         i = 0
+        print(nodes)
         nodes = nodes[1:]
         while i < len(nodes):
+            tok = nodes[i]
             if isinstance(tok, BinaryOp):
                 right = nodes[i + 1]
                 left = BinaryExpr(left, tok, right, left.pos + right.pos)
@@ -197,6 +205,7 @@ class AstGen(Transformer):
         i = 0
         nodes = nodes[1:]
         while i < len(nodes):
+            tok = nodes[i]
             if isinstance(tok, BinaryOp):
                 right = nodes[i + 1]
                 left = BinaryExpr(left, tok, right, left.pos + right.pos)
@@ -207,7 +216,7 @@ class AstGen(Transformer):
     def compare_expr(self, *nodes):
         left = nodes[0]
         if len(nodes) == 3:
-            return BinaryExpr(left, nodes[2], nodes[3], left.pos + nodes[3].pos)
+            return BinaryExpr(left, nodes[1], nodes[2], left.pos + nodes[2].pos)
         return left
 
     def bitwise_expr(self, *nodes):
@@ -215,6 +224,7 @@ class AstGen(Transformer):
         i = 0
         nodes = nodes[1:]
         while i < len(nodes):
+            tok = nodes[i]
             if isinstance(tok, BinaryOp):
                 right = nodes[i + 1]
                 left = BinaryExpr(left, tok, right, left.pos + right.pos)
@@ -227,6 +237,7 @@ class AstGen(Transformer):
         i = 0
         nodes = nodes[1:]
         while i < len(nodes):
+            tok = nodes[i]
             if isinstance(tok, BinaryOp):
                 right = nodes[i + 1]
                 left = BinaryExpr(left, tok, right, left.pos + right.pos)
@@ -239,6 +250,7 @@ class AstGen(Transformer):
         i = 0
         nodes = nodes[1:]
         while i < len(nodes):
+            tok = nodes[i]
             if isinstance(tok, BinaryOp):
                 right = nodes[i + 1]
                 left = BinaryExpr(left, tok, right, left.pos + right.pos)
@@ -251,6 +263,7 @@ class AstGen(Transformer):
         i = 0
         nodes = nodes[1:]
         while i < len(nodes):
+            tok = nodes[i]
             if isinstance(tok, BinaryOp):
                 right = nodes[i + 1]
                 left = BinaryExpr(left, tok, right, left.pos + right.pos)
@@ -280,17 +293,17 @@ class AstGen(Transformer):
     def compare_op(self, *nodes):
         match nodes[0].value:
             case "<":
-                return BinaryExpr.lt
+                return BinaryOp.lt
             case ">":
-                return BinaryExpr.gt
+                return BinaryOp.gt
             case "<=":
-                return BinaryExpr.le
+                return BinaryOp.le
             case ">=":
-                return BinaryExpr.ge
+                return BinaryOp.ge
             case "==":
-                return BinaryExpr.eq
+                return BinaryOp.eq
             case "!=":
-                return BinaryExpr.neq
+                return BinaryOp.neq
             case _:
                 assert False # unreachable
 

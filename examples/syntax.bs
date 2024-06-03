@@ -13,7 +13,7 @@ mod tests {
     use core::testing::assert
 
     fn test0() {
-        @assert(0x1)
+        @assert(0x1 == -0x1 && true || false)
     }
 }
 

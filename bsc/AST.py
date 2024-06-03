@@ -129,6 +129,9 @@ class ParExpr:
     def __str__(self):
         return f"({self.expr})"
 
+    def __repr__(self):
+        return str(self)
+
 class BuiltinVar:
     def __init__(self, name, pos):
         self.name = name
@@ -137,12 +140,18 @@ class BuiltinVar:
     def __str__(self):
         return f"@{self.name}"
 
+    def __repr__(self):
+        return str(self)
+
 class NilLiteral:
     def __init__(self, pos):
         self.pos = pos
 
     def __str__(self):
         return "nil"
+
+    def __repr__(self):
+        return str(self)
 
 class BoolLiteral:
     def __init__(self, value, pos):
@@ -152,6 +161,9 @@ class BoolLiteral:
     def __str__(self):
         return str(self.value)
 
+    def __repr__(self):
+        return str(self)
+
 class NumberLiteral:
     def __init__(self, value, pos):
         self.value = value
@@ -159,6 +171,9 @@ class NumberLiteral:
 
     def __str__(self):
         return self.value
+
+    def __repr__(self):
+        return str(self)
 
 class StringLiteral:
     def __init__(self, value, pos):
@@ -168,12 +183,18 @@ class StringLiteral:
     def __str__(self):
         return self.value
 
+    def __repr__(self):
+        return str(self)
+
 class SelfLiteral:
     def __init__(self, pos):
         self.pos = pos
 
     def __str__(self):
         return "self"
+
+    def __repr__(self):
+        return str(self)
 
 class ArrayLiteral:
     def __init__(self, elems, is_fixed, pos):
@@ -187,6 +208,9 @@ class ArrayLiteral:
             _str += "!"
         return _str
 
+    def __repr__(self):
+        return str(self)
+
 class TupleLiteral:
     def __init__(self, elems, pos):
         self.elems = elems
@@ -195,6 +219,9 @@ class TupleLiteral:
     def __str__(self):
         return f"[{', '.join([str(elem) for elem in self.elems])}]"
 
+    def __repr__(self):
+        return str(self)
+
 class Ident:
     def __init__(self, name, pos):
         self.name = name
@@ -202,6 +229,9 @@ class Ident:
 
     def __str__(self):
         return self.name
+
+    def __repr__(self):
+        return str(self)
 
 class PathExpr:
     def __init__(self, left, name, pos):
@@ -212,6 +242,9 @@ class PathExpr:
     def __str__(self):
         return f"{self.left}::{self.name}"
 
+    def __repr__(self):
+        return str(self)
+
 class SelectorExpr:
     def __init__(self, left, name, pos):
         self.left = left
@@ -220,6 +253,9 @@ class SelectorExpr:
 
     def __str__(self):
         return f"{self.left}.{self.name}"
+
+    def __repr__(self):
+        return str(self)
 
 class CallExpr:
     def __init__(self, left, args, pos):
@@ -230,28 +266,88 @@ class CallExpr:
     def __str__(self):
         return f"{self.left}({', '.join([str(arg) for arg in self.args])})"
 
+    def __repr__(self):
+        return str(self)
+
 class UnaryOp(IntEnum):
     bang = auto()
     bit_not = auto()
     minus = auto()
 
+    def __str__(self):
+        match self:
+            case UnaryOp.bang:
+                return "!"
+            case UnaryOp.bit_not:
+                return "~"
+            case UnaryOp.minus:
+                return "-"
+            case _:
+                assert False #unreachable
+
 class BinaryOp(IntEnum):
+    plus = auto()
+    minus = auto()
+    mul = auto()
+    div = auto()
+    mod = auto()
+    bit_and = auto()
+    bit_or = auto()
+    bit_xor = auto()
+    lshift = auto()
+    rshift = auto()
     lt = auto()
     gt = auto()
     le = auto()
     ge = auto()
     eq = auto()
     neq = auto()
-    bit_and = auto()
-    bit_or = auto()
-    bit_xor = auto()
-    lshift = auto()
-    rshift = auto()
-    plus = auto()
-    minus = auto()
-    mul = auto()
-    div = auto()
-    mod = auto()
+    logical_and = auto()
+    logical_or = auto()
+
+    def __str__(self):
+        match self:
+            case BinaryOp.plus:
+                return "+"
+            case BinaryOp.minus:
+                return "-"
+            case BinaryOp.mul:
+                return "*"
+            case BinaryOp.div:
+                return "/"
+            case BinaryOp.mod:
+                return "%"
+            case BinaryOp.bit_and:
+                return "&"
+            case BinaryOp.bit_or:
+                return "|"
+            case BinaryOp.bit_xor:
+                return "^"
+            case BinaryOp.lshift:
+                return "<<"
+            case BinaryOp.rshift:
+                return ">>"
+            case BinaryOp.lt:
+                return "<"
+            case BinaryOp.gt:
+                return ">"
+            case BinaryOp.le:
+                return "<="
+            case BinaryOp.ge:
+                return ">="
+            case BinaryOp.eq:
+                return "=="
+            case BinaryOp.neq:
+                return "!="
+            case BinaryOp.logical_and:
+                return "&&"
+            case BinaryOp.logical_or:
+                return "||"
+            case _:
+                assert False #unreachable
+
+    def __repr__(self):
+        return str(self)
 
 class UnaryExpr:
     def __init__(self, op, right, pos):
@@ -262,6 +358,9 @@ class UnaryExpr:
     def __str__(self):
         return f"{self.op}{self.right}"
 
+    def __repr__(self):
+        return str(self)
+
 class BinaryExpr:
     def __init__(self, left, op, right, pos):
         self.left = left
@@ -271,6 +370,9 @@ class BinaryExpr:
 
     def __str__(self):
         return f"{self.left} {self.op} {self.right}"
+
+    def __repr__(self):
+        return str(self)
 
 class IfExpr:
     def __init__(self, branches, pos):
@@ -287,6 +389,9 @@ class IfExpr:
                 s += "\nelse "
             s += f"if ({branch.cond}) {branch.stmt}" + "\n"
         return s
+
+    def __repr__(self):
+        return str(self)
 
 class IfBranch:
     def __init__(self, cond, is_else, stmt, pos):
@@ -313,6 +418,9 @@ class BasicType:
             return str(self.typesym)
         return str(self.expr)
 
+    def __repr__(self):
+        return str(self)
+
 class OptionType:
     def __init__(self, type, pos):
         self.type = type
@@ -320,6 +428,9 @@ class OptionType:
 
     def __str__(self):
         return f"?{self.type}"
+
+    def __repr__(self):
+        return str(self)
 
 class ArrayType:
     def __init__(self, size, type, pos):
@@ -332,6 +443,9 @@ class ArrayType:
             return f"[{self.size}]{self.type}"
         return f"[]{self.type}"
 
+    def __repr__(self):
+        return str(self)
+
 class MapType:
     def __init__(self, k_type, v_type, pos):
         self.k_type = k_type
@@ -341,6 +455,9 @@ class MapType:
     def __str__(self):
         return f"{{{self.k_type}:{self.v_type}}}"
 
+    def __repr__(self):
+        return str(self)
+
 class SumType:
     def __init__(self, types, pos):
         self.types = types
@@ -349,6 +466,9 @@ class SumType:
     def __str__(self):
         return " | ".join([str(t) for t in self.types])
 
+    def __repr__(self):
+        return str(self)
+
 class TupleType:
     def __init__(self, types, pos):
         self.types = types
@@ -356,3 +476,6 @@ class TupleType:
 
     def __str__(self):
         return "(" + ", ".join([str(t) for t in self.types]) + ")"
+
+    def __repr__(self):
+        return str(self)
