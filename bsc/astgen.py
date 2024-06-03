@@ -188,7 +188,6 @@ class AstGen(Transformer):
     def and_expr(self, *nodes):
         left = nodes[0]
         i = 0
-        print(nodes)
         nodes = nodes[1:]
         while i < len(nodes):
             tok = nodes[i]
@@ -333,12 +332,6 @@ class AstGen(Transformer):
                 return BinaryOp.plus
             case "-":
                 return BinaryOp.minus
-            case "*":
-                return BinaryOp.mul
-            case "/":
-                return BinaryOp.div
-            case "%":
-                return BinaryOp.mod
             case _:
                 assert False # unreachable
 
