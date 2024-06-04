@@ -386,7 +386,7 @@ class IfExpr:
                 s += f"else {branch.stmt}"
                 break
             if i > 0:
-                s += "\nelse "
+                s += "else "
             s += f"if ({branch.cond}) {branch.stmt}" + "\n"
         return s
 
