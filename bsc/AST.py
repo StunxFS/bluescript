@@ -3,6 +3,7 @@
 # LICENSE file.
 
 from enum import IntEnum, auto
+from typing import Any
 
 class Pos:
     def __init__(self, file, line, column, len, pos):
@@ -55,7 +56,6 @@ class FnArg:
 # Statements
 
 class OpAssign(IntEnum):
-    Decl = auto()
     Assign = auto()
     PlusAssign = auto()
     MinusAssign = auto()
@@ -67,29 +67,37 @@ class OpAssign(IntEnum):
     XorAssign = auto()
 
     def __str__(self):
-        return op_assign_str(self)
+        match self:
+            case OpAssign.Assign:
+                return "="
+            case OpAssign.PlusAssign:
+                return "+="
+            case OpAssign.MinusAssign:
+                return "-="
+            case OpAssign.DivAssign:
+                return "-="
+            case OpAssign.MulAssign:
+                return "*="
+            case OpAssign.ModAssign:
+                return "%="
+            case OpAssign.AndAssign:
+                return "&="
+            case OpAssign.OrAssign:
+                return "|="
+            case OpAssign.XorAssign:
+                return "^="
+        assert False # unreachable
 
-def op_assign_str(op_assign):
-    match op_assign:
-        case OpAssign.Decl:
-            return "="
-        case OpAssign.PlusAssign:
-            return "+="
-        case OpAssign.MinusAssign:
-            return "-="
-        case OpAssign.DivAssign:
-            return "-="
-        case OpAssign.MulAssign:
-            return "*="
-        case OpAssign.ModAssign:
-            return "%="
-        case OpAssign.AndAssign:
-            return "&="
-        case OpAssign.OrAssign:
-            return "|="
-        case OpAssign.XorAssign:
-            return "^="
-    return ":="
+class VarIdent:
+    def __init__(self, name, typ, pos):
+        self.name = name
+        self.typ = typ
+        self.pos = pos
+
+class VarDecl:
+    def __init__(self, lefts, right):
+        self.lefts = lefts
+        self.right = right
 
 class AssignStmt:
     def __init__(self, lefts, op, right, pos):

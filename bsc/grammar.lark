@@ -32,19 +32,21 @@ use_tree: simple_path DOUBLE_COLON MUL
        | simple_path DOUBLE_COLON LBRACE [use_tree (COMMA use_tree)*] RBRACE
        | simple_path [KW_AS NAME]
 
+extern_decl: KW_EXTERN fn_decl
+
 mod_decl: KW_MOD NAME [LBRACE decl* RBRACE]
 
-var_decl: KW_VAR NAME [COLON type] OP_DECL expr
-const_decl: KW_CONST NAME [COLON type] OP_DECL expr
+var_decl: KW_VAR var_ident (COMMA var_ident)* OP_ASSIGN expr
+var_ident: NAME [COLON type]
 
-extern_decl: KW_EXTERN decl
+const_decl: KW_CONST NAME [COLON type] OP_ASSIGN expr
 
 class_decl: KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
-class_field: access_modifier? NAME COLON type [OP_DECL expr]
+class_field: access_modifier? NAME COLON type [OP_ASSIGN expr]
 
 fn_decl: KW_FN NAME LPAREN fn_args? RPAREN [BANG | type] fn_body?
 fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)*
-fn_arg: NAME COLON type [OP_DECL expr]
+fn_arg: NAME COLON type [OP_ASSIGN expr]
 fn_body: LBRACE stmt* RBRACE
 
 access_modifier: KW_PUB | KW_PROT
@@ -66,13 +68,14 @@ primitive_type: "any"
 // Statements
 
 ?stmt: expr
+       | var_decl
        | assignment
        | block
        | KW_WHILE LPAREN expr RPAREN stmt -> while_stmt
 
 block: LBRACE stmt* RBRACE
 assignment: expr (COMMA expr)* op_assign expr
-op_assign: OP_DECL
+op_assign: OP_ASSIGN
        | OP_ASSIGN
        | OP_PLUS_ASSIGN
        | OP_MINUS_ASSIGN
@@ -178,7 +181,6 @@ RBRACE: "}"
 LBRACKET: "["
 RBRACKET: "]"
 
-OP_DECL: ":="
 OP_ASSIGN: "="
 OP_PLUS_ASSIGN: "+="
 OP_MINUS_ASSIGN: "-="

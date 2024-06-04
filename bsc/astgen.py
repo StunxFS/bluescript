@@ -90,8 +90,6 @@ class AstGen(Transformer):
     def op_assign(self, *nodes):
         op_assign = str(nodes[0])
         match op_assign:
-            case ":=":
-                op_assign = OpAssign.Decl
             case "=":
                 op_assign = OpAssign.Assign
             case "+=":
@@ -110,6 +108,8 @@ class AstGen(Transformer):
                 op_assign = OpAssign.OrAssign
             case "^=":
                 op_assign = OpAssign.XorAssign
+            case _:
+                assert False # unreachable
         return op_assign
 
     def block(self, *nodes):
