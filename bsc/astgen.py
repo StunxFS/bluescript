@@ -348,7 +348,7 @@ class AstGen(Transformer):
 
     def call_expr(self, *nodes):
         left = nodes[0]
-        args = list(nodes[1:-1])
+        args = list(nodes[2:-1])
         return CallExpr(left, args, left.pos + self.mkpos(nodes[-1]))
 
     def if_expr(self, *nodes):
