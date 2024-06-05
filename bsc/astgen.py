@@ -278,17 +278,6 @@ class AstGen(Transformer):
             right = UnaryExpr(op, right, right.pos)
         return right
 
-    def unary_op(self, *nodes):
-        match nodes[0].value:
-            case "!":
-                return UnaryOp.bang
-            case "~":
-                return UnaryOp.bit_not
-            case "-":
-                return UnaryOp.minus
-            case _:
-                assert False # unreachable
-
     def compare_op(self, *nodes):
         match nodes[0].value:
             case "<":
@@ -346,9 +335,20 @@ class AstGen(Transformer):
             case _:
                 assert False # unreachable
 
+    def unary_op(self, *nodes):
+        match nodes[0].value:
+            case "!":
+                return UnaryOp.bang
+            case "~":
+                return UnaryOp.bit_not
+            case "-":
+                return UnaryOp.minus
+            case _:
+                assert False # unreachable
+
     def call_expr(self, *nodes):
         left = nodes[0]
-        if nodes[2:-1]:
+        if nodes[2]:
             args = list(nodes[2:-1])
         else:
             args = []
