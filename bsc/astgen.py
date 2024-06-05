@@ -75,6 +75,22 @@ class AstGen(Transformer):
         return BlockStmt(stmts, self.mkpos(nodes[0]))
 
     # Statements
+    def var_decl(self, *nodes):
+        lefts = [nodes[1]]
+        if len(nodes) != 4:
+            lefts += list(filter(lambda n: not isinstance(n, Token), nodes[2:-2]))
+        right = nodes[-1]
+        return VarDecl(lefts, right)
+
+    def var_ident(self, *nodes):
+        typ = None
+        if nodes[2]:
+            typ = nodes[2]
+        pos = nodes[0].pos
+        if nodes[2]:
+            pos += self.mkpos(nodes[2])
+        return VarIdent(nodes[0].name, typ, pos)
+
     def assignment(self, *nodes):
         lefts = []
         op_assign = ""

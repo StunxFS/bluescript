@@ -7,7 +7,7 @@ use core::io as lua_io
 use love::filesystem::*
 use love::graphics::{ draw, draw_arc }
 
-use pkg::asset_manager::{ AssetManager }
+use pkg::asset_manager::AssetManager
 
 mod tests {
     use core::testing::assert
@@ -20,6 +20,7 @@ mod tests {
 extern fn require(path: string) any
 
 var my_var = 9
+var myvar2, myvar3 = (1, 2, 3)
 
 const ALPHA = 0b00101010110101
 
