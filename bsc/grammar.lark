@@ -28,9 +28,9 @@
 extern_pkg: KW_EXTERN KW_PKG NAME [KW_AS NAME]
 
 use_decl: KW_USE use_tree
-use_tree: simple_path DOUBLE_COLON MUL
-       | simple_path DOUBLE_COLON LBRACE [use_tree (COMMA use_tree)*] RBRACE
-       | simple_path [KW_AS NAME]
+use_tree: path_expr DOUBLE_COLON MUL
+       | path_expr DOUBLE_COLON LBRACE [use_tree (COMMA use_tree)*] RBRACE
+       | path_expr [KW_AS NAME]
 
 extern_decl: KW_EXTERN fn_decl
 
@@ -98,16 +98,16 @@ addition_expr: multiply_expr (addition_op multiply_expr)*
 multiply_expr: unary_expr (multiply_op unary_expr)*
 unary_expr: unary_op* primary_expr
 ?primary_expr: literal
+       | par_expr
        | AT NAME -> builtin_var
        | expr DOT NAME -> selector_expr
-       | simple_path
+       | path_expr
        | LBRACKET [expr (COMMA expr)*] RBRACKET BANG? -> array_literal
        | LBRACE expr COLON expr (COMMA expr COLON expr)* RBRACE -> map_literal
        | LPAREN expr (COMMA expr)* RPAREN -> tuple_literal
        | expr LPAREN [expr (COMMA expr)*] RPAREN -> call_expr
        | if_expr
-       | KW_SWITCH [LPAREN expr RPAREN] LBRACE switch_branches RBRACE -> switch_expr
-       | par_expr
+       | switch_expr
 
 compare_op: LT | GT | LE | GE | EQ | NEQ
 bitwise_op: BIT_AND | BIT_OR | BIT_XOR
@@ -118,13 +118,14 @@ unary_op: BANG | BIT_NOT | MINUS
 
 par_expr: LPAREN expr RPAREN
 
-simple_path: NAME (DOUBLE_COLON NAME)*
+path_expr: NAME (DOUBLE_COLON NAME)*
 
 if_expr: if_header else_if_expr* else_stmt?
 if_header: KW_IF LPAREN expr RPAREN stmt
 else_if_expr: KW_ELSE KW_IF LPAREN expr RPAREN stmt
 else_stmt: KW_ELSE stmt
 
+switch_expr: KW_SWITCH [LPAREN expr RPAREN] LBRACE switch_branches RBRACE
 switch_branches: switch_branch (COMMA switch_branch)*
 switch_branch: expr (COMMA expr)* ARROW stmt
        | KW_ELSE ARROW stmt
