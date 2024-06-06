@@ -118,7 +118,7 @@ unary_op: BANG | BIT_NOT | MINUS
 
 par_expr: LPAREN expr RPAREN
 
-path_expr: NAME (DOUBLE_COLON NAME)+
+path_expr: NAME (DOUBLE_COLON NAME)*
 
 if_expr: if_header else_if_expr* else_stmt?
 if_header: KW_IF LPAREN expr RPAREN stmt
