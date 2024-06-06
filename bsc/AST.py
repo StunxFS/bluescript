@@ -408,6 +408,37 @@ class IfBranch:
         self.stmt = stmt
         self.pos = pos
 
+class MatchExpr:
+    def __init__(self, expr, branches, pos):
+        self.expr = expr
+        self.branches = branches
+        self.pos = pos
+
+    def __str__(self):
+        if self.expr:
+            s = f"match ({self.expr}) {{\n"
+        else:
+            s = "match {\n"
+        for i, branch in enumerate(self.branches):
+            if branch.is_else:
+                s += f"    else -> {branch.stmt}"
+                break
+            s += f"    {', '.join([str(pat) for pat in branch.cases])} -> {branch.stmt}"
+            if i < len(self.branches) - 1:
+                s += "\n"
+        s += "\n}"
+        return s
+
+    def __repr__(self):
+        return str(self)
+
+class MatchBranch:
+    def __init__(self, cases, is_else, stmt, pos):
+        self.cases = cases
+        self.is_else = is_else
+        self.stmt = stmt
+        self.pos = pos
+
 # Types
 class BasicType:
     def __init__(self, expr, pos):

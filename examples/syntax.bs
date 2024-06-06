@@ -1,3 +1,5 @@
+// #![extern_module(global=true)]
+
 extern pkg core
 
 mod asset_manager
@@ -17,7 +19,7 @@ mod tests {
     }
 }
 
-extern fn require(path: string) any
+fn require(path: string) any
 
 var my_var = 9
 var myvar2, myvar3 = (1, 2, 3)
@@ -31,7 +33,7 @@ pub fn sumtype(x: number | string | Item) {}
 /*
 enum WorldLevel {
     overworld
-    midgar
+    midgard
     underworld
     undefined = 0x0
 }
@@ -80,12 +82,12 @@ fn main() {
         }
     }
     while (nil) m += 4
-    switch (name) {
+    match (name) {
         "holaa" -> m = 99,
         "wb", "js" -> m = 1000,
         else -> exit
     }
-    switch {
+    match {
         true -> true,
         false -> false
     }

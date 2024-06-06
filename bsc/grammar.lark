@@ -21,7 +21,6 @@
        | mod_decl
        | var_decl
        | const_decl
-       | extern_decl
        | class_decl
        | fn_decl)
 
@@ -31,8 +30,6 @@ use_decl: KW_USE use_tree
 use_tree: path_expr DOUBLE_COLON MUL
        | path_expr DOUBLE_COLON LBRACE [use_tree (COMMA use_tree)*] RBRACE
        | path_expr [KW_AS NAME]
-
-extern_decl: KW_EXTERN fn_decl
 
 mod_decl: KW_MOD NAME [LBRACE decl* RBRACE]
 
@@ -107,7 +104,7 @@ unary_expr: unary_op* primary_expr
        | LPAREN expr (COMMA expr)* RPAREN -> tuple_literal
        | expr LPAREN [expr (COMMA expr)*] RPAREN -> call_expr
        | if_expr
-       | switch_expr
+       | match_expr
 
 compare_op: LT | GT | LE | GE | EQ | NEQ
 bitwise_op: BIT_AND | BIT_OR | BIT_XOR
@@ -125,9 +122,9 @@ if_header: KW_IF LPAREN expr RPAREN stmt
 else_if_expr: KW_ELSE KW_IF LPAREN expr RPAREN stmt
 else_stmt: KW_ELSE stmt
 
-switch_expr: KW_SWITCH [LPAREN expr RPAREN] LBRACE switch_branches RBRACE
-switch_branches: switch_branch (COMMA switch_branch)*
-switch_branch: expr (COMMA expr)* ARROW stmt
+match_expr: KW_MATCH [LPAREN expr RPAREN] LBRACE match_branches RBRACE
+match_branches: match_branch (COMMA match_branch)*
+match_branch: expr (COMMA expr)* ARROW stmt
        | KW_ELSE ARROW stmt
 
 ?literal: KW_NIL
@@ -200,13 +197,13 @@ KW_EXTERN: "extern"
 KW_FALSE: "false"
 KW_FN: "fn"
 KW_IF: "if"
+KW_MATCH: "match"
 KW_MOD: "mod"
 KW_NIL: "nil"
 KW_PKG: "pkg"
 KW_PROT: "prot"
 KW_PUB: "pub"
 KW_SELF: "self"
-KW_SWITCH: "switch"
 KW_TRUE: "true"
 KW_USE: "use"
 KW_VAR: "var"

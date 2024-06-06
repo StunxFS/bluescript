@@ -78,7 +78,9 @@ class AstGen(Transformer):
     def var_decl(self, *nodes):
         lefts = [nodes[1]]
         if len(nodes) != 4:
-            lefts += list(filter(lambda n: not isinstance(n, Token), nodes[2:-2]))
+            lefts += list(
+                filter(lambda n: not isinstance(n, Token), nodes[2:-2])
+            )
         right = nodes[-1]
         return VarDecl(lefts, right)
 
@@ -373,7 +375,6 @@ class AstGen(Transformer):
         return CallExpr(left, args, left.pos + self.mkpos(nodes[-1]))
 
     def if_expr(self, *nodes):
-        branches = list(nodes)
         return IfExpr(list(nodes), nodes[0].pos + nodes[-1].pos)
 
     def if_header(self, *nodes):
@@ -391,6 +392,40 @@ class AstGen(Transformer):
             None, True, nodes[1],
             self.mkpos(nodes[0]) + nodes[-1].pos
         )
+
+    def match_expr(self, *nodes):
+        expr = None
+        if nodes[1]:
+            expr = nodes[2]
+        return MatchExpr(
+            expr, nodes[5],
+            self.mkpos(nodes[0]) + self.mkpos(nodes[-1])
+        )
+
+    def match_branches(self, *nodes):
+        branches = []
+        for node in nodes:
+            if str(node) == ",":
+                continue
+            branches.append(node)
+        return branches
+
+    def match_branch(self, *nodes):
+        is_else = str(nodes[0]) == "else"
+        cases = []
+        if is_else:
+            pos = nodes[0].pos
+            stmt = nodes[2]
+        else:
+            pos = nodes[0].pos
+            for case in nodes:
+                if str(case) == ",":
+                    continue
+                if str(case) == "->":
+                    break
+                cases.append(case)
+            stmt = nodes[-1]
+        return MatchBranch(cases, is_else, stmt, pos + nodes[-1].pos)
 
     # Modifiers
     def access_modifier(self, modifier):
