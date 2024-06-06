@@ -2,7 +2,6 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
-import os
 from lark import Lark, v_args, Transformer, Token, Tree
 
 from bsc.AST import *
@@ -37,6 +36,16 @@ class AstGen(Transformer):
             alias_name = nodes[-1].name
             pos += nodes[-1].pos
         return ExternPkg(pkg_name, alias_name, pos)
+
+    def mod_decl(self, *nodes):
+        is_inline = nodes[2] is None
+        decls = []
+        if not is_inline:
+            decls = list(nodes[3:-2])
+        pos = self.mkpos(nodes[0])
+        if not is_inline:
+            pos += self.mkpos(nodes[-1])
+        return ModDecl(nodes[1].name, is_inline, decls, pos)
 
     def fn_decl(self, *nodes):
         name = nodes[1].name

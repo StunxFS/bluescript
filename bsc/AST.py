@@ -39,6 +39,13 @@ class ExternPkg:
         self.alias_name = alias_name
         self.pos = pos
 
+class ModDecl:
+    def __init__(self, name, is_inline, decls, pos):
+        self.name = name
+        self.is_inline = is_inline
+        self.decls = decls
+        self.pos = pos
+
 class FnDecl:
     def __init__(self, name, args, ret_type, stmts, is_main):
         self.name = name

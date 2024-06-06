@@ -16,7 +16,10 @@ class Prefs:
             prog = 'bsc', description = 'The BlueScript compiler'
         )
         parser.add_argument('input', help = "the input file")
-        parser.add_argument('--lib', action='store_true', help='specifies whether the entry is a library or not')
+        parser.add_argument(
+            '--lib', action = 'store_true',
+            help = 'specifies whether the entry is a library or not'
+        )
         args = parser.parse_args()
 
         self.is_library = args.lib
