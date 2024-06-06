@@ -13,7 +13,7 @@
 %ignore C_COMMENT
 %ignore WS
 
-?module: extern_pkg* decl*
+module: extern_pkg* decl*
 
 // Declarations
 

@@ -2,10 +2,12 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
+import os
 from lark import Lark, v_args, Transformer, Token, Tree
 
 from bsc.AST import *
-from bsc.sym import AccessModifier
+from bsc.sym import AccessModifier, Module, Scope
+from bsc import utils
 
 bs_parser = Lark.open(
     "grammar.lark", rel_to = __file__, parser = 'earley', start = "module"
@@ -21,13 +23,28 @@ class AstGen(Transformer):
 
     def parse_file(self, file):
         self.file = file
-        self.source_file = SourceFile(self.file)
-        return self.transform(bs_parser.parse(open(file).read()))
+        mod_sym = Module(
+            AccessModifier.public,
+            os.path.splitext(os.path.basename(self.file))[0],
+            Scope(self.ctx.universe)
+        )
+        self.source_file = SourceFile(
+            self.file, self.transform(bs_parser.parse(open(file).read())),
+            mod_sym
+        )
+        try:
+            self.ctx.universe.add_sym(self.source_file.mod_sym)
+        except utils.CompilerError as e:
+            utils.error(e.args[0])
+        return self.source_file
 
     def mkpos(self, token):
         return Pos.from_token(self.file, token)
 
     # Declarations
+    def module(self, *nodes):
+        return list(nodes)
+
     def extern_pkg(self, *nodes):
         pos = self.mkpos(nodes[0]) + nodes[2].pos
         pkg_name = nodes[2].name
@@ -225,7 +242,6 @@ class AstGen(Transformer):
                 left = BinaryExpr(left, tok, right, left.pos + right.pos)
                 i += 1
             i += 1
-        print(left)
         return left
 
     def or_expr(self, *nodes):

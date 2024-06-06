@@ -19,3 +19,4 @@ jobs:
         run: |
           sudo pip3 install lark
           python3 bsc examples/syntax.bs
+          python3 bsc examples/sema.bs
