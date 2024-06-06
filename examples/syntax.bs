@@ -28,6 +28,15 @@ class Item {}
 
 pub fn sumtype(x: number | string | Item) {}
 
+/*
+enum WorldLevel {
+    overworld
+    midgar
+    underworld
+    undefined = 0x0
+}
+*/
+
 class Person {
     name: string
     age: number = 15
