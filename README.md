@@ -13,3 +13,11 @@ convenient and powerful syntax.
 ![license](https://img.shields.io/github/license/StunxFS/bluescript?style=flat-square)
 
 </div>
+
+## The most basic example: "Hello World!"
+
+```rs
+fn main() {
+    println("Hello World!")
+}
+```
