@@ -11,6 +11,16 @@ class AccessModifier(IntEnum):
     public = auto()
     protected = auto()
 
+    def __str__(self):
+        match self:
+            case AccessModifier.private: return "<priv>"
+            case AccessModifier.public: return "pub"
+            case AccessModifier.protected: return "prot"
+            case _: assert False #unreachable
+
+    def __repr__(self):
+        return str(self)
+
 class Sym:
     def __init__(self, access_modifier, name):
         self.parent = None
@@ -115,6 +125,13 @@ class TypeSym(Sym):
 class Module(Sym):
     def __init__(self, access_modifier, name, scope):
         super().__init__(access_modifier, name)
+        scope.owner = self
+        self.scope = scope
+
+class Function(Sym):
+    def __init__(self, access_modifier, name, args, scope):
+        super().__init__(access_modifier, name)
+        self.args = args
         scope.owner = self
         self.scope = scope
 

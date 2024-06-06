@@ -65,8 +65,9 @@ class AstGen(Transformer):
         return ModDecl(nodes[1].name, is_inline, decls, pos)
 
     def fn_decl(self, *nodes):
-        name = nodes[1].name
-        args = nodes[3]
+        access_modifier = self.access_modifier(nodes[0])
+        name = nodes[2].name
+        args = nodes[4]
         if isinstance(args, Token):
             is_method = False
             args = []
@@ -83,7 +84,7 @@ class AstGen(Transformer):
             if stmts == ret_type: # no body
                 stmts = None
         return FnDecl(
-            name, args, ret_type, stmts, name == "main"
+            access_modifier, name, args, is_method, ret_type, stmts, name == "main"
             and self.file == self.ctx.prefs.input
         )
 
@@ -454,7 +455,7 @@ class AstGen(Transformer):
 
     # Modifiers
     def access_modifier(self, modifier):
-        match modifier.value:
+        match str(modifier):
             case "pub":
                 return AccessModifier.public
             case "prot":
@@ -503,3 +504,11 @@ class AstGen(Transformer):
     def sum_type(self, *nodes):
         types = list(filter(lambda node: not isinstance(node, Token), nodes))
         return SumType(types, nodes[0].pos + nodes[-1].pos)
+
+    # Utilities
+    def get_access_modifier(self, node):
+        print(node)
+        _access_modifier = AccessModifier.private
+        if isinstance(node, AccessModifier):
+            _access_modifier = node
+        return _access_modifier

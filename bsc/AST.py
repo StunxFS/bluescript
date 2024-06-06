@@ -46,14 +46,18 @@ class ModDecl:
         self.is_inline = is_inline
         self.decls = decls
         self.pos = pos
+        self.sym = None
 
 class FnDecl:
-    def __init__(self, name, args, ret_type, stmts, is_main):
+    def __init__(self, access_modifier, name, args, is_method, ret_type, stmts, is_main):
+        self.access_modifier = access_modifier
         self.name = name
-        self.args = ret_type
+        self.args = args
+        self.is_method=is_method
         self.ret_type = ret_type
         self.stmts = stmts
         self.is_main = is_main
+        self.sym = None
 
 class FnArg:
     def __init__(self, name, type, default_value):

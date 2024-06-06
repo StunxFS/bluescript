@@ -4,6 +4,7 @@
 
 from bsc.AST import *
 from bsc.sym import *
+from bsc import utils
 
 class Sema:
     def __init__(self, ctx):
@@ -26,6 +27,7 @@ class Sema:
             if self.first_pass:
                 pass
             self.cur_file = file
+            self.cur_sym = file.mod_sym
             self.check_file(file)
 
     def check_file(self, file):
@@ -40,12 +42,20 @@ class Sema:
             self.check_fn_decl(decl)
 
     def check_fn_decl(self, decl):
-        pass
+        if self.first_pass:
+            decl.sym = Function(decl.access_modifier, decl.name, [], self.open_scope())
+            self.add_sym(decl.sym)
+            return
 
     ## === Utilities ====================================
 
+    def add_sym(self, sym):
+        try: self.cur_sym.scope.add_sym(sym)
+        except utils.CompilerError as e: utils.error(e.args[0])
+
     def open_scope(self, detach_from_parent = False):
-        self.scope = Scope(self.scope, detach_from_parent)
+        self.cur_scope = Scope(self.cur_scope, detach_from_parent)
+        return self.cur_scope
 
     def close_scope(self):
-        self.scope = self.scope.parent
+        self.cur_scope = self.cur_scope.parent

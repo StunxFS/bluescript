@@ -1,3 +1,5 @@
-fn main() {
+pub fn main() {
     print("hello")
 }
+
+fn my_fn(){}
