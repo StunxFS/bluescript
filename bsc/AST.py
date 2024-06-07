@@ -48,9 +48,22 @@ class ModDecl:
         self.pos = pos
         self.sym = None
 
+class EnumDecl:
+    def __init__(self, access_modifier, name, fields, pos):
+        self.access_modifier = access_modifier
+        self.name = name
+        self.fields = fields
+        self.pos = pos
+
+class EnumField:
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
 class FnDecl:
     def __init__(
-        self, access_modifier, name, args, is_method, ret_type, stmts, is_main
+        self, access_modifier, name, args, is_method, ret_type, stmts, is_main,
+        pos
     ):
         self.access_modifier = access_modifier
         self.name = name
@@ -60,6 +73,7 @@ class FnDecl:
         self.stmts = stmts
         self.is_main = is_main
         self.sym = None
+        self.pos = pos
 
 class FnArg:
     def __init__(self, name, type, default_value):

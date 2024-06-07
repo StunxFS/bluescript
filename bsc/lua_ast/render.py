@@ -3,7 +3,7 @@
 # LICENSE file.
 
 import os
-from bsc import utils
+from bsc import sym, utils
 from bsc.lua_ast import *
 
 class LuaRender:

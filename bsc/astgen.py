@@ -62,8 +62,23 @@ class AstGen(Transformer):
             pos += self.mkpos(nodes[-1])
         return ModDecl(nodes[2].name, is_inline, decls, pos)
 
+    def enum_decl(self, *nodes):
+        pos = self.mkpos(nodes[1])
+        access_modifier = self.get_access_modifier(nodes[0])
+        name = nodes[2].name
+        enum_fields = []
+        for node in nodes[4:]:
+            if str(node) == "}":
+                break
+            enum_fields.append(node)
+        return EnumDecl(access_modifier, name, enum_fields, pos)
+
+    def enum_field(self, *nodes):
+        return EnumField(nodes[0].name, nodes[-1])
+
     def fn_decl(self, *nodes):
-        access_modifier = self.access_modifier(nodes[0])
+        pos = self.mkpos(nodes[1])
+        access_modifier = self.get_access_modifier(nodes[0])
         name = nodes[2].name
         args = nodes[4]
         if isinstance(args, Token):
@@ -83,7 +98,7 @@ class AstGen(Transformer):
                 stmts = None
         return FnDecl(
             access_modifier, name, args, is_method, ret_type, stmts,
-            name == "main" and self.file == self.ctx.prefs.input
+            name == "main" and self.file == self.ctx.prefs.input, pos
         )
 
     def fn_args(self, *nodes):
@@ -162,7 +177,7 @@ class AstGen(Transformer):
     def while_stmt(self, *nodes):
         return WhileStmt(
             nodes[1], nodes[3],
-            self.mkpos(nodes[0]) + self.mkpos(nodes[-1])
+            self.mkpos(nodes[0]) + nodes[-1].pos
         )
 
     # Expressions
@@ -438,7 +453,7 @@ class AstGen(Transformer):
         is_else = str(nodes[0]) == "else"
         cases = []
         if is_else:
-            pos = nodes[0].pos
+            pos = self.mkpos(nodes[0])
             stmt = nodes[2]
         else:
             pos = nodes[0].pos
@@ -505,7 +520,6 @@ class AstGen(Transformer):
 
     # Utilities
     def get_access_modifier(self, node):
-        print(node)
         _access_modifier = AccessModifier.private
         if isinstance(node, AccessModifier):
             _access_modifier = node

@@ -7,9 +7,16 @@ class LuaModule:
         self.name = name
         self.decls = []
 
-class LuaIdent:
-    def __init__(self, name):
+class LuaTableField:
+    def __init__(self, name, value):
         self.name = name
+        self.value = value
+
+class LuaTable:
+    def __init__(self, is_local, name, fields):
+        self.is_local = is_local
+        self.name = name
+        self.fields = fields
 
 class LuaFunction:
     def __init__(self, name, args):
@@ -20,3 +27,10 @@ class LuaFunction:
 class LuaBlock:
     def __init__(self):
         self.chunk = []
+
+class LuaIdent:
+    def __init__(self, name):
+        self.name = name
+
+class LuaNil:
+    pass

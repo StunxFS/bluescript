@@ -30,14 +30,12 @@ class Item {}
 
 pub fn sumtype(x: number | string | Item) {}
 
-/*
 enum WorldLevel {
     overworld
     midgard
     underworld
-    undefined = 0x0
+    undefined = 0xFF
 }
-*/
 
 class Person {
     name: string
@@ -92,4 +90,3 @@ fn main() {
         false -> false
     }
 }
-

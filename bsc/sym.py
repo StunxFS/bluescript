@@ -11,6 +11,12 @@ class AccessModifier(IntEnum):
     public = auto()
     protected = auto()
 
+    def is_public(self):
+        self == AccessModifier.public
+
+    def is_private(self):
+        return self == AccessModifier.private or self == AccessModifier.protected
+
     def __str__(self):
         match self:
             case AccessModifier.private:
@@ -81,6 +87,7 @@ class TypeKind(IntEnum):
     map = auto()
     tuple = auto()
     sumtype = auto()
+    enum = auto()
     _class = auto()
 
     def __str__(self):
@@ -103,10 +110,16 @@ class TypeKind(IntEnum):
                 return "tuple"
             case TypeKind.sumtype:
                 return "sumtype"
+            case TypeKind.enum:
+                return "enum"
             case TypeKind._class:
                 return "class"
             case _:
                 assert False # unreachable
+
+class EnumInfo:
+    def __init__(self, fields):
+        self.fields = fields
 
 class TypeField:
     def __init__(self, access_modifier, name, typ, default_value):
@@ -116,9 +129,10 @@ class TypeField:
         self.default_value = default_value
 
 class TypeSym(Sym):
-    def __init__(self, access_modifier, kind, name, fields, scope):
+    def __init__(self, access_modifier, kind, name, fields, scope, info = None):
         super().__init__(access_modifier, name)
         self.kind = kind
+        self.info = info
         self.fields = fields
         scope.owner = self
         self.scope = scope

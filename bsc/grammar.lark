@@ -21,6 +21,7 @@ module: extern_pkg* decl*
        | mod_decl
        | var_decl
        | const_decl
+       | enum_decl
        | class_decl
        | fn_decl
 
@@ -37,6 +38,9 @@ var_decl: [access_modifier] KW_VAR var_ident (COMMA var_ident)* OP_ASSIGN expr
 var_ident: NAME [COLON type]
 
 const_decl: [access_modifier] KW_CONST NAME [COLON type] OP_ASSIGN expr
+
+enum_decl: [access_modifier] KW_ENUM NAME LBRACE (enum_field)* RBRACE
+enum_field: NAME [OP_ASSIGN expr]
 
 class_decl: [access_modifier] KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
 class_field: [access_modifier] NAME COLON type [OP_ASSIGN expr]
@@ -134,13 +138,13 @@ match_branch: expr (COMMA expr)* ARROW stmt
        | KW_SELF
        | NAME
 bool_lit: KW_TRUE | KW_FALSE
-number_lit: NUMBER | BIN_NUMBER | OCT_NUMBER | HEX_NUMBER
+number_lit: BIN_NUMBER | OCT_NUMBER | HEX_NUMBER | NUMBER
 
 // Tokens
 
-BIN_NUMBER: /0b?[0-1]*l?/i
-OCT_NUMBER: /0o?[0-7]*l?/i
-HEX_NUMBER: /0x[\da-f]*l?/i
+BIN_NUMBER.2: /0b[0-1]*l?/i
+OCT_NUMBER.2: /0o[0-7]*l?/i
+HEX_NUMBER.2: /0x[\da-f]*l?/i
 
 PLUS: "+"
 MINUS: "-"
@@ -189,23 +193,24 @@ OP_BIT_AND_ASSIGN: "&="
 OP_BIT_OR_ASSIGN: "|="
 OP_BIT_XOR_ASSIGN: "^="
 
-KW_AS.10: "as"
-KW_CLASS.10: "class"
-KW_CONST.10: "const"
-KW_ELSE.10: "else"
-KW_EXTERN.10: "extern"
-KW_FALSE.10: "false"
-KW_FN.10: "fn"
-KW_IF.10: "if"
-KW_MATCH.10: "match"
-KW_MOD.10: "mod"
-KW_NIL.10: "nil"
-KW_PKG.10: "pkg"
-KW_PROT.10: "prot"
-KW_PUB.10: "pub"
-KW_SELF.10: "self"
-KW_TRUE.10: "true"
-KW_USE.10: "use"
-KW_VAR.10: "var"
-KW_WHILE.10: "while"
+KW_AS.1: "as"
+KW_CLASS.1: "class"
+KW_CONST.1: "const"
+KW_ELSE.1: "else"
+KW_ENUM.1: "enum"
+KW_EXTERN.1: "extern"
+KW_FALSE.1: "false"
+KW_FN.1: "fn"
+KW_IF.1: "if"
+KW_MATCH.1: "match"
+KW_MOD.1: "mod"
+KW_NIL.1: "nil"
+KW_PKG.1: "pkg"
+KW_PROT.1: "prot"
+KW_PUB.1: "pub"
+KW_SELF.1: "self"
+KW_TRUE.1: "true"
+KW_USE.1: "use"
+KW_VAR.1: "var"
+KW_WHILE.1: "while"
 

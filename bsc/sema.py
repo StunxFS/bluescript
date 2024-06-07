@@ -4,7 +4,7 @@
 
 from bsc.AST import *
 from bsc.sym import *
-from bsc import utils
+from bsc import utils, report
 
 class Sema:
     def __init__(self, ctx):
@@ -36,24 +36,40 @@ class Sema:
             self.check_decl(decl)
 
     def check_decl(self, decl):
-        if isinstance(decl, FnDecl):
+        if isinstance(decl, EnumDecl):
+            self.check_enum_decl(decl)
+        elif isinstance(decl, FnDecl):
             self.check_fn_decl(decl)
+
+    def check_enum_decl(self, decl):
+        if self.first_pass:
+            fields = []
+            for i, field in enumerate(decl.fields):
+                fields.append((field.name, i))
+            decl.sym = TypeSym(
+                decl.access_modifier, TypeKind.enum, decl.name, [],
+                self.open_scope(), info = EnumInfo(fields)
+            )
+            self.add_sym(decl.sym, decl.pos)
+            return
+        if len(decl.fields) == 0:
+            report.error(f"enum `{decl.name}` cannot be empty", decl.pos)
 
     def check_fn_decl(self, decl):
         if self.first_pass:
             decl.sym = Function(
                 decl.access_modifier, decl.name, [], self.open_scope()
             )
-            self.add_sym(decl.sym)
+            self.add_sym(decl.sym, decl.pos)
             return
 
     ## === Utilities ====================================
 
-    def add_sym(self, sym):
+    def add_sym(self, sym, pos):
         try:
             self.cur_sym.scope.add_sym(sym)
         except utils.CompilerError as e:
-            utils.error(e.args[0])
+            report.error(e.args[0], pos)
 
     def open_scope(self, detach_from_parent = False):
         self.cur_scope = Scope(self.cur_scope, detach_from_parent)
