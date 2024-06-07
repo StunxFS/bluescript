@@ -103,6 +103,7 @@ unary_expr: unary_op* primary_expr
        | AT NAME -> builtin_var
        | expr DOT NAME -> selector_expr
        | path_expr
+       | DOT NAME -> enum_literal
        | LBRACKET [expr (COMMA expr)*] RBRACKET BANG? -> array_literal
        | LBRACE expr COLON expr (COMMA expr COLON expr)* RBRACE -> map_literal
        | LPAREN expr (COMMA expr)* RPAREN -> tuple_literal

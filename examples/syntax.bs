@@ -61,6 +61,9 @@ class Person {
 }
 
 fn main() {
+    var w = WorldLevel.midgard
+    w = .undefined
+
     var x = 666.0e4
     var a = 123
     var q, m, c = (99, true, nil)

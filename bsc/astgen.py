@@ -239,6 +239,9 @@ class AstGen(Transformer):
             elems.append(node)
         return TupleLiteral(elems, self.mkpos(nodes[0]) + self.mkpos(nodes[-1]))
 
+    def enum_literal(self, *nodes):
+        return EnumLiteral(nodes[1].name, self.mkpos(nodes[0]) + nodes[1].pos)
+
     def LOGICAL_AND(self, *nodes):
         return BinaryOp.logical_and
 

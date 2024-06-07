@@ -258,6 +258,17 @@ class TupleLiteral:
     def __repr__(self):
         return str(self)
 
+class EnumLiteral:
+    def __init__(self, name, pos):
+        self.name = name
+        self.pos = pos
+
+    def __str__(self):
+        return f".{self.name}"
+
+    def __repr__(self):
+        return str(self)
+
 class Ident:
     def __init__(self, name, pos):
         self.name = name
