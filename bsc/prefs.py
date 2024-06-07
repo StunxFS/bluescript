@@ -43,11 +43,11 @@ class Prefs:
             if os.path.isfile(self.input):
                 self.pkg_name = os.path.splitext(self.pkg_name)[0]
 
-        # if the input is a directory, try loading `main.bs`
-        # or `lib.bs` as main input
+        # if the input is a directory, try loading `src/main.bs`
+        # or `src/lib.bs` as main input
         if os.path.isdir(self.input):
             input_file = "lib.bs" if self.is_library else "main.bs"
-            self.input = os.path.join(self.input, input_file)
+            self.input = os.path.join(self.input, "src", input_file)
 
         # we make sure the input exists
         if not os.path.exists(self.input):
