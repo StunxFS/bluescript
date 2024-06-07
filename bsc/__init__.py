@@ -7,6 +7,7 @@ from bsc.AST import BasicType
 from bsc.prefs import Prefs
 from bsc.astgen import AstGen
 from bsc.sema import Sema
+from bsc.codegen import Codegen
 from bsc.sym import Scope, TypeSym, AccessModifier, TypeKind, TypeField
 
 class Context:
@@ -51,6 +52,7 @@ class Context:
 
         self.astgen = AstGen(self)
         self.sema = Sema(self)
+        self.codegen = Codegen(self)
 
     def parse_args(self):
         self.prefs.parse_args()
@@ -58,6 +60,7 @@ class Context:
     def compile(self):
         self.parse_file(self.prefs.pkg_name, self.prefs.input)
         self.sema.check_files(self.source_files)
+        self.codegen.gen_files(self.source_files)
 
     def parse_input(self):
         self.parse_file(self.prefs.input)
