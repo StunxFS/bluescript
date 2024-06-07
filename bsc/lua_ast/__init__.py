@@ -7,6 +7,10 @@ class LuaModule:
         self.name = name
         self.decls = []
 
+class LuaIdent:
+    def __init__(self, name):
+        self.name = name
+
 class LuaFunction:
     def __init__(self, name, args):
         self.name = name

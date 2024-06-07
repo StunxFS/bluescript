@@ -88,10 +88,10 @@ class AstGen(Transformer):
 
     def fn_args(self, *nodes):
         is_method = str(nodes[0]) == "self"
-        return (is_method, nodes[2:] if is_method else nodes)
+        return (is_method, nodes[1:] if is_method else nodes)
 
     def fn_arg(self, *nodes):
-        return FnArg(nodes[1], nodes[3], nodes[-1])
+        return FnArg(nodes[0].name, nodes[2], nodes[-1])
 
     def fn_body(self, *nodes):
         stmts = []

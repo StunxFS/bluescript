@@ -4,8 +4,8 @@
 
 import os, sys
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
+BSC_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(BSC_DIR))
 
 from bsc import Context
 

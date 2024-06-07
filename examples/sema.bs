@@ -2,4 +2,4 @@ pub fn main() {
     print("hello")
 }
 
-fn my_fn(){}
+fn my_fn(a: number){}

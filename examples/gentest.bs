@@ -1,8 +1,0 @@
-extern pkg core
-extern pkg std as stdlib
-
-fn main() {}
-fn main(a: number) {}
-fn main(b: number = 0x0) bool {}
-fn main(c: number) any
-

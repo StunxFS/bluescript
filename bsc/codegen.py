@@ -32,5 +32,8 @@ class Codegen:
             self.gen_fn_decl(decl)
 
     def gen_fn_decl(self, decl):
-        luafn = LuaFunction(decl.name, [])
+        args = []
+        for arg in decl.args:
+            args.append(LuaIdent(arg.name))
+        luafn = LuaFunction(decl.name, args)
         self.cur_module.decls.append(luafn)
