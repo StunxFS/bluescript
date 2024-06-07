@@ -49,11 +49,13 @@ class ModDecl:
         self.sym = None
 
 class FnDecl:
-    def __init__(self, access_modifier, name, args, is_method, ret_type, stmts, is_main):
+    def __init__(
+        self, access_modifier, name, args, is_method, ret_type, stmts, is_main
+    ):
         self.access_modifier = access_modifier
         self.name = name
         self.args = args
-        self.is_method=is_method
+        self.is_method = is_method
         self.ret_type = ret_type
         self.stmts = stmts
         self.is_main = is_main

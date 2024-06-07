@@ -24,8 +24,6 @@ class Sema:
 
     def check_files_(self, files):
         for file in files:
-            if self.first_pass:
-                pass
             self.cur_file = file
             self.cur_sym = file.mod_sym
             self.check_file(file)
@@ -43,15 +41,19 @@ class Sema:
 
     def check_fn_decl(self, decl):
         if self.first_pass:
-            decl.sym = Function(decl.access_modifier, decl.name, [], self.open_scope())
+            decl.sym = Function(
+                decl.access_modifier, decl.name, [], self.open_scope()
+            )
             self.add_sym(decl.sym)
             return
 
     ## === Utilities ====================================
 
     def add_sym(self, sym):
-        try: self.cur_sym.scope.add_sym(sym)
-        except utils.CompilerError as e: utils.error(e.args[0])
+        try:
+            self.cur_sym.scope.add_sym(sym)
+        except utils.CompilerError as e:
+            utils.error(e.args[0])
 
     def open_scope(self, detach_from_parent = False):
         self.cur_scope = Scope(self.cur_scope, detach_from_parent)

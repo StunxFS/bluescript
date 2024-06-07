@@ -21,12 +21,10 @@ class AstGen(Transformer):
         self.file = ""
         self.source_file = None
 
-    def parse_file(self, file):
+    def parse_file(self, mod_name, file):
         self.file = file
         mod_sym = Module(
-            AccessModifier.public,
-            os.path.splitext(os.path.basename(self.file))[0],
-            Scope(self.ctx.universe)
+            AccessModifier.public, mod_name, Scope(self.ctx.universe)
         )
         self.source_file = SourceFile(
             self.file, self.transform(bs_parser.parse(open(file).read())),
@@ -84,8 +82,8 @@ class AstGen(Transformer):
             if stmts == ret_type: # no body
                 stmts = None
         return FnDecl(
-            access_modifier, name, args, is_method, ret_type, stmts, name == "main"
-            and self.file == self.ctx.prefs.input
+            access_modifier, name, args, is_method, ret_type, stmts,
+            name == "main" and self.file == self.ctx.prefs.input
         )
 
     def fn_args(self, *nodes):

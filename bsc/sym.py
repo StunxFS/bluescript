@@ -13,10 +13,14 @@ class AccessModifier(IntEnum):
 
     def __str__(self):
         match self:
-            case AccessModifier.private: return "<priv>"
-            case AccessModifier.public: return "pub"
-            case AccessModifier.protected: return "prot"
-            case _: assert False #unreachable
+            case AccessModifier.private:
+                return "<priv>"
+            case AccessModifier.public:
+                return "pub"
+            case AccessModifier.protected:
+                return "prot"
+            case _:
+                assert False #unreachable
 
     def __repr__(self):
         return str(self)

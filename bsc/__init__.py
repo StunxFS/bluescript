@@ -47,19 +47,20 @@ class Context:
         )
         self.string_type = BasicType.with_typesym(self.universe.syms[4])
 
+        self.source_files = []
+
         self.astgen = AstGen(self)
         self.sema = Sema(self)
-        self.source_files = []
 
     def parse_args(self):
         self.prefs.parse_args()
 
     def compile(self):
-        self.parse_file(self.prefs.input)
+        self.parse_file(self.prefs.pkg_name, self.prefs.input)
         self.sema.check_files(self.source_files)
 
     def parse_input(self):
         self.parse_file(self.prefs.input)
 
-    def parse_file(self, file):
-        self.source_files.append(self.astgen.parse_file(file))
+    def parse_file(self, mod_name, file):
+        self.source_files.append(self.astgen.parse_file(mod_name, file))
