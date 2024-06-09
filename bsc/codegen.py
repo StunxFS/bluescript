@@ -34,8 +34,16 @@ class Codegen:
         if isinstance(decl, AST.ModDecl):
             if decl.is_inline:
                 self.gen_inline_mod(decl)
+        elif isinstance(decl, AST.EnumDecl):
+            self.gen_enum_decl(decl)
         elif isinstance(decl, AST.FnDecl):
             self.gen_fn_decl(decl)
+
+    def gen_enum_decl(self, decl):
+        fields = []
+        for i, f in enumerate(decl.fields):
+            fields.append(LuaTableField(f.name, str(i)))
+        self.decls.append(LuaTable(decl.sym.qualname("."), fields))
 
     def gen_inline_mod(self, decl):
         old_decls = self.decls

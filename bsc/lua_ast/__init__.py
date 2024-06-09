@@ -13,8 +13,7 @@ class LuaTableField:
         self.value = value
 
 class LuaTable:
-    def __init__(self, is_local, name, fields):
-        self.is_local = is_local
+    def __init__(self, name, fields):
         self.name = name
         self.fields = fields
 

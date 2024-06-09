@@ -49,8 +49,22 @@ class LuaRender:
     def render_decl(self, decl):
         if isinstance(decl, LuaModule):
             self.render_inline_mod(decl)
+        elif isinstance(decl, LuaTable):
+            self.render_table(decl)
         elif isinstance(decl, LuaFunction):
             self.render_fn_decl(decl)
+
+    def render_table(self, decl):
+        self.writeln(f"{decl.name} = {{ -- enum")
+        self.indent += 1
+        for i, field in enumerate(decl.fields):
+            self.write(f"{field.name} = {field.value}")
+            if i < len(decl.fields) - 1:
+                self.writeln(",")
+            else:
+                self.writeln()
+        self.indent -= 1
+        self.writeln("}\n")
 
     def render_inline_mod(self, decl):
         self.writeln(f"{decl.name} = {{}} -- inline module\n")
@@ -73,7 +87,7 @@ class LuaRender:
         self.lua_file.write(s)
         self.empty_line = False
 
-    def writeln(self, s):
+    def writeln(self, s = ""):
         if self.indent > 0 and self.empty_line:
             self.lua_file.write("\t" * self.indent)
         self.lua_file.writeln(s)
