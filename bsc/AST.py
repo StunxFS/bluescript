@@ -39,9 +39,11 @@ class ExternPkg:
         self.pkg_name = pkg_name
         self.alias_name = alias_name
         self.pos = pos
+        self.sym = None
 
 class ModDecl:
-    def __init__(self, name, is_inline, decls, pos):
+    def __init__(self, access_modifier, name, is_inline, decls, pos):
+        self.access_modifier = access_modifier
         self.name = name
         self.is_inline = is_inline
         self.decls = decls
@@ -54,6 +56,7 @@ class EnumDecl:
         self.name = name
         self.fields = fields
         self.pos = pos
+        self.sym = None
 
 class EnumField:
     def __init__(self, name, value):

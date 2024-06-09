@@ -11,6 +11,7 @@ class Codegen:
         self.ctx = ctx
         self.modules = []
         self.cur_module = None
+        self.decls = []
 
     def gen_files(self, source_files):
         for file in source_files:
@@ -21,19 +22,30 @@ class Codegen:
     def gen_file(self, file):
         self.cur_module = LuaModule(file.mod_sym.name)
         self.gen_decls(file.decls)
+        self.cur_module.decls = self.decls
         self.modules.append(self.cur_module)
+        self.decls = []
 
     def gen_decls(self, decls):
         for decl in decls:
             self.gen_decl(decl)
 
     def gen_decl(self, decl):
-        if isinstance(decl, AST.FnDecl):
+        if isinstance(decl, AST.ModDecl):
+            self.gen_inline_mod(decl)
+        elif isinstance(decl, AST.FnDecl):
             self.gen_fn_decl(decl)
+
+    def gen_inline_mod(self, decl):
+        old_decls = self.decls
+        self.decls = []
+        self.gen_decls(decl.decls)
+        old_decls.append(LuaModule(decl.sym.qualname("."), self.decls))
+        self.decls = old_decls
 
     def gen_fn_decl(self, decl):
         args = []
         for arg in decl.args:
             args.append(LuaIdent(arg.name))
-        luafn = LuaFunction(decl.name, args)
-        self.cur_module.decls.append(luafn)
+        luafn = LuaFunction(decl.sym.qualname("."), args)
+        self.decls.append(luafn)

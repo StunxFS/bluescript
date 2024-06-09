@@ -3,9 +3,9 @@
 # LICENSE file.
 
 class LuaModule:
-    def __init__(self, name):
+    def __init__(self, name, decls = []):
         self.name = name
-        self.decls = []
+        self.decls = decls
 
 class LuaTableField:
     def __init__(self, name, value):
@@ -27,6 +27,12 @@ class LuaFunction:
 class LuaBlock:
     def __init__(self):
         self.chunk = []
+
+class LuaAssignment:
+    def __init__(self, lefts, op, rights):
+        self.lefts = lefts
+        self.op = op
+        self.rights = rights
 
 class LuaIdent:
     def __init__(self, name):

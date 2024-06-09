@@ -2,4 +2,10 @@ pub fn main() {
     print("hello")
 }
 
-fn my_fn(a: number){}
+fn my_fn(a: number) {}
+
+mod my_module {
+    pub fn new_func() {}
+    pub fn other_func() {}
+}
+

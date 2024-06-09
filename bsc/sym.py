@@ -45,13 +45,19 @@ class Sym:
         elif isinstance(self, TypeSym):
             return self.type_kind()
         elif isinstance(self, Module):
-            return "module"
+            return "package" if self.is_pkg_root else "module"
         return "symbol"
 
-    def __str__(self):
+    def qualname(self, sep = "::"):
         if self.parent and not self.parent.scope.is_universe:
-            return f"{self.parent}.{self.name}"
+            return f"{self.parent.qualname(sep)}{sep}{self.name}"
         return self.name
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return self.qualname()
 
 class ObjectLevel(IntEnum):
     _global = auto()
@@ -141,10 +147,11 @@ class TypeSym(Sym):
         return str(self.kind)
 
 class Module(Sym):
-    def __init__(self, access_modifier, name, scope):
+    def __init__(self, access_modifier, name, scope, is_pkg_root):
         super().__init__(access_modifier, name)
         scope.owner = self
         self.scope = scope
+        self.is_pkg_root = is_pkg_root
 
 class Function(Sym):
     def __init__(self, access_modifier, name, args, scope):
@@ -181,9 +188,9 @@ class Scope:
     def add_sym(self, sym):
         if _ := self.lookup(sym.name):
             if self.owner:
-                errmsg = f"duplicate symbol `{sym.name}` in {self.owner.typeof()} `{self.owner.name}`"
+                errmsg = f"duplicate symbol `{sym.name}` in {self.owner.typeof()} `{self.owner}`"
             else:
                 errmsg = f"duplicate symbol `{sym.name}` in global namespace"
             raise CompilerError(errmsg)
-        sym.parent = self
+        sym.parent = self.owner
         self.syms.append(sym)

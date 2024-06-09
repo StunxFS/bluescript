@@ -58,12 +58,18 @@ class Context:
         self.prefs.parse_args()
 
     def compile(self):
-        self.parse_file(self.prefs.pkg_name, self.prefs.input)
+        self.parse_input()
         self.sema.check_files(self.source_files)
         self.codegen.gen_files(self.source_files)
 
     def parse_input(self):
-        self.parse_file(self.prefs.input)
+        self.parse_file(
+            self.prefs.pkg_name, self.prefs.input, is_pkg_root = True
+        )
 
-    def parse_file(self, mod_name, file):
-        self.source_files.append(self.astgen.parse_file(mod_name, file))
+    def parse_file(
+        self, mod_name, file, is_pkg_root = False, parent_mod = None
+    ):
+        self.source_files.append(
+            self.astgen.parse_file(mod_name, file, is_pkg_root, parent_mod)
+        )

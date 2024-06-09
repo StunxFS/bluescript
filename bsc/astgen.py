@@ -21,17 +21,24 @@ class AstGen(Transformer):
         self.file = ""
         self.source_file = None
 
-    def parse_file(self, mod_name, file):
+    def parse_file(
+        self, mod_name, file, is_pkg_root = False, parent_mod = None
+    ):
         self.file = file
         mod_sym = Module(
-            AccessModifier.public, mod_name, Scope(self.ctx.universe)
+            AccessModifier.public, mod_name, Scope(self.ctx.universe),
+            is_pkg_root
         )
         self.source_file = SourceFile(
             self.file, self.transform(bs_parser.parse(open(file).read())),
             mod_sym
         )
         try:
-            self.ctx.universe.add_sym(self.source_file.mod_sym)
+            if is_pkg_root:
+                self.ctx.universe.add_sym(self.source_file.mod_sym)
+            else:
+                assert parent_mod, f"parent_mod is None for `{mod_name}`"
+                parent_mod.scope.add_sym(self.source_file.mod_sym)
         except utils.CompilerError as e:
             utils.error(e.args[0])
         return self.source_file
@@ -53,14 +60,15 @@ class AstGen(Transformer):
         return ExternPkg(pkg_name, alias_name, pos)
 
     def mod_decl(self, *nodes):
+        access_modifier = self.get_access_modifier(nodes)
         pos = self.mkpos(nodes[0] or nodes[1])
-        is_inline = nodes[3] is None
+        is_inline = nodes[3] != None
         decls = []
+        if is_inline:
+            decls = list(nodes[4:-1])
         if not is_inline:
-            decls = list(nodes[4:-2])
-        if not is_inline:
-            pos += self.mkpos(nodes[-1])
-        return ModDecl(nodes[2].name, is_inline, decls, pos)
+            pos += nodes[2].pos
+        return ModDecl(access_modifier, nodes[2].name, is_inline, decls, pos)
 
     def enum_decl(self, *nodes):
         pos = self.mkpos(nodes[1])

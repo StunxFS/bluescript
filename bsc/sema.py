@@ -14,6 +14,8 @@ class Sema:
         self.first_pass = True
 
         self.cur_file = None
+        self.cur_pkg = None
+        self.cur_mod = None
         self.cur_sym = None
         self.cur_scope = self.ctx.universe
 
@@ -24,11 +26,14 @@ class Sema:
 
     def check_files_(self, files):
         for file in files:
-            self.cur_file = file
-            self.cur_sym = file.mod_sym
             self.check_file(file)
 
     def check_file(self, file):
+        self.cur_file = file
+        if file.mod_sym.is_pkg_root:
+            self.cur_pkg = file.mod_sym
+        self.cur_mod = file.mod_sym
+        self.cur_sym = file.mod_sym
         self.check_decls(file.decls)
 
     def check_decls(self, decls):
@@ -36,10 +41,25 @@ class Sema:
             self.check_decl(decl)
 
     def check_decl(self, decl):
-        if isinstance(decl, EnumDecl):
+        if isinstance(decl, ModDecl):
+            self.check_mod_decl(decl)
+        elif isinstance(decl, EnumDecl):
             self.check_enum_decl(decl)
         elif isinstance(decl, FnDecl):
             self.check_fn_decl(decl)
+
+    def check_mod_decl(self, decl):
+        old_sym = self.cur_sym
+        if self.first_pass and decl.is_inline:
+            decl.sym = Module(
+                decl.access_modifier, decl.name, self.open_scope(), False
+            )
+            self.add_sym(decl.sym, decl.pos)
+            self.cur_sym = decl.sym
+            self.check_decls(decl.decls)
+            self.close_scope()
+            self.cur_sym = old_sym
+            return
 
     def check_enum_decl(self, decl):
         if self.first_pass:
@@ -51,6 +71,7 @@ class Sema:
                 self.open_scope(), info = EnumInfo(fields)
             )
             self.add_sym(decl.sym, decl.pos)
+            self.close_scope()
             return
         if len(decl.fields) == 0:
             report.error(f"enum `{decl.name}` cannot be empty", decl.pos)
@@ -61,6 +82,7 @@ class Sema:
                 decl.access_modifier, decl.name, [], self.open_scope()
             )
             self.add_sym(decl.sym, decl.pos)
+            self.close_scope()
             return
 
     ## === Utilities ====================================
