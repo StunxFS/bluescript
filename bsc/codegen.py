@@ -32,7 +32,8 @@ class Codegen:
 
     def gen_decl(self, decl):
         if isinstance(decl, AST.ModDecl):
-            self.gen_inline_mod(decl)
+            if decl.is_inline:
+                self.gen_inline_mod(decl)
         elif isinstance(decl, AST.FnDecl):
             self.gen_fn_decl(decl)
 
