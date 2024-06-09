@@ -60,6 +60,7 @@ class Sema:
             self.close_scope()
             self.cur_sym = old_sym
             return
+        self.check_decls(decl.decls)
 
     def check_enum_decl(self, decl):
         if self.first_pass:

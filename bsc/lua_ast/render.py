@@ -55,7 +55,7 @@ class LuaRender:
             self.render_fn_decl(decl)
 
     def render_table(self, decl):
-        self.writeln(f"{decl.name} = {{ -- enum")
+        self.writeln(f"{decl.name} = {{")
         self.indent += 1
         for i, field in enumerate(decl.fields):
             self.write(f"{field.name} = {field.value}")

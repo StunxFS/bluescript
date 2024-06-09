@@ -478,9 +478,12 @@ class AstGen(Transformer):
         return MatchBranch(cases, is_else, stmt, pos + nodes[-1].pos)
 
     # Modifiers
-    def access_modifier(self, modifier):
+    def access_modifier(self, *nodes):
+        modifier = nodes[0]
         match str(modifier):
             case "pub":
+                if nodes[2]:
+                    return AccessModifier.internal
                 return AccessModifier.public
             case "prot":
                 return AccessModifier.protected

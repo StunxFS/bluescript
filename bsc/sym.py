@@ -8,6 +8,7 @@ from bsc.utils import CompilerError
 
 class AccessModifier(IntEnum):
     private = auto()
+    internal = auto()
     public = auto()
     protected = auto()
 
@@ -15,12 +16,14 @@ class AccessModifier(IntEnum):
         self == AccessModifier.public
 
     def is_private(self):
-        return self == AccessModifier.private or self == AccessModifier.protected
+        return self == AccessModifier.private or self == AccessModifier.internal or self == AccessModifier.protected
 
     def __str__(self):
         match self:
             case AccessModifier.private:
                 return "<priv>"
+            case AccessModifier.internal:
+                return "pub(pkg)"
             case AccessModifier.public:
                 return "pub"
             case AccessModifier.protected:

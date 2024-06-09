@@ -50,7 +50,7 @@ fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)*
 fn_arg: NAME COLON type [OP_ASSIGN expr]
 fn_body: LBRACE stmt* RBRACE
 
-access_modifier: KW_PUB | KW_PROT
+access_modifier: KW_PUB [LPAREN KW_PKG RPAREN] | KW_PROT
 
 ?type: primitive_type
        | NAME (DOT NAME)* -> user_type

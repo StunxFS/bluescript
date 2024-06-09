@@ -2,7 +2,7 @@ pub fn main() {
     print("hello")
 }
 
-fn my_fn(a: number) {}
+pub(pkg) fn my_fn(a: number) {}
 
 mod my_module {
     pub fn new_func() {}
