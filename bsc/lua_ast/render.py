@@ -48,11 +48,21 @@ class LuaRender:
 
     def render_decl(self, decl):
         if isinstance(decl, LuaModule):
-            self.render_inline_mod(decl)
+            self.render_mod(decl)
         elif isinstance(decl, LuaTable):
             self.render_table(decl)
         elif isinstance(decl, LuaFunction):
             self.render_fn_decl(decl)
+
+    def render_mod(self, decl):
+        if decl.is_inline:
+            self.writeln(f"{decl.name} = {{}} -- inline module\n")
+            self.render_decls(decl.decls)
+            self.writeln(f"-- end module `{decl.name}`\n")
+        else:
+            self.writeln(
+                f"{decl.name} = require(\"bsc-out.{decl.lua_filename}\") -- load module file\n"
+            )
 
     def render_table(self, decl):
         self.writeln(f"{decl.name} = {{")
@@ -65,10 +75,6 @@ class LuaRender:
                 self.writeln()
         self.indent -= 1
         self.writeln("}\n")
-
-    def render_inline_mod(self, decl):
-        self.writeln(f"{decl.name} = {{}} -- inline module\n")
-        self.render_decls(decl.decls)
 
     def render_fn_decl(self, decl):
         self.write(f"function {decl.name}(")

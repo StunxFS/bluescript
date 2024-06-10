@@ -8,14 +8,15 @@ errors = 0
 
 def _format(pos, kind, kindc, msg):
     return "{} {}".format(
-        utils.bold("{}:{}:{}: {}".format(pos.file, pos.line, pos.column, kindc(kind))),
-        msg
+        utils.bold(
+            "{}:{}:{}: {}".format(pos.file, pos.line, pos.column, kindc(kind))
+        ), msg
     )
 
 def error(msg, pos):
     global errors
-    utils.eprint(_format(pos, "error: ", utils.red, msg))
+    utils.eprint(_format(pos, "error:", utils.red, msg))
     errors += 1
 
 def warn(msg, pos):
-    utils.eprint(_format(pos, "warning: ", utils.yellow, msg))
+    utils.eprint(_format(pos, "warning:", utils.yellow, msg))

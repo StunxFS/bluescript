@@ -32,8 +32,7 @@ class Codegen:
 
     def gen_decl(self, decl):
         if isinstance(decl, AST.ModDecl):
-            if decl.is_inline:
-                self.gen_inline_mod(decl)
+            self.gen_mod(decl)
         elif isinstance(decl, AST.EnumDecl):
             self.gen_enum_decl(decl)
         elif isinstance(decl, AST.FnDecl):
@@ -43,18 +42,28 @@ class Codegen:
         fields = []
         for i, f in enumerate(decl.fields):
             fields.append(LuaTableField(f.name, str(i)))
-        self.decls.append(LuaTable(decl.sym.mod_qualname("."), fields))
+        self.decls.append(LuaTable(decl.sym.codegen_qualname(), fields))
 
-    def gen_inline_mod(self, decl):
-        old_decls = self.decls
-        self.decls = []
-        self.gen_decls(decl.decls)
-        old_decls.append(LuaModule(decl.sym.mod_qualname("."), self.decls))
-        self.decls = old_decls
+    def gen_mod(self, decl):
+        if decl.is_inline:
+            old_decls = self.decls
+            self.decls = []
+            self.gen_decls(decl.decls)
+            old_decls.append(
+                LuaModule(decl.sym.codegen_qualname(), self.decls, True)
+            )
+            self.decls = old_decls
+        else:
+            self.decls.append(
+                LuaModule(
+                    decl.sym.codegen_qualname(), [], False,
+                    lua_filename = decl.name
+                )
+            )
 
     def gen_fn_decl(self, decl):
         args = []
         for arg in decl.args:
             args.append(LuaIdent(arg.name))
-        luafn = LuaFunction(decl.sym.mod_qualname("."), args)
+        luafn = LuaFunction(decl.sym.codegen_qualname(), args)
         self.decls.append(luafn)

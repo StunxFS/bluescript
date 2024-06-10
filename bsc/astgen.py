@@ -22,13 +22,10 @@ class AstGen(Transformer):
         self.source_file = None
         self.mod_sym = None
 
-    def parse_file(
-        self, mod_name, file, is_pkg = False, parent_mod = None
-    ):
+    def parse_file(self, mod_name, file, is_pkg = False, parent_mod = None):
         self.file = file
         self.mod_sym = Module(
-            AccessModifier.public, mod_name, Scope(self.ctx.universe),
-            is_pkg
+            AccessModifier.public, mod_name, Scope(self.ctx.universe), is_pkg
         )
         self.source_file = SourceFile(
             self.file, self.transform(bs_parser.parse(open(file).read())),
@@ -70,10 +67,12 @@ class AstGen(Transformer):
         if not is_inline:
             pos += nodes[2].pos
         mod_sym = Module(
-            access_modifier, nodes[2].name, Scope(self.mod_sym, True),
-            False
+            access_modifier, nodes[2].name, Scope(self.mod_sym, True), False,
+            is_inline
         )
-        return ModDecl(access_modifier, nodes[2].name, is_inline, decls, pos, mod_sym)
+        return ModDecl(
+            access_modifier, nodes[2].name, is_inline, decls, pos, mod_sym
+        )
 
     def enum_decl(self, *nodes):
         pos = self.mkpos(nodes[1])

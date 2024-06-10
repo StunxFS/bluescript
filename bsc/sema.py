@@ -51,8 +51,10 @@ class Sema:
 
     def check_mod_decl(self, decl):
         old_sym = self.cur_sym
-        if self.first_pass and decl.is_inline:
-            self.add_sym(decl.sym, decl.pos)
+        if self.first_pass:
+            decl.sym.parent = self.cur_sym
+            if decl.is_inline:
+                self.add_sym(decl.sym, decl.pos)
             self.cur_sym = decl.sym
             self.cur_scope = decl.sym.scope
             self.check_decls(decl.decls)

@@ -85,24 +85,22 @@ class Context:
         dir = os.path.dirname(os.path.relpath(decl.pos.file))
         file = os.path.join(dir, f"{decl.name}.bs")
         if os.path.isfile(file):
-            self.parse_file(decl.name, file, parent_mod=parent)
+            self.parse_file(decl.name, file, parent_mod = parent)
         elif os.path.isdir(os.path.join(dir, decl.name)):
             mod_bs = os.path.join(dir, decl.name, "mod.bs")
             if os.path.isfile(mod_bs):
-                self.parse_file(decl.name, file, parent_mod=parent)
+                self.parse_file(decl.name, file, parent_mod = parent)
             else:
-                report.error(f"cannot load module `{decl.name}`, because it does not contain a file `mod.bs`")
+                report.error(
+                    f"cannot load module `{decl.name}`, because it does not contain a file `mod.bs`"
+                )
         else:
             report.error(f"module `{decl.name}` not found", decl.pos)
 
     def parse_input(self):
-        self.parse_file(
-            self.prefs.pkg_name, self.prefs.input, is_pkg = True
-        )
+        self.parse_file(self.prefs.pkg_name, self.prefs.input, is_pkg = True)
 
-    def parse_file(
-        self, mod_name, file, is_pkg = False, parent_mod = None
-    ):
+    def parse_file(self, mod_name, file, is_pkg = False, parent_mod = None):
         self.source_files.append(
             self.astgen.parse_file(mod_name, file, is_pkg, parent_mod)
         )

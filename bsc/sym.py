@@ -56,12 +56,12 @@ class Sym:
             return f"{self.parent.qualname(sep)}{sep}{self.name}"
         return self.name
 
-    def mod_qualname(self, sep = "::"):
+    def codegen_qualname(self, sep = "."):
         if self.parent:
-            if isinstance(self.parent, Module):
+            if isinstance(self.parent, Module) and not self.parent.is_inline:
                 return f"{self.parent.name}{sep}{self.name}"
             if not self.parent.scope.is_universe:
-                return f"{self.parent.mod_qualname(sep)}{sep}{self.name}"
+                return f"{self.parent.codegen_qualname(sep)}{sep}{self.name}"
         return self.name
 
     def __repr__(self):
@@ -158,11 +158,12 @@ class TypeSym(Sym):
         return str(self.kind)
 
 class Module(Sym):
-    def __init__(self, access_modifier, name, scope, is_pkg):
+    def __init__(self, access_modifier, name, scope, is_pkg, is_inline = False):
         super().__init__(access_modifier, name)
         scope.owner = self
         self.scope = scope
         self.is_pkg = is_pkg
+        self.is_inline = is_inline
 
 class Function(Sym):
     def __init__(self, access_modifier, name, args, scope):

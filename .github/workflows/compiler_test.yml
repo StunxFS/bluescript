@@ -18,5 +18,5 @@ jobs:
       - name: Run passing tests
         run: |
           sudo pip3 install lark
-          python3 bsc examples/syntax.bs
-          python3 bsc examples/sema.bs
+          python3 bsc examples/hello_world.bs
+          python3 bsc tests/sema.bs

@@ -3,9 +3,11 @@
 # LICENSE file.
 
 class LuaModule:
-    def __init__(self, name, decls = []):
+    def __init__(self, name, decls = [], is_inline = False, lua_filename = ""):
         self.name = name
         self.decls = decls
+        self.is_inline = is_inline
+        self.lua_filename = lua_filename
 
 class LuaTableField:
     def __init__(self, name, value):
