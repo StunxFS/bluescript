@@ -1,0 +1,13 @@
+mod syntax
+
+pub fn main() {
+    print("hello")
+}
+
+pub(pkg) fn my_fn(a: number) {}
+
+mod my_module {
+    pub fn new_func() {}
+    pub fn other_func() {}
+}
+

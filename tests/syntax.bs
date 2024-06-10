@@ -1,0 +1,95 @@
+// #![extern_module(global=true)]
+
+extern pkg core
+
+// mod asset_manager
+
+use core::fs
+use core::io as lua_io
+use love::filesystem::*
+use love::graphics::{ draw, draw_arc }
+
+use pkg::asset_manager::AssetManager
+
+mod tests {
+    use core::testing::assert
+
+    fn test0() {
+        @assert(0x1 == -0x1 && true || false)
+    }
+}
+
+fn require(path: string) any
+
+var my_var = 9
+var myvar2, myvar3 = (1, 2, 3)
+
+const ALPHA = 0b00101010110101
+
+class Item {}
+
+pub fn sumtype(x: number | string | Item) {}
+
+enum WorldLevel {
+    overworld
+    midgard
+    underworld
+    undefined = 0xFF
+}
+
+class Person {
+    name: string
+    age: number = 15
+
+    items: []Item = [Item()]
+    magic: [4]number = [1, 2, 3, 4]!
+
+    map: {string:number} = {
+        "First Key": 99,
+        "Second Key": 100
+    }
+
+    tuple: (number, ?lua.string) = (1, nil)
+
+    fn setAge(self, age: number) {
+        self.age = age
+    }
+
+    fn mkdir(path: lua.string = ".") number {
+        @assert(path)
+    }
+}
+
+fn init() {
+    var w = WorldLevel.midgard
+    w = .undefined
+
+    var x = 666.0e4
+    var a = 123
+    var q, m, c = (99, true, nil)
+    var name = "StunxFS"
+    name = 999
+    println("Hello World!")
+    _ = math.pow(2)
+    std.my_func()
+    if (true) q = 3
+    if (false) {
+        s = if (true) {
+            99
+        } else if (99) {
+            99
+        } else {
+            100
+        }
+    }
+    while (nil) m += 4
+    match (name) {
+        "holaa" -> m = 99,
+        "wb", "js" -> m = 1000,
+        else -> exit
+    }
+    match {
+        true -> true,
+        false -> false
+    }
+}
