@@ -1,3 +1,5 @@
+mod syntax
+
 pub fn main() {
     print("hello")
 }

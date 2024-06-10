@@ -43,18 +43,18 @@ class Codegen:
         fields = []
         for i, f in enumerate(decl.fields):
             fields.append(LuaTableField(f.name, str(i)))
-        self.decls.append(LuaTable(decl.sym.qualname("."), fields))
+        self.decls.append(LuaTable(decl.sym.mod_qualname("."), fields))
 
     def gen_inline_mod(self, decl):
         old_decls = self.decls
         self.decls = []
         self.gen_decls(decl.decls)
-        old_decls.append(LuaModule(decl.sym.qualname("."), self.decls))
+        old_decls.append(LuaModule(decl.sym.mod_qualname("."), self.decls))
         self.decls = old_decls
 
     def gen_fn_decl(self, decl):
         args = []
         for arg in decl.args:
             args.append(LuaIdent(arg.name))
-        luafn = LuaFunction(decl.sym.qualname("."), args)
+        luafn = LuaFunction(decl.sym.mod_qualname("."), args)
         self.decls.append(luafn)

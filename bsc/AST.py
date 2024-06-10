@@ -2,8 +2,8 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
-from enum import IntEnum, auto
 from typing import Any
+from enum import IntEnum, auto
 
 class Pos:
     def __init__(self, file, line, column, len, pos):
@@ -42,13 +42,13 @@ class ExternPkg:
         self.sym = None
 
 class ModDecl:
-    def __init__(self, access_modifier, name, is_inline, decls, pos):
+    def __init__(self, access_modifier, name, is_inline, decls, pos, sym=None):
         self.access_modifier = access_modifier
         self.name = name
         self.is_inline = is_inline
         self.decls = decls
         self.pos = pos
-        self.sym = None
+        self.sym = sym
 
 class EnumDecl:
     def __init__(self, access_modifier, name, fields, pos):

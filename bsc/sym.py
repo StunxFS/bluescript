@@ -48,12 +48,20 @@ class Sym:
         elif isinstance(self, TypeSym):
             return self.type_kind()
         elif isinstance(self, Module):
-            return "package" if self.is_pkg_root else "module"
+            return "package" if self.is_pkg else "module"
         return "symbol"
 
     def qualname(self, sep = "::"):
         if self.parent and not self.parent.scope.is_universe:
             return f"{self.parent.qualname(sep)}{sep}{self.name}"
+        return self.name
+
+    def mod_qualname(self, sep = "::"):
+        if self.parent:
+            if isinstance(self.parent, Module):
+                return f"{self.parent.name}{sep}{self.name}"
+            if not self.parent.scope.is_universe:
+                return f"{self.parent.mod_qualname(sep)}{sep}{self.name}"
         return self.name
 
     def __repr__(self):
@@ -150,11 +158,11 @@ class TypeSym(Sym):
         return str(self.kind)
 
 class Module(Sym):
-    def __init__(self, access_modifier, name, scope, is_pkg_root):
+    def __init__(self, access_modifier, name, scope, is_pkg):
         super().__init__(access_modifier, name)
         scope.owner = self
         self.scope = scope
-        self.is_pkg_root = is_pkg_root
+        self.is_pkg = is_pkg
 
 class Function(Sym):
     def __init__(self, access_modifier, name, args, scope):

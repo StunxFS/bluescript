@@ -18,6 +18,7 @@ class Sema:
         self.cur_mod = None
         self.cur_sym = None
         self.cur_scope = self.ctx.universe
+        self.old_scope = None
 
     def check_files(self, files):
         self.check_files_(files)
@@ -30,7 +31,7 @@ class Sema:
 
     def check_file(self, file):
         self.cur_file = file
-        if file.mod_sym.is_pkg_root:
+        if file.mod_sym.is_pkg:
             self.cur_pkg = file.mod_sym
         self.cur_mod = file.mod_sym
         self.cur_sym = file.mod_sym
@@ -51,11 +52,9 @@ class Sema:
     def check_mod_decl(self, decl):
         old_sym = self.cur_sym
         if self.first_pass and decl.is_inline:
-            decl.sym = Module(
-                decl.access_modifier, decl.name, self.open_scope(), False
-            )
             self.add_sym(decl.sym, decl.pos)
             self.cur_sym = decl.sym
+            self.cur_scope = decl.sym.scope
             self.check_decls(decl.decls)
             self.close_scope()
             self.cur_sym = old_sym

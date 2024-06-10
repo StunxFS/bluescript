@@ -2,7 +2,7 @@
 
 extern pkg core
 
-mod asset_manager
+// mod asset_manager
 
 use core::fs
 use core::io as lua_io
