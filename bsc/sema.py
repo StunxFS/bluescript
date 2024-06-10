@@ -84,8 +84,26 @@ class Sema:
                 decl.access_modifier, decl.name, [], self.open_scope()
             )
             self.add_sym(decl.sym, decl.pos)
+            if decl.has_body:
+                self.check_stmts(decl.stmts)
             self.close_scope()
             return
+        if decl.has_body:   
+            self.check_stmts(decl.stmts)
+    
+    def check_var_decl(self, stmt):
+        for left in stmt.lefts:
+            print(left)
+    
+    ## === Statements ===================================
+
+    def check_stmts(self, stmts):
+        for stmt in stmts:
+            self.check_stmt(stmt)
+    
+    def check_stmt(self, stmt):
+        if isinstance(stmt, VarDecl):
+            self.check_var_decl(stmt)
 
     ## === Utilities ====================================
 

@@ -45,7 +45,7 @@ enum_field: NAME [OP_ASSIGN expr]
 class_decl: [access_modifier] KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
 class_field: [access_modifier] NAME COLON type [OP_ASSIGN expr]
 
-fn_decl: [access_modifier] KW_FN NAME LPAREN fn_args? RPAREN [BANG | type] fn_body?
+fn_decl: [access_modifier] KW_FN NAME LPAREN [fn_args] RPAREN [BANG | type] [fn_body]
 fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)*
 fn_arg: NAME COLON type [OP_ASSIGN expr]
 fn_body: LBRACE stmt* RBRACE
@@ -70,6 +70,7 @@ primitive_type: "any"
 
 ?stmt: expr
        | var_decl
+       | const_decl
        | assignment
        | block
        | KW_WHILE LPAREN expr RPAREN stmt -> while_stmt

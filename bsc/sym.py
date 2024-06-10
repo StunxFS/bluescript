@@ -64,6 +64,9 @@ class Sym:
                 return f"{self.parent.codegen_qualname(sep)}{sep}{self.name}"
         return self.name
 
+    def __eq__(self, other):
+        return str(self) == str(other)
+
     def __repr__(self):
         return str(self)
 

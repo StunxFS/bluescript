@@ -93,21 +93,24 @@ class AstGen(Transformer):
         access_modifier = self.get_access_modifier(nodes[0])
         name = nodes[2].name
         args = nodes[4]
-        if isinstance(args, Token):
-            is_method = False
-            args = []
+        is_method = False
+        if args:
+            if isinstance(args, Token):
+                args = []
+            else:
+                is_method = args[0]
+                args = list(args[1])
         else:
-            is_method = args[0]
-            args = list(args[1])
-        ret_type = nodes[5]
+            args = []
+        ret_type = nodes[6]
         if isinstance(ret_type, BlockStmt
                       ) or isinstance(ret_type, Token) or not ret_type:
             ret_type = self.ctx.void_type
         stmts = []
-        if not isinstance(nodes[-1], Token):
+        if nodes[-1] == None:
+            stmts = None    
+        else:
             stmts = nodes[-1]
-            if stmts == ret_type: # no body
-                stmts = None
         return FnDecl(
             access_modifier, name, args, is_method, ret_type, stmts,
             name == "main" and self.file == self.ctx.prefs.input, pos
@@ -123,8 +126,8 @@ class AstGen(Transformer):
     def fn_body(self, *nodes):
         stmts = []
         if len(nodes) != 2:
-            stmts = nodes[1:-1]
-        return BlockStmt(stmts, self.mkpos(nodes[0]))
+            stmts = list(nodes[1:-1])
+        return stmts
 
     # Statements
     def var_decl(self, *nodes):

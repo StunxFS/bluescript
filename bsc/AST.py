@@ -76,6 +76,7 @@ class FnDecl:
         self.is_method = is_method
         self.ret_type = ret_type
         self.stmts = stmts
+        self.has_body = stmts != None
         self.is_main = is_main
         self.sym = None
         self.pos = pos
@@ -504,6 +505,13 @@ class BasicType:
     def __repr__(self):
         return str(self)
 
+    def __eq__(self, other):
+        if isinstance(other, BasicType):
+            if self.typesym:
+                return self.typesym == other.typesym
+            return str(self.expr) == str(other.expr)
+        return False
+
 class OptionType:
     def __init__(self, type, pos):
         self.type = type
@@ -514,6 +522,11 @@ class OptionType:
 
     def __repr__(self):
         return str(self)
+
+    def __eq__(self, other):
+        if isinstance(other, OptionType):
+            return self.type == other.type
+        return False
 
 class ArrayType:
     def __init__(self, size, type, pos):
@@ -529,6 +542,11 @@ class ArrayType:
     def __repr__(self):
         return str(self)
 
+    def __eq__(self, other):
+        if isinstance(other, ArrayType):
+            return str(self.size) == str(other.size) and self.type == other.type
+        return False
+
 class MapType:
     def __init__(self, k_type, v_type, pos):
         self.k_type = k_type
@@ -541,6 +559,11 @@ class MapType:
     def __repr__(self):
         return str(self)
 
+    def __eq__(self, other):
+        if isinstance(other, MapType):
+            return self.k_type == other.k_type and self.v_type == other.v_type
+        return False
+
 class SumType:
     def __init__(self, types, pos):
         self.types = types
@@ -552,6 +575,16 @@ class SumType:
     def __repr__(self):
         return str(self)
 
+    def __eq__(self, other):
+        if isinstance(other, SumType):
+            if len(self.types) != len(other.types):
+                return False
+            for i,t in enumerate(self.types):
+                if t != other.types[i]:
+                    return False
+            return True
+        return False
+
 class TupleType:
     def __init__(self, types, pos):
         self.types = types
@@ -562,3 +595,13 @@ class TupleType:
 
     def __repr__(self):
         return str(self)
+
+    def __eq__(self, other):
+        if isinstance(other, TupleType):
+            if len(self.types) != len(other.types):
+                return False
+            for i,t in enumerate(self.types):
+                if t != other.types[i]:
+                    return False
+            return True
+        return False
