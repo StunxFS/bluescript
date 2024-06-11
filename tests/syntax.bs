@@ -37,6 +37,9 @@ enum WorldLevel {
     undefined = 0xFF
 
     fn from_string(s: string) Self {
+        unsafe {
+            "unsafe!"
+        }
         return match s {
             "overworld" => .overworld,
             "midgard" => .midgard,

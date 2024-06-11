@@ -75,7 +75,7 @@ primitive_type: "any"
        | KW_WHILE expr block -> while_stmt
 
 block: LBRACE stmt* RBRACE // returns array of stmts in AstGen
-block_stmt: LBRACE stmt* RBRACE // returns BlockStmt in AstGen
+block_stmt: [KW_UNSAFE] LBRACE stmt* RBRACE // returns BlockStmt in AstGen
 
 assignment: expr (COMMA expr)* op_assign expr
 op_assign: OP_ASSIGN
@@ -214,6 +214,7 @@ KW_PUB.1: "pub"
 KW_SELF.1: "self"
 KW_TRUE.1: "true"
 KW_USE.1: "use"
+KW_UNSAFE.1: "unsafe"
 KW_VAR.1: "var"
 KW_WHILE.1: "while"
 

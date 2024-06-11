@@ -160,13 +160,16 @@ class WhileStmt:
         return res
 
 class BlockStmt:
-    def __init__(self, stmts, pos):
+    def __init__(self, is_unsafe, stmts, pos):
+        self.is_unsafe = is_unsafe
         self.stmts = stmts
         self.pos = pos
 
     def __str__(self):
         stmts = '\n'.join([str(stmt) for stmt in self.stmts])
-        return f"{{ {stmts} }}"
+        res = "unsafe " if self.is_unsafe else ""
+        res += f"{{ {stmts} }}"
+        return res
 
 # Expressions
 

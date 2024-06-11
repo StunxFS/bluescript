@@ -186,8 +186,12 @@ class AstGen(Transformer):
         return list(nodes[1:-1])
 
     def block_stmt(self, *nodes):
-        stmts = list(nodes[1:-1])
-        return BlockStmt(stmts, self.mkpos(nodes[0]) + self.mkpos(nodes[-1]))
+        is_unsafe = nodes[0] != None
+        stmts = list(nodes[2:-1])
+        return BlockStmt(
+            is_unsafe, stmts,
+            self.mkpos(nodes[0]) + self.mkpos(nodes[-1])
+        )
 
     def while_stmt(self, *nodes):
         return WhileStmt(nodes[1], nodes[2], self.mkpos(nodes[0]))
