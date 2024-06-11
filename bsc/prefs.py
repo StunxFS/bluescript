@@ -12,6 +12,7 @@ class Prefs:
         self.is_library = False
 
         self.pkg_name = ""
+        self.is_verbose = False
 
     def parse_args(self):
         parser = argparse.ArgumentParser(
@@ -19,17 +20,22 @@ class Prefs:
         )
         parser.add_argument('INPUT', help = "the input file", nargs = 1)
         parser.add_argument(
+            '--pkg-name', action = 'store', metavar = 'pkg_name', help =
+            'specifies the name of the package being compiled (by default the name of the given file or directory will be used)'
+        )
+        parser.add_argument(
             '--lib', action = 'store_true',
             help = 'specifies whether the input is a library or not'
         )
         parser.add_argument(
-            '--pkg-name', action = 'store', metavar = 'pkg_name', help =
-            'specifies the name of the package being compiled (by default the name of the given file or directory will be used)'
+            '-v', '--verbose', action = 'store_true',
+            help = 'Enable verbosity in the compiler while compiling'
         )
         args = parser.parse_args()
 
         self.is_library = args.lib
         self.pkg_name = args.pkg_name or ""
+        self.is_verbose = args.verbose
 
         # check input file
         self.input = args.INPUT[0]

@@ -20,6 +20,7 @@ class AstGen(Transformer):
         self.ctx = ctx
         self.file = ""
         self.source_file = None
+        self.source_file_deps = []
         self.mod_sym = None
 
     def parse_file(self, mod_name, file, is_pkg = False, parent_mod = None):
@@ -30,7 +31,7 @@ class AstGen(Transformer):
         )
         self.source_file = SourceFile(
             self.file, self.transform(bs_parser.parse(open(file).read())),
-            self.mod_sym
+            self.mod_sym, deps = self.source_file_deps
         )
         try:
             if is_pkg:
@@ -40,6 +41,7 @@ class AstGen(Transformer):
                 parent_mod.scope.add_sym(self.source_file.mod_sym)
         except utils.CompilerError as e:
             utils.error(e.args[0])
+        self.source_file_deps = []
         return self.source_file
 
     def mkpos(self, token):
@@ -61,19 +63,20 @@ class AstGen(Transformer):
     def mod_decl(self, *nodes):
         access_modifier = self.get_access_modifier(nodes)
         pos = self.mkpos(nodes[0] or nodes[1])
+        name = nodes[2].name
         is_inline = nodes[3] != None
         decls = []
         if is_inline:
             decls = list(nodes[4:-1])
-        if not is_inline:
+        else:
             pos += nodes[2].pos
         mod_sym = Module(
-            access_modifier, nodes[2].name, Scope(self.mod_sym.scope, True),
-            False, is_inline
+            access_modifier, name, Scope(self.mod_sym.scope, True), False,
+            is_inline
         )
-        return ModDecl(
-            access_modifier, nodes[2].name, is_inline, decls, pos, mod_sym
-        )
+        if not is_inline:
+            self.source_file_deps.append(mod_sym)
+        return ModDecl(access_modifier, name, is_inline, decls, pos, mod_sym)
 
     def enum_decl(self, *nodes):
         pos = self.mkpos(nodes[1])

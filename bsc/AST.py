@@ -27,10 +27,11 @@ class Pos:
         return f"Pos(file='{self.file}', line={self.line}, column={self.column}, len={self.len}, pos={self.pos})"
 
 class SourceFile:
-    def __init__(self, file, decls, mod_sym):
+    def __init__(self, file, decls, mod_sym, deps = []):
         self.file = file
         self.mod_sym = mod_sym
         self.decls = decls
+        self.deps = deps
 
 # Declarations
 

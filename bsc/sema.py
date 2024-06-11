@@ -54,7 +54,6 @@ class Sema:
         old_sym = self.cur_sym
         old_mod = self.cur_mod
         if self.first_pass:
-            decl.sym.parent = self.cur_sym
             if decl.is_inline:
                 self.add_sym(decl.sym, decl.pos)
                 self.cur_mod = decl.sym

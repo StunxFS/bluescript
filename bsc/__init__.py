@@ -4,8 +4,8 @@
 
 import os
 
-from bsc import sym, report
-from bsc.AST import BasicType
+from bsc import report, utils
+from bsc.AST import BasicType, ModDecl
 from bsc.prefs import Prefs
 from bsc.astgen import AstGen
 from bsc.sema import Sema
@@ -72,10 +72,11 @@ class Context:
     def import_modules(self):
         for sf in self.source_files:
             self.import_modules_from_decls(sf.mod_sym, sf.decls)
+        self.resolve_deps()
 
     def import_modules_from_decls(self, parent, decls):
         for decl in decls:
-            if isinstance(decl, AST.ModDecl):
+            if isinstance(decl, ModDecl):
                 if decl.is_inline:
                     self.import_modules_from_decls(parent, decl.decls)
                 else:
@@ -97,6 +98,40 @@ class Context:
         else:
             report.error(f"module `{decl.name}` not found", decl.pos)
 
+    def resolve_deps(self):
+        g = self.module_graph()
+        g_resolved = g.resolve()
+        self.vlog(
+            f"-----= resolved dependencies graph =-----\n{g_resolved.display()}"
+        )
+        self.vlog("-----------------------------------------")
+        cycles = g_resolved.display_cycles()
+        if len(cycles) > 1:
+            utils.error(
+                f"import cycle detected between the following modules:\n{cycles}"
+            )
+        self.vlog("----------= imported modules =-----------")
+        for node in g_resolved.nodes:
+            self.vlog(f"> {node.name}")
+        self.vlog("-----------------------------------------")
+        source_files = self.source_files
+        self.source_files = []
+        for node in g_resolved.nodes:
+            for sf in source_files:
+                if sf.mod_sym.name == node.name:
+                    self.source_files.append(sf)
+        self.vlog("module dependencies resolved...")
+
+    def module_graph(self):
+        g = utils.DepGraph()
+        for sf in self.source_files:
+            deps = []
+            for dep in sf.deps:
+                dep.parent = sf.mod_sym
+                deps.append(dep.qualname())
+            g.add(sf.mod_sym.qualname(), deps)
+        return g
+
     def parse_input(self):
         self.parse_file(self.prefs.pkg_name, self.prefs.input, is_pkg = True)
 
@@ -104,3 +139,8 @@ class Context:
         self.source_files.append(
             self.astgen.parse_file(mod_name, file, is_pkg, parent_mod)
         )
+
+    def vlog(self, s):
+        if self.prefs.is_verbose:
+            bsc_log = utils.bold(utils.green("[bsc-log]"))
+            print(f"{bsc_log} {s}")
