@@ -147,13 +147,17 @@ class AssignStmt:
         return f"{', '.join([str(left) for left in self.lefts])} {self.op} {str(self.right)}"
 
 class WhileStmt:
-    def __init__(self, cond, stmt, pos):
+    def __init__(self, cond, stmts, pos):
         self.cond = cond
-        self.stmt = stmt
+        self.stmts = stmts
         self.pos = pos
 
     def __str__(self):
-        return f"while ({self.cond}) {self.stmt}"
+        res = f"while {self.cond} {{\n"
+        for stmt in self.stmts:
+            res += f"    {stmt}\n"
+        res += "}"
+        return res
 
 class BlockStmt:
     def __init__(self, stmts, pos):
@@ -439,21 +443,27 @@ class IfExpr:
         s = ""
         for i, branch in enumerate(self.branches):
             if branch.is_else:
-                s += f"else {branch.stmt}"
+                s += " else {\n"
+                for stmt in branch.stmts:
+                    s += f"    {stmt}\n"
+                s += "}"
                 break
             if i > 0:
-                s += "else "
-            s += f"if ({branch.cond}) {branch.stmt}" + "\n"
+                s += " else "
+            s += f"if {branch.cond} {{\n"
+            for stmt in branch.stmts:
+                s += f"    {stmt}\n"
+            s += "}"
         return s
 
     def __repr__(self):
         return str(self)
 
 class IfBranch:
-    def __init__(self, cond, is_else, stmt, pos):
+    def __init__(self, cond, is_else, stmts, pos):
         self.cond = cond
         self.is_else = is_else
-        self.stmt = stmt
+        self.stmts = stmts
         self.pos = pos
 
 class MatchExpr:
@@ -464,7 +474,7 @@ class MatchExpr:
 
     def __str__(self):
         if self.expr:
-            s = f"match ({self.expr}) {{\n"
+            s = f"match {self.expr} {{\n"
         else:
             s = "match {\n"
         for i, branch in enumerate(self.branches):

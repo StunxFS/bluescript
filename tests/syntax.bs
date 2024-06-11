@@ -35,6 +35,15 @@ enum WorldLevel {
     midgard
     underworld
     undefined = 0xFF
+
+    fn from_string(s: string) Self {
+        return match s {
+            "overworld" => .overworld,
+            "midgard" => .midgard,
+            "underworld" => .underworld,
+            else => .undefined
+        }
+    }
 }
 
 class Person {
@@ -72,24 +81,28 @@ fn init() {
     println("Hello World!")
     _ = math.pow(2)
     std.my_func()
-    if (true) q = 3
-    if (false) {
-        s = if (true) {
+    if true {
+        q = 3
+    }
+    if false {
+        s = if true {
             99
-        } else if (99) {
+        } else if 99 {
             99
         } else {
             100
         }
     }
-    while (nil) m += 4
-    match (name) {
-        "holaa" -> m = 99,
-        "wb", "js" -> m = 1000,
-        else -> exit
+    while nil {
+        m += 4
+    }
+    match name {
+        "holaa" => m = 99,
+        "wb", "js" => m = 1000,
+        else => exit
     }
     match {
-        true -> true,
-        false -> false
+        true => true,
+        false => false
     }
 }

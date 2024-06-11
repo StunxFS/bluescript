@@ -61,7 +61,7 @@ class LuaRender:
             self.writeln(f"-- end module `{decl.name}`\n")
         else:
             self.writeln(
-                f"{decl.name} = require(\"bsc-out.{decl.lua_filename}\") -- load module file\n"
+                f"{decl.name} = require(\"{BSC_OUT_DIR}.{decl.lua_filename}\") -- load module file\n"
             )
 
     def render_table(self, decl):

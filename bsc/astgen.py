@@ -111,10 +111,10 @@ class AstGen(Transformer):
                       ) or isinstance(ret_type, Token) or not ret_type:
             ret_type = self.ctx.void_type
         stmts = []
-        if nodes[-1] == None:
-            stmts = None
-        else:
+        if nodes[-1]:
             stmts = nodes[-1]
+        else:
+            stmts = None
         return FnDecl(
             access_modifier, name, args, is_method, ret_type, stmts,
             name == "main" and self.file == self.ctx.prefs.input, pos
@@ -126,12 +126,6 @@ class AstGen(Transformer):
 
     def fn_arg(self, *nodes):
         return FnArg(nodes[0].name, nodes[2], nodes[-1])
-
-    def fn_body(self, *nodes):
-        stmts = []
-        if len(nodes) != 2:
-            stmts = list(nodes[1:-1])
-        return stmts
 
     def var_decl(self, *nodes):
         pos = self.mkpos(nodes[1])
@@ -189,14 +183,14 @@ class AstGen(Transformer):
         return op_assign
 
     def block(self, *nodes):
+        return list(nodes[1:-1])
+
+    def block_stmt(self, *nodes):
         stmts = list(nodes[1:-1])
         return BlockStmt(stmts, self.mkpos(nodes[0]) + self.mkpos(nodes[-1]))
 
     def while_stmt(self, *nodes):
-        return WhileStmt(
-            nodes[1], nodes[3],
-            self.mkpos(nodes[0]) + nodes[-1].pos
-        )
+        return WhileStmt(nodes[1], nodes[2], self.mkpos(nodes[0]))
 
     # Expressions
     def par_expr(self, *nodes):
@@ -438,29 +432,19 @@ class AstGen(Transformer):
         return IfExpr(list(nodes), nodes[0].pos + nodes[-1].pos)
 
     def if_header(self, *nodes):
-        cond = nodes[2]
-        stmt = nodes[4]
-        return IfBranch(cond, False, stmt, self.mkpos(nodes[0]) + nodes[-1].pos)
+        return IfBranch(nodes[1], False, nodes[2], self.mkpos(nodes[0]))
 
     def else_if_expr(self, *nodes):
-        cond = nodes[3]
-        stmt = nodes[5]
-        return IfBranch(cond, False, stmt, self.mkpos(nodes[0]) + nodes[-1].pos)
+        return IfBranch(nodes[2], False, nodes[3], self.mkpos(nodes[0]))
 
     def else_stmt(self, *nodes):
-        return IfBranch(
-            None, True, nodes[1],
-            self.mkpos(nodes[0]) + nodes[-1].pos
-        )
+        return IfBranch(None, True, nodes[1], self.mkpos(nodes[0]))
 
     def match_expr(self, *nodes):
         expr = None
         if nodes[1]:
-            expr = nodes[2]
-        return MatchExpr(
-            expr, nodes[5],
-            self.mkpos(nodes[0]) + self.mkpos(nodes[-1])
-        )
+            expr = nodes[1]
+        return MatchExpr(expr, nodes[3], self.mkpos(nodes[0]))
 
     def match_branches(self, *nodes):
         branches = []
@@ -481,7 +465,7 @@ class AstGen(Transformer):
             for case in nodes:
                 if str(case) == ",":
                     continue
-                if str(case) == "->":
+                if str(case) == "=>":
                     break
                 cases.append(case)
             stmt = nodes[-1]

@@ -39,16 +39,15 @@ var_ident: NAME [COLON type]
 
 const_decl: [access_modifier] KW_CONST NAME [COLON type] OP_ASSIGN expr
 
-enum_decl: [access_modifier] KW_ENUM NAME LBRACE (enum_field)* RBRACE
+enum_decl: [access_modifier] KW_ENUM NAME LBRACE enum_field* decl* RBRACE
 enum_field: NAME [OP_ASSIGN expr]
 
 class_decl: [access_modifier] KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
 class_field: [access_modifier] NAME COLON type [OP_ASSIGN expr]
 
-fn_decl: [access_modifier] KW_FN NAME LPAREN [fn_args] RPAREN [BANG | type] [fn_body]
+fn_decl: [access_modifier] KW_FN NAME LPAREN [fn_args] RPAREN [BANG | type] [block]
 fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)*
 fn_arg: NAME COLON type [OP_ASSIGN expr]
-fn_body: LBRACE stmt* RBRACE
 
 access_modifier: KW_PUB [LPAREN KW_PKG RPAREN] | KW_PROT
 
@@ -72,10 +71,12 @@ primitive_type: "any"
        | var_decl
        | const_decl
        | assignment
-       | block
-       | KW_WHILE LPAREN expr RPAREN stmt -> while_stmt
+       | block_stmt
+       | KW_WHILE expr block -> while_stmt
 
-block: LBRACE stmt* RBRACE
+block: LBRACE stmt* RBRACE // returns array of stmts in AstGen
+block_stmt: LBRACE stmt* RBRACE // returns BlockStmt in AstGen
+
 assignment: expr (COMMA expr)* op_assign expr
 op_assign: OP_ASSIGN
        | OP_ASSIGN
@@ -124,11 +125,11 @@ par_expr: LPAREN expr RPAREN
 path_expr: NAME (DOUBLE_COLON NAME)*
 
 if_expr: if_header else_if_expr* else_stmt?
-if_header: KW_IF LPAREN expr RPAREN stmt
-else_if_expr: KW_ELSE KW_IF LPAREN expr RPAREN stmt
-else_stmt: KW_ELSE stmt
+if_header: KW_IF expr block
+else_if_expr: KW_ELSE KW_IF expr block
+else_stmt: KW_ELSE block
 
-match_expr: KW_MATCH [LPAREN expr RPAREN] LBRACE match_branches RBRACE
+match_expr: KW_MATCH [expr] LBRACE match_branches RBRACE
 match_branches: match_branch (COMMA match_branch)*
 match_branch: expr (COMMA expr)* ARROW stmt
        | KW_ELSE ARROW stmt
@@ -155,7 +156,7 @@ DIV: "/"
 MOD: "%"
 AT: "@"
 SLASH: "/"
-ARROW: "->"
+ARROW: "=>"
 COMMA: ","
 DOT: "."
 DOUBLE_COLON: "::"
