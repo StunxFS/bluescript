@@ -87,6 +87,19 @@ class FnArg:
         self.type = type
         self.default_value = default_value
 
+class VarDecl:
+    def __init__(self, access_modifier, lefts, right, pos):
+        self.access_modifier = access_modifier
+        self.lefts = lefts
+        self.right = right
+        self.pos = pos
+
+class VarIdent:
+    def __init__(self, name, typ, pos):
+        self.name = name
+        self.typ = typ
+        self.pos = pos
+
 # Statements
 
 class OpAssign(IntEnum):
@@ -121,17 +134,6 @@ class OpAssign(IntEnum):
             case OpAssign.XorAssign:
                 return "^="
         assert False # unreachable
-
-class VarIdent:
-    def __init__(self, name, typ, pos):
-        self.name = name
-        self.typ = typ
-        self.pos = pos
-
-class VarDecl:
-    def __init__(self, lefts, right):
-        self.lefts = lefts
-        self.right = right
 
 class AssignStmt:
     def __init__(self, lefts, op, right, pos):
@@ -579,7 +581,7 @@ class SumType:
         if isinstance(other, SumType):
             if len(self.types) != len(other.types):
                 return False
-            for i,t in enumerate(self.types):
+            for i, t in enumerate(self.types):
                 if t != other.types[i]:
                     return False
             return True
@@ -600,7 +602,7 @@ class TupleType:
         if isinstance(other, TupleType):
             if len(self.types) != len(other.types):
                 return False
-            for i,t in enumerate(self.types):
+            for i, t in enumerate(self.types):
                 if t != other.types[i]:
                     return False
             return True

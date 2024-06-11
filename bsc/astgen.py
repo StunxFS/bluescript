@@ -25,7 +25,8 @@ class AstGen(Transformer):
     def parse_file(self, mod_name, file, is_pkg = False, parent_mod = None):
         self.file = file
         self.mod_sym = Module(
-            AccessModifier.public, mod_name, Scope(self.ctx.universe), is_pkg
+            AccessModifier.public, mod_name, Scope(self.ctx.universe, True),
+            is_pkg
         )
         self.source_file = SourceFile(
             self.file, self.transform(bs_parser.parse(open(file).read())),
@@ -67,8 +68,8 @@ class AstGen(Transformer):
         if not is_inline:
             pos += nodes[2].pos
         mod_sym = Module(
-            access_modifier, nodes[2].name, Scope(self.mod_sym, True), False,
-            is_inline
+            access_modifier, nodes[2].name, Scope(self.mod_sym.scope, True),
+            False, is_inline
         )
         return ModDecl(
             access_modifier, nodes[2].name, is_inline, decls, pos, mod_sym
@@ -108,7 +109,7 @@ class AstGen(Transformer):
             ret_type = self.ctx.void_type
         stmts = []
         if nodes[-1] == None:
-            stmts = None    
+            stmts = None
         else:
             stmts = nodes[-1]
         return FnDecl(
@@ -129,15 +130,12 @@ class AstGen(Transformer):
             stmts = list(nodes[1:-1])
         return stmts
 
-    # Statements
     def var_decl(self, *nodes):
-        lefts = [nodes[1]]
-        if len(nodes) != 4:
-            lefts += list(
-                filter(lambda n: not isinstance(n, Token), nodes[2:-2])
-            )
+        pos = self.mkpos(nodes[1])
+        access_modifier = self.get_access_modifier(nodes[0])
+        lefts = list(filter(lambda n: isinstance(n, VarIdent), nodes[2:-2]))
         right = nodes[-1]
-        return VarDecl(lefts, right)
+        return VarDecl(access_modifier, lefts, right, pos)
 
     def var_ident(self, *nodes):
         typ = None
@@ -147,6 +145,8 @@ class AstGen(Transformer):
         if nodes[2]:
             pos += self.mkpos(nodes[2])
         return VarIdent(nodes[0].name, typ, pos)
+
+    # Statements
 
     def assignment(self, *nodes):
         lefts = []

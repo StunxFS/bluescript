@@ -20,3 +20,16 @@ def error(msg, pos):
 
 def warn(msg, pos):
     utils.eprint(_format(pos, "warning:", utils.yellow, msg))
+
+def notes(notes):
+    for i, note in enumerate(notes):
+        _char = "└" if i == len(notes) - 1 else "├"
+        utils.eprint(utils.bold(utils.cyan(f"   {_char} note: ")) + note)
+
+def error_from_ce(ce, pos):
+    error(ce.args[0], pos)
+    notes(ce.args[1:])
+
+def warn_from_ce(ce, pos):
+    warn(ce.args[0], pos)
+    notes(ce.args[1:])
