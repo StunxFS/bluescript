@@ -83,9 +83,68 @@ class LuaRender:
             if i < len(decl.args) - 1:
                 self.write(", ")
         self.writeln(")")
-        #self.indent += 1
-        #self.indent -= 1
+        self.indent += 1
+        self.render_stmts(decl.stmts)
+        self.indent -= 1
         self.writeln("end\n")
+
+    def render_stmts(self, stmts):
+        for stmt in stmts:
+            self.render_stmt(stmt)
+
+    def render_stmt(self, stmt):
+        if isinstance(stmt, LuaWhile):
+            self.write("while ")
+            self.render_expr(stmt.cond)
+            self.writeln(" do")
+            self.indent += 1
+            self.render_stmts(stmt.stmts)
+            self.indent -= 1
+            self.writeln("end")
+        elif isinstance(stmt, LuaRepeat):
+            self.writeln("repeat")
+            self.indent += 1
+            self.render_stmts(stmt.stmts)
+            self.indent -= 1
+            self.write("until ")
+            self.render_expr(stmt.cond)
+            self.writeln()
+        elif isinstance(stmt, LuaIf):
+            for i, branch in enumerate(stmt.branches):
+                if branch.is_else:
+                    self.writeln("else")
+                else:
+                    self.write("if " if i == 0 else "elseif ")
+                    self.render_expr(branch.cond)
+                self.indent += 1
+                self.render_stmts(branch.stmts)
+                self.indent -= 1
+            self.writeln("end")
+
+    def render_expr(self, expr):
+        if isinstance(expr, LuaParenExpr):
+            self.write("(")
+            self.render_expr(expr.expr)
+            self.write(")")
+        elif isinstance(expr, LuaCallExpr):
+            self.render_expr(expr.left)
+            self.write("(")
+            for i, arg in enumerate(expr.args):
+                self.render_expr(arg)
+                if i < len(expr.args) - 1:
+                    self.write(", ")
+            self.write(")")
+        elif isinstance(expr, LuaSelector):
+            self.render_expr(expr.left)
+            self.write(f".{expr.name}")
+        elif isinstance(expr, LuaIdent):
+            self.write(expr.name)
+        elif isinstance(expr, (LuaBooleanLit, LuaNumberLit)):
+            self.write(expr.value)
+        elif isinstance(expr, LuaNil):
+            self.write("nil")
+
+    ## Utils
 
     def write(self, s):
         if self.indent > 0 and self.empty_line:

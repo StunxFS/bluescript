@@ -25,6 +25,28 @@ class LuaFunction:
         self.args = args
         self.stmts = []
 
+# Statements
+
+class LuaWhile:
+    def __init__(self, cond, stmts):
+        self.cond = cond
+        self.stmts = stmts
+
+class LuaRepeat:
+    def __init__(self, stmts, cond):
+        self.stmts = stmts
+        self.cond = cond
+
+class LuaIf:
+    def __init__(self, branches):
+        self.branches = branches
+
+class LuaIfBranch:
+    def __init__(self, cond, is_else, stmts):
+        self.cond = cond
+        self.is_else = is_else
+        self.stmts = stmts
+
 class LuaBlock:
     def __init__(self):
         self.chunk = []
@@ -35,9 +57,33 @@ class LuaAssignment:
         self.op = op
         self.rights = rights
 
+# Expressions
+
+class LuaCallExpr:
+    def __init__(self, left, args):
+        self.left = left
+        self.args = args
+
+class LuaSelector:
+    def __init__(self, left, name):
+        self.left = left
+        self.name = name
+
 class LuaIdent:
     def __init__(self, name):
         self.name = name
+
+class LuaParenExpr:
+    def __init__(self, expr):
+        self.expr = expr
+
+class LuaNumberLit:
+    def __init__(self, value):
+        self.value = value
+
+class LuaBooleanLit:
+    def __init__(self, value):
+        self.value = value
 
 class LuaNil:
     pass
