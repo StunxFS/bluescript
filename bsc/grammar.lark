@@ -51,19 +51,12 @@ fn_arg: NAME COLON type [OP_ASSIGN expr]
 
 access_modifier: KW_PUB [LPAREN KW_PKG RPAREN] | KW_PROT
 
-?type: primitive_type
-       | NAME (DOT NAME)* -> user_type
+?type: path_expr -> user_type
        | QUESTION type -> option_type
        | LBRACKET expr? RBRACKET type -> array_type
        | LBRACE type COLON type RBRACE -> map_type
        | type PIPE type (PIPE type)* -> sum_type
        | LPAREN type COMMA type (COMMA type)* RPAREN -> tuple_type
-
-// TODO: do we implement thread as a generic type? `thread[T]` or "thread"
-primitive_type: "any"
-       | "bool"
-       | "number"
-       | "string"
 
 // Statements
 

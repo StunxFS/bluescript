@@ -38,7 +38,7 @@ enum WorldLevel {
 
     fn from_string(s: string) Self {
         unsafe {
-            "unsafe!"
+            @lua("function x() end")
         }
         return match s {
             "overworld" => .overworld,
@@ -61,18 +61,20 @@ class Person {
         "Second Key": 100
     }
 
-    tuple: (number, ?lua.string) = (1, nil)
+    tuple: (number, ?string) = (1, nil)
 
     fn setAge(self, age: number) {
         self.age = age
     }
 
-    fn mkdir(path: lua.string = ".") number {
+    fn mkdir(path: lua::string = ".") number {
         @assert(path)
     }
 }
 
 fn init() {
+    const age = 9
+
     var w = WorldLevel.midgard
     w = .undefined
 
@@ -84,9 +86,11 @@ fn init() {
     println("Hello World!")
     _ = math.pow(2)
     std.my_func()
+    
     if true {
         q = 3
     }
+
     if false {
         s = if true {
             99
@@ -96,16 +100,20 @@ fn init() {
             100
         }
     }
+
     while nil {
         m += 4
     }
+
     match name {
         "holaa" => m = 99,
         "wb", "js" => m = 1000,
-        else => exit
+        else => exit(0)
     }
+
+    var x = true
     match {
-        true => true,
-        false => false
+        x => true,
+        else => false
     }
 }

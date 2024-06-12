@@ -488,47 +488,38 @@ class AstGen(Transformer):
         return AccessModifier.private
 
     # Types
-    def primitive_type(self, *nodes):
-        match nodes[0].value:
-            case "any":
-                return self.ctx.any_type
-            case "bool":
-                return self.ctx.bool_type
-            case "number":
-                return self.ctx.number_type
-            case "string":
-                return self.ctx.string_type
-            case _:
-                assert False # unreachable
-
     def user_type(self, *names):
         left = names[0]
-        for name in names[1:]:
-            if not isinstance(name, Ident):
-                continue
-            left = SelectorExpr(left, name, left.pos + name.pos)
+        if isinstance(left, Ident):
+            match left.name:
+                case "any":
+                    return self.ctx.any_type
+                case "bool":
+                    return self.ctx.bool_type
+                case "number":
+                    return self.ctx.number_type
+                case "string":
+                    return self.ctx.string_type
+                case _:
+                    return BasicType(left, left.pos)
         return BasicType(left, left.pos)
 
     def option_type(self, *nodes):
-        return OptionType(nodes[1], self.mkpos(nodes[0]) + nodes[1].pos)
+        return OptionType(nodes[1], self.mkpos(nodes[0]))
 
     def array_type(self, *nodes):
         has_size = not isinstance(nodes[1], Token)
         size = nodes[1] if has_size else None
         return ArrayType(
-            size, nodes[3 if has_size else 2],
-            self.mkpos(nodes[0]) + nodes[-1].pos
+            size, nodes[3 if has_size else 2], self.mkpos(nodes[0])
         )
 
     def map_type(self, *nodes):
-        return MapType(
-            nodes[1], nodes[3],
-            self.mkpos(nodes[0]) + self.mkpos(nodes[-1])
-        )
+        return MapType(nodes[1], nodes[3], self.mkpos(nodes[0]))
 
     def sum_type(self, *nodes):
         types = list(filter(lambda node: not isinstance(node, Token), nodes))
-        return SumType(types, nodes[0].pos + nodes[-1].pos)
+        return SumType(types, nodes[0].pos)
 
     # Utilities
     def get_access_modifier(self, node):
