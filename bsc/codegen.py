@@ -43,6 +43,7 @@ class Codegen:
         for i, f in enumerate(decl.fields):
             fields.append(LuaTableField(f.name, str(i)))
         self.decls.append(LuaTable(decl.sym.codegen_qualname(), fields))
+        self.gen_decls(decl.decls)
 
     def gen_mod(self, decl):
         if decl.is_inline:

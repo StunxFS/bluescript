@@ -87,9 +87,13 @@ fn init() {
     var name = "StunxFS"
     name = 999
     println("Hello World!")
-    _ = math.pow(2)
-    std.my_func()
-    
+    _ = math::pow(2)
+    mod.my_func()
+
+    // var _x = @len("")
+    // for elem in arr {}
+    // for i in 0..@len(arr) {}
+
     if true {
         q = 3
     }

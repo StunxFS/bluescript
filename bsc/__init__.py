@@ -41,11 +41,7 @@ class Context:
 
         self.universe.add_sym(
             TypeSym(
-                AccessModifier.private, TypeKind.string, "string", [
-                    TypeField(
-                        AccessModifier.public, "len", self.number_type, None
-                    )
-                ], Scope()
+                AccessModifier.private, TypeKind.string, "string", [], Scope()
             )
         )
         self.string_type = BasicType.with_typesym(self.universe.syms[4])
