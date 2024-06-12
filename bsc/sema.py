@@ -128,6 +128,12 @@ class Sema:
                 decl.access_modifier, decl.name, decl.typ, decl.expr,
                 self.cur_scope
             )
+            if isinstance(
+                self.cur_sym, Function
+            ) and decl.access_modifier != AccessModifier.private:
+                report.error(
+                    "local constants cannot have access modifier", decl.pos
+                )
             self.add_sym(decl.sym, decl.pos)
             return
 
@@ -137,6 +143,11 @@ class Sema:
                 level = ObjectLevel.static
                 if isinstance(self.cur_sym, Function):
                     level = ObjectLevel.local
+                    if stmt.access_modifier != AccessModifier.private:
+                        report.error(
+                            "local variables cannot have access modifier",
+                            left.pos
+                        )
                 left.sym = Object(
                     stmt.access_modifier, left.name, level, left.typ,
                     self.cur_scope
