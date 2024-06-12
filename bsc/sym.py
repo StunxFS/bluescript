@@ -76,7 +76,7 @@ class Sym:
         return self.qualname()
 
 class ObjectLevel(IntEnum):
-    _global = auto()
+    static = auto()
     argument = auto()
     local = auto()
 

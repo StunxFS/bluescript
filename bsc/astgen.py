@@ -111,7 +111,7 @@ class AstGen(Transformer):
                       ) or isinstance(ret_type, Token) or not ret_type:
             ret_type = self.ctx.void_type
         stmts = []
-        if nodes[-1]:
+        if nodes[-1] != None:
             stmts = nodes[-1]
         else:
             stmts = None

@@ -47,6 +47,8 @@ class Sema:
             self.check_mod_decl(decl)
         elif isinstance(decl, EnumDecl):
             self.check_enum_decl(decl)
+        elif isinstance(decl, VarDecl):
+            self.check_var_decl(decl)
         elif isinstance(decl, FnDecl):
             self.check_fn_decl(decl)
 
@@ -101,10 +103,13 @@ class Sema:
     def check_var_decl(self, stmt):
         if self.first_pass:
             for left in stmt.lefts:
+                level = ObjectLevel.static
+                if isinstance(self.cur_sym, Function):
+                    level = ObjectLevel.local
                 self.add_sym(
                     Object(
-                        stmt.access_modifier, left.name, ObjectLevel.local,
-                        left.typ, self.cur_scope
+                        stmt.access_modifier, left.name, level, left.typ,
+                        self.cur_scope
                     ), left.pos
                 )
 

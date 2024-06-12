@@ -111,9 +111,9 @@ fn init() {
         else => exit(0)
     }
 
-    var x = true
+    var b = true
     match {
-        x => true,
+        b => true,
         else => false
     }
 }

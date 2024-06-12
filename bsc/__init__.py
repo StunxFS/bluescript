@@ -118,7 +118,7 @@ class Context:
         self.source_files = []
         for node in g_resolved.nodes:
             for sf in source_files:
-                if sf.mod_sym.name == node.name:
+                if sf.mod_sym.qualname() == node.name:
                     self.source_files.append(sf)
         self.vlog("module dependencies resolved...")
 
