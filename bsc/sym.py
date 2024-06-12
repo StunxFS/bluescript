@@ -168,6 +168,12 @@ class Module(Sym):
         self.is_pkg = is_pkg
         self.is_inline = is_inline
 
+class FunctionArg:
+    def __init__(self, name, typ, default_value):
+        self.name = name
+        self.typ = typ
+        self.default_value = default_value
+
 class Function(Sym):
     def __init__(self, access_modifier, name, args, scope):
         super().__init__(access_modifier, name)
@@ -210,7 +216,12 @@ class Scope:
             else:
                 errmsg = f"duplicate symbol `{sym.name}` in global namespace"
             if duplicate.__class__ == sym.__class__:
-                note = f"another {duplicate.typeof()} with the same name was defined before"
+                if isinstance(
+                    duplicate, Object
+                ) and duplicate.level == ObjectLevel.argument:
+                    note = f"another argument with the same name was already declared previously"
+                else:
+                    note = f"another {duplicate.typeof()} with the same name was defined before"
             else:
                 note = f"a {duplicate.typeof()} with the same name has already been defined"
             raise CompilerError(errmsg, note)

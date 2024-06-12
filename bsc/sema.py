@@ -95,15 +95,29 @@ class Sema:
         old_sym = self.cur_sym
         if self.first_pass:
             decl.sym = Function(
-                decl.access_modifier, decl.name, [], self.open_scope()
+                decl.access_modifier, decl.name,
+                list(
+                    map(
+                        lambda arg:
+                        FunctionArg(arg.name, arg.type, arg.default_value),
+                        decl.args
+                    )
+                ), self.open_scope()
             )
             self.add_sym(decl.sym, decl.pos)
+            self.cur_sym = decl.sym
+            self.cur_scope = decl.sym.scope
+            for arg in decl.args:
+                self.add_sym(
+                    Object(
+                        AccessModifier.private, arg.name, ObjectLevel.argument,
+                        arg.type, self.cur_scope
+                    ), arg.pos
+                )
             if decl.has_body:
-                self.cur_sym = decl.sym
-                self.cur_scope = decl.sym.scope
                 self.check_stmts(decl.stmts)
-                self.cur_sym = old_sym
-                self.close_scope()
+            self.cur_sym = old_sym
+            self.close_scope()
             return
         if decl.has_body:
             self.check_stmts(decl.stmts)

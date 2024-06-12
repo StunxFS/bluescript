@@ -106,7 +106,7 @@ class AstGen(Transformer):
                 args = []
             else:
                 is_method = args[0]
-                args = list(args[1])
+                args = list(filter(lambda arg: isinstance(arg, FnArg), args[1]))
         else:
             args = []
         ret_type = nodes[6]
@@ -128,7 +128,7 @@ class AstGen(Transformer):
         return (is_method, nodes[1:] if is_method else nodes)
 
     def fn_arg(self, *nodes):
-        return FnArg(nodes[0].name, nodes[2], nodes[-1])
+        return FnArg(nodes[0].name, nodes[2], nodes[-1], nodes[0].pos)
 
     def const_decl(self, *nodes):
         access_modifier = self.get_access_modifier(nodes[0])

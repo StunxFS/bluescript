@@ -84,10 +84,11 @@ class FnDecl:
         self.pos = pos
 
 class FnArg:
-    def __init__(self, name, type, default_value):
+    def __init__(self, name, type, default_value, pos):
         self.name = name
         self.type = type
         self.default_value = default_value
+        self.pos = pos
 
 class ConstDecl:
     def __init__(self, access_modifier, name, typ, expr, pos):
