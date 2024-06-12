@@ -54,10 +54,11 @@ class ModDecl:
         self.sym = sym
 
 class EnumDecl:
-    def __init__(self, access_modifier, name, fields, pos):
+    def __init__(self, access_modifier, name, fields, decls, pos):
         self.access_modifier = access_modifier
         self.name = name
         self.fields = fields
+        self.decls = decls
         self.pos = pos
         self.sym = None
 
@@ -88,6 +89,15 @@ class FnArg:
         self.type = type
         self.default_value = default_value
 
+class ConstDecl:
+    def __init__(self, access_modifier, name, typ, expr, pos):
+        self.access_modifier = access_modifier
+        self.name = name
+        self.typ = typ
+        self.expr = expr
+        self.pos = pos
+        self.sym = None
+
 class VarDecl:
     def __init__(self, access_modifier, lefts, right, pos):
         self.access_modifier = access_modifier
@@ -100,6 +110,7 @@ class VarIdent:
         self.name = name
         self.typ = typ
         self.pos = pos
+        self.sym = None
 
 # Statements
 

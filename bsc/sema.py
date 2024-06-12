@@ -47,6 +47,8 @@ class Sema:
             self.check_mod_decl(decl)
         elif isinstance(decl, EnumDecl):
             self.check_enum_decl(decl)
+        elif isinstance(decl, ConstDecl):
+            self.check_const_decl(decl)
         elif isinstance(decl, VarDecl):
             self.check_var_decl(decl)
         elif isinstance(decl, FnDecl):
@@ -69,6 +71,7 @@ class Sema:
         self.check_decls(decl.decls)
 
     def check_enum_decl(self, decl):
+        old_sym = self.cur_sym
         if self.first_pass:
             fields = []
             for i, field in enumerate(decl.fields):
@@ -78,10 +81,15 @@ class Sema:
                 self.open_scope(), info = EnumInfo(fields)
             )
             self.add_sym(decl.sym, decl.pos)
+            self.cur_sym = decl.sym
+            self.cur_scope = decl.sym.scope
+            self.check_decls(decl.decls)
+            self.cur_sym = old_sym
             self.close_scope()
             return
         if len(decl.fields) == 0:
             report.error(f"enum `{decl.name}` cannot be empty", decl.pos)
+        self.check_decls(decl.decls)
 
     def check_fn_decl(self, decl):
         old_sym = self.cur_sym
@@ -100,18 +108,27 @@ class Sema:
         if decl.has_body:
             self.check_stmts(decl.stmts)
 
+    def check_const_decl(self, decl):
+        if self.first_pass:
+            decl.sym = Const(
+                decl.access_modifier, decl.name, decl.typ, decl.expr,
+                self.cur_scope
+            )
+            self.add_sym(decl.sym, decl.pos)
+            return
+
     def check_var_decl(self, stmt):
         if self.first_pass:
             for left in stmt.lefts:
                 level = ObjectLevel.static
                 if isinstance(self.cur_sym, Function):
                     level = ObjectLevel.local
-                self.add_sym(
-                    Object(
-                        stmt.access_modifier, left.name, level, left.typ,
-                        self.cur_scope
-                    ), left.pos
+                left.sym = Object(
+                    stmt.access_modifier, left.name, level, left.typ,
+                    self.cur_scope
                 )
+                self.add_sym(left.sym, left.pos)
+            return
 
     ## === Statements ===================================
 
@@ -120,7 +137,9 @@ class Sema:
             self.check_stmt(stmt)
 
     def check_stmt(self, stmt):
-        if isinstance(stmt, VarDecl):
+        if isinstance(stmt, ConstDecl):
+            self.check_const_decl(stmt)
+        elif isinstance(stmt, VarDecl):
             self.check_var_decl(stmt)
 
     ## === Utilities ====================================

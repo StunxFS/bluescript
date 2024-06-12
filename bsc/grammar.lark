@@ -34,10 +34,10 @@ use_tree: path_expr DOUBLE_COLON MUL
 
 mod_decl: [access_modifier] KW_MOD NAME [LBRACE decl* RBRACE]
 
+const_decl: [access_modifier] KW_CONST NAME [COLON type] OP_ASSIGN expr
+
 var_decl: [access_modifier] KW_VAR var_ident (COMMA var_ident)* OP_ASSIGN expr
 var_ident: NAME [COLON type]
-
-const_decl: [access_modifier] KW_CONST NAME [COLON type] OP_ASSIGN expr
 
 enum_decl: [access_modifier] KW_ENUM NAME LBRACE enum_field* decl* RBRACE
 enum_field: NAME [OP_ASSIGN expr]

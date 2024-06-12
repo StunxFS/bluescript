@@ -56,6 +56,9 @@ class Person {
     items: []Item = [Item()]
     magic: [4]number = [1, 2, 3, 4]!
 
+    var static_var = nil
+    const MAX = 999
+
     map: {string:number} = {
         "First Key": 99,
         "Second Key": 100

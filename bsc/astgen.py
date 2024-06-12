@@ -83,11 +83,14 @@ class AstGen(Transformer):
         access_modifier = self.get_access_modifier(nodes[0])
         name = nodes[2].name
         enum_fields = []
+        decls = []
         for node in nodes[4:]:
-            if str(node) == "}":
-                break
-            enum_fields.append(node)
-        return EnumDecl(access_modifier, name, enum_fields, pos)
+            if str(node) == "}": break
+            if isinstance(node, EnumField):
+                enum_fields.append(node)
+            else:
+                decls.append(node)
+        return EnumDecl(access_modifier, name, enum_fields, decls, pos)
 
     def enum_field(self, *nodes):
         return EnumField(nodes[0].name, nodes[-1])
@@ -127,12 +130,17 @@ class AstGen(Transformer):
     def fn_arg(self, *nodes):
         return FnArg(nodes[0].name, nodes[2], nodes[-1])
 
+    def const_decl(self, *nodes):
+        access_modifier = self.get_access_modifier(nodes[0])
+        return ConstDecl(
+            access_modifier, nodes[2].name, nodes[4], nodes[-1],
+            self.mkpos(nodes[1])
+        )
+
     def var_decl(self, *nodes):
-        pos = self.mkpos(nodes[1])
         access_modifier = self.get_access_modifier(nodes[0])
         lefts = list(filter(lambda n: isinstance(n, VarIdent), nodes[2:-2]))
-        right = nodes[-1]
-        return VarDecl(access_modifier, lefts, right, pos)
+        return VarDecl(access_modifier, lefts, nodes[-1], self.mkpos(nodes[1]))
 
     def var_ident(self, *nodes):
         typ = None
