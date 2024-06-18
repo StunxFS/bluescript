@@ -95,7 +95,7 @@ multiply_expr: unary_expr (multiply_op unary_expr)*
 unary_expr: unary_op* primary_expr
 ?primary_expr: literal
        | par_expr
-       | AT NAME -> builtin_var
+       | DOLLAR NAME -> builtin_var
        | expr DOT NAME -> selector_expr
        | path_expr
        | DOT NAME -> enum_literal
@@ -148,6 +148,7 @@ MUL: "*"
 DIV: "/"
 MOD: "%"
 AT: "@"
+DOLLAR: "$"
 SLASH: "/"
 ARROW: "=>"
 COMMA: ","

@@ -15,10 +15,11 @@ mod tests {
     use core::testing::assert
 
     fn test0() {
-        @assert(0x1 == -0x1 && true || false)
+        $assert(0x1 == -0x1 && true || false)
     }
 }
 
+// @lua_symbol(name="require")
 fn require(path: string) any
 
 var my_var = 9
@@ -38,7 +39,7 @@ enum WorldLevel {
 
     fn from_string(s: string) Self {
         unsafe {
-            @lua("function x() end")
+            $lua("function x() end")
         }
         return match s {
             "overworld" => .overworld,
@@ -49,6 +50,7 @@ enum WorldLevel {
     }
 }
 
+// @abstract
 class Person {
     name: string
     age: number = 15
@@ -71,7 +73,7 @@ class Person {
     }
 
     fn mkdir(path: lua::string = ".") number {
-        @assert(path)
+        $assert(path)
     }
 }
 
@@ -90,9 +92,9 @@ fn init() {
     _ = math::pow(2)
     mod.my_func()
 
-    // var _x = @len("")
+    var _x = $len("")
     // for elem in arr {}
-    // for i in 0..@len(arr) {}
+    // for i in 0..$len(arr) {}
 
     if true {
         q = 3
