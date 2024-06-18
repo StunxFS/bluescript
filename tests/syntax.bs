@@ -77,7 +77,7 @@ class Person {
     }
 }
 
-fn init(verbose: bool = true, year: number = 2004) {
+fn init(verbose: bool = !false, year: number = 2004) {
     const age = 9
 
     var w = WorldLevel.midgard

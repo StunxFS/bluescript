@@ -80,7 +80,14 @@ class Codegen:
         self.decls.append(luafn)
 
     def gen_expr(self, expr):
-        if isinstance(expr, NumberLiteral):
+        if isinstance(expr, BinaryExpr):
+            return LuaBinaryExpr(
+                self.gen_expr(expr.left), expr.op.to_lua_op(),
+                self.gen_expr(expr.right)
+            )
+        elif isinstance(expr, UnaryExpr):
+            return LuaUnaryExpr(expr.op.to_lua_op(), self.gen_expr(expr.right))
+        elif isinstance(expr, NumberLiteral):
             return LuaNumberLit(expr.value)
         elif isinstance(expr, BoolLiteral):
             return LuaBooleanLit("true" if expr.value else "false")

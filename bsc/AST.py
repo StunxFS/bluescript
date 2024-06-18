@@ -347,6 +347,17 @@ class UnaryOp(IntEnum):
     bit_not = auto()
     minus = auto()
 
+    def to_lua_op(self):
+        match self:
+            case UnaryOp.bang:
+                return "not "
+            case UnaryOp.bit_not:
+                return "~"
+            case UnaryOp.minus:
+                return "-"
+            case _:
+                assert False #unreachable
+
     def __str__(self):
         match self:
             case UnaryOp.bang:
@@ -377,6 +388,15 @@ class BinaryOp(IntEnum):
     neq = auto()
     logical_and = auto()
     logical_or = auto()
+
+    def to_lua_op(self):
+        match self:
+            case BinaryOp.logical_and:
+                return "and"
+            case BinaryOp.logical_or:
+                return "or"
+            case _:
+                return str(self)
 
     def __str__(self):
         match self:

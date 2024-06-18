@@ -140,12 +140,16 @@ class LuaRender:
             self.render_expr(expr.expr)
             self.write(")")
         elif isinstance(expr, LuaBinaryExpr):
+            self.write("(")
             self.render_expr(expr.left)
-            self.write(f" {expr.op} ")
+            self.write(f") {expr.op} (")
             self.render_expr(expr.right)
+            self.write(")")
         elif isinstance(expr, LuaUnaryExpr):
+            self.write("(")
             self.write(expr.op)
             self.render_expr(expr.right)
+            self.write(")")
         elif isinstance(expr, LuaCallExpr):
             self.render_expr(expr.left)
             self.write("(")
