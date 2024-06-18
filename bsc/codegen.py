@@ -2,7 +2,7 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
-from bsc import AST
+from bsc.AST import *
 from bsc.lua_ast import *
 from bsc.lua_ast.render import LuaRender
 
@@ -31,11 +31,11 @@ class Codegen:
             self.gen_decl(decl)
 
     def gen_decl(self, decl):
-        if isinstance(decl, AST.ModDecl):
+        if isinstance(decl, ModDecl):
             self.gen_mod(decl)
-        elif isinstance(decl, AST.EnumDecl):
+        elif isinstance(decl, EnumDecl):
             self.gen_enum_decl(decl)
-        elif isinstance(decl, AST.FnDecl):
+        elif isinstance(decl, FnDecl):
             self.gen_fn_decl(decl)
 
     def gen_enum_decl(self, decl):
@@ -67,4 +67,22 @@ class Codegen:
         for arg in decl.args:
             args.append(LuaIdent(arg.name))
         luafn = LuaFunction(decl.sym.codegen_qualname(), args)
+        for arg in decl.args:
+            if arg.default_value != None:
+                left = LuaIdent(arg.name)
+                luafn.add_stmt(
+                    LuaAssignment([left], [
+                        LuaBinaryExpr(
+                            left, "or", self.gen_expr(arg.default_value)
+                        )
+                    ], False)
+                )
         self.decls.append(luafn)
+
+    def gen_expr(self, expr):
+        if isinstance(expr, NumberLiteral):
+            return LuaNumberLit(expr.value)
+        elif isinstance(expr, BoolLiteral):
+            return LuaBooleanLit("true" if expr.value else "false")
+        elif isinstance(expr, NilLiteral):
+            return LuaNil()

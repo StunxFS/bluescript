@@ -120,12 +120,32 @@ class LuaRender:
                 self.render_stmts(branch.stmts)
                 self.indent -= 1
             self.writeln("end")
+        elif isinstance(stmt, LuaAssignment):
+            if stmt.is_local:
+                self.write("local ")
+            for i, left in enumerate(stmt.lefts):
+                self.render_ident(left)
+                if i < len(stmt.lefts) - 1:
+                    self.write(", ")
+            self.write(" = ")
+            for i, right in enumerate(stmt.rights):
+                self.render_expr(right)
+                if i < len(stmt.rights) - 1:
+                    self.write(", ")
+            self.writeln()
 
     def render_expr(self, expr):
         if isinstance(expr, LuaParenExpr):
             self.write("(")
             self.render_expr(expr.expr)
             self.write(")")
+        elif isinstance(expr, LuaBinaryExpr):
+            self.render_expr(expr.left)
+            self.write(f" {expr.op} ")
+            self.render_expr(expr.right)
+        elif isinstance(expr, LuaUnaryExpr):
+            self.write(expr.op)
+            self.render_expr(expr.right)
         elif isinstance(expr, LuaCallExpr):
             self.render_expr(expr.left)
             self.write("(")
@@ -143,6 +163,9 @@ class LuaRender:
             self.write(expr.value)
         elif isinstance(expr, LuaNil):
             self.write("nil")
+
+    def render_ident(self, ident):
+        self.write(ident.name)
 
     ## Utils
 

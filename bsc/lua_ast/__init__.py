@@ -25,6 +25,9 @@ class LuaFunction:
         self.args = args
         self.stmts = []
 
+    def add_stmt(self, stmt):
+        self.stmts.append(stmt)
+
 # Statements
 
 class LuaWhile:
@@ -52,12 +55,23 @@ class LuaBlock:
         self.chunk = []
 
 class LuaAssignment:
-    def __init__(self, lefts, op, rights):
+    def __init__(self, lefts, rights, is_local = True):
+        self.is_local = is_local
         self.lefts = lefts
-        self.op = op
         self.rights = rights
 
 # Expressions
+
+class LuaBinaryExpr:
+    def __init__(self, left, op, right):
+        self.left = left
+        self.op = op
+        self.right = right
+
+class LuaUnaryExpr:
+    def __init__(self, op, right):
+        self.op = op
+        self.right = right
 
 class LuaCallExpr:
     def __init__(self, left, args):

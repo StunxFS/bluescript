@@ -214,8 +214,8 @@ class AstGen(Transformer):
     def KW_NIL(self, lit):
         return NilLiteral(self.mkpos(lit))
 
-    def bool_lit(self, lit):
-        return BoolLiteral(lit.value == "true", self.mkpos(lit))
+    def BOOL_LIT(self, lit):
+        return BoolLiteral(str(lit) == "true", self.mkpos(lit))
 
     def number_lit(self, lit):
         return NumberLiteral(lit.value, self.mkpos(lit))

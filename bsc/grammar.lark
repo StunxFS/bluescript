@@ -131,12 +131,12 @@ match_branch: expr (COMMA expr)* ARROW stmt
 return_expr: KW_RETURN [expr]
 
 ?literal: KW_NIL
-       | bool_lit
+       | BOOL_LIT
        | number_lit
        | STRING
        | KW_SELF
        | NAME
-bool_lit: KW_TRUE | KW_FALSE
+BOOL_LIT: KW_TRUE | KW_FALSE
 number_lit: BIN_NUMBER | OCT_NUMBER | HEX_NUMBER | NUMBER
 
 // Tokens
