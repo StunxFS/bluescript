@@ -240,17 +240,15 @@ class AstGen(Transformer):
         )
 
     def array_literal(self, *nodes):
+        is_fixed = nodes[0] != None
         elems = []
-        for node in nodes[1:]:
-            if str(node) == ",":
+        for node in nodes[2:]:
+            if isinstance(node, Token):
                 continue
-            if str(node) == "]":
-                break
             elems.append(node)
-        is_fixed = str(nodes[-1]) == "!"
         return ArrayLiteral(
             elems, is_fixed,
-            self.mkpos(nodes[0]) + self.mkpos(nodes[-1])
+            self.mkpos(nodes[0] or nodes[1]) + self.mkpos(nodes[-1])
         )
 
     def tuple_literal(self, *nodes):

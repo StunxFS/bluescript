@@ -267,10 +267,8 @@ class ArrayLiteral:
         self.pos = pos
 
     def __str__(self):
-        _str = f"[{', '.join([str(elem) for elem in self.elems])}]"
-        if self.is_fixed:
-            _str += "!"
-        return _str
+        _str = "#[" if self.is_fixed else "["
+        return _str + f"{', '.join([str(elem) for elem in self.elems])}]"
 
     def __repr__(self):
         return str(self)
@@ -516,6 +514,14 @@ class ReturnExpr:
     def __init__(self, expr, pos):
         self.expr = expr
         self.pos = pos
+
+    def __str__(self):
+        if self.expr != None:
+            return f"return {self.expr}"
+        return "return"
+
+    def __repr__(self):
+        return str(self)
 
 # Types
 class BasicType:
