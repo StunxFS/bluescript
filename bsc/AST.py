@@ -512,6 +512,11 @@ class MatchBranch:
         self.stmt = stmt
         self.pos = pos
 
+class ReturnExpr:
+    def __init__(self, expr, pos):
+        self.expr = expr
+        self.pos = pos
+
 # Types
 class BasicType:
     def __init__(self, expr, pos):

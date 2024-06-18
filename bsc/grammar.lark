@@ -105,6 +105,7 @@ unary_expr: unary_op* primary_expr
        | expr LPAREN [expr (COMMA expr)*] RPAREN -> call_expr
        | if_expr
        | match_expr
+       | return_expr
 
 compare_op: LT | GT | LE | GE | EQ | NEQ
 bitwise_op: BIT_AND | BIT_OR | BIT_XOR
@@ -126,6 +127,8 @@ match_expr: KW_MATCH [expr] LBRACE match_branches RBRACE
 match_branches: match_branch (COMMA match_branch)*
 match_branch: expr (COMMA expr)* ARROW stmt
        | KW_ELSE ARROW stmt
+
+return_expr: KW_RETURN [expr]
 
 ?literal: KW_NIL
        | bool_lit
@@ -205,6 +208,7 @@ KW_NIL.1: "nil"
 KW_PKG.1: "pkg"
 KW_PROT.1: "prot"
 KW_PUB.1: "pub"
+KW_RETURN.1: "return"
 KW_SELF.1: "self"
 KW_TRUE.1: "true"
 KW_USE.1: "use"

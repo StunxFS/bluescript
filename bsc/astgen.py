@@ -483,6 +483,9 @@ class AstGen(Transformer):
             stmt = nodes[-1]
         return MatchBranch(cases, is_else, stmt, pos + nodes[-1].pos)
 
+    def return_expr(self, *nodes):
+        return ReturnExpr(nodes[1], self.mkpos(nodes[0]))
+
     # Modifiers
     def access_modifier(self, *nodes):
         modifier = nodes[0]
