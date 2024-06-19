@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - 'main'
-    paths: ['bsc/**']
+    paths: ['bsc/**', '.github/workflows/compiler_test.yml']
   pull_request:
-    paths: ['bsc/**']
+    paths: ['bsc/**', '.github/workflows/compiler_test.yml']
     types: [opened, synchronize]
 
 jobs:
@@ -17,6 +17,9 @@ jobs:
 
       - name: Run passing tests
         run: |
+          sudo apt install luajit
           sudo pip3 install lark
           python3 bsc examples/hello_world.bs
           python3 bsc tests/main.bs
+          echo "local main = require("bsc-out.main"); main.main()" > bsc-out/x.lua 
+          luajit bsc-out/x.lua
