@@ -120,6 +120,11 @@ class Sema:
             self.close_scope()
             return
         if decl.has_body:
+            if len(decl.sym.scope.syms) > 200:
+                report.error(
+                    f"function `{decl.name}` exceeded the maximum number of local variables allowed (200)",
+                    decl.pos
+                )
             self.check_stmts(decl.stmts)
 
     def check_const_decl(self, decl):

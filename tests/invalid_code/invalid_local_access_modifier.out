@@ -1,0 +1,2 @@
+tests/invalid_code/invalid_local_access_modifier.bs:2:13: error: local variables cannot have access modifier
+tests/invalid_code/invalid_local_access_modifier.bs:3:9: error: local constants cannot have access modifier

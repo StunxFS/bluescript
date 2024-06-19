@@ -1,0 +1,1 @@
+tests/invalid_code/empty_enum.bs:1:1: error: enum `EmptyEnum` cannot be empty

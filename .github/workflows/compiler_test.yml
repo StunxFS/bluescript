@@ -15,7 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run passing tests
+      - name: Check invalid code
+        run: |
+          python3 tests/check_invalid_code.py
+
+      - name: Check Code Generation
         run: |
           sudo apt install luajit
           sudo pip3 install lark
