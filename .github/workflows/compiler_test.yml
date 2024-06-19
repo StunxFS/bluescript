@@ -15,14 +15,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install lark and LuaJIT
+        run: |
+          sudo pip3 install lark
+          sudo apt install luajit
+
       - name: Check invalid code
         run: |
           python3 tests/check_invalid_code.py
 
       - name: Check Code Generation
         run: |
-          sudo apt install luajit
-          sudo pip3 install lark
           python3 bsc examples/hello_world.bs
           python3 bsc tests/main.bs
           echo 'local main = require("bsc-out.main"); main.main()' > bsc-out/x.lua 
