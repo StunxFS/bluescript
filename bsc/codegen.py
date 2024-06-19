@@ -38,13 +38,6 @@ class Codegen:
         elif isinstance(decl, FnDecl):
             self.gen_fn_decl(decl)
 
-    def gen_enum_decl(self, decl):
-        fields = []
-        for i, f in enumerate(decl.fields):
-            fields.append(LuaTableField(f.name, str(i)))
-        self.decls.append(LuaTable(decl.sym.codegen_qualname(), fields))
-        self.gen_decls(decl.decls)
-
     def gen_mod(self, decl):
         if decl.is_inline:
             old_decls = self.decls
@@ -62,7 +55,15 @@ class Codegen:
                 )
             )
 
+    def gen_enum_decl(self, decl):
+        fields = []
+        for i, f in enumerate(decl.fields):
+            fields.append(LuaTableField(f.name, str(i)))
+        self.decls.append(LuaTable(decl.sym.codegen_qualname(), fields))
+        self.gen_decls(decl.decls)
+
     def gen_fn_decl(self, decl):
+        if not decl.has_body: return
         args = []
         for arg in decl.args:
             args.append(LuaIdent(arg.name))
