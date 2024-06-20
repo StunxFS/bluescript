@@ -45,7 +45,7 @@ enum_field: NAME [OP_ASSIGN expr]
 class_decl: [access_modifier] KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
 class_field: [access_modifier] NAME COLON type [OP_ASSIGN expr]
 
-fn_decl: [access_modifier] KW_FN NAME LPAREN [fn_args] RPAREN [BANG | type] [block]
+fn_decl: [access_modifier] KW_FN NAME LPAREN [fn_args] RPAREN [BANG | type] [stmts]
 fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)*
 fn_arg: NAME COLON type [OP_ASSIGN expr]
 
@@ -60,13 +60,15 @@ access_modifier: KW_PUB [LPAREN KW_PKG RPAREN] | KW_PROT
 
 // Statements
 
+?stmts: inline_stmt | block
 ?stmt: expr
        | var_decl
        | const_decl
        | assignment
        | block_stmt
-       | KW_WHILE expr block -> while_stmt
+       | KW_WHILE expr stmts -> while_stmt
 
+inline_stmt: COLON stmt
 block: LBRACE stmt* RBRACE // returns array of stmts in AstGen
 block_stmt: [KW_UNSAFE] LBRACE stmt* RBRACE // returns BlockStmt in AstGen
 
@@ -119,9 +121,9 @@ par_expr: LPAREN expr RPAREN
 path_expr: NAME (DOUBLE_COLON NAME)*
 
 if_expr: if_header else_if_expr* else_stmt?
-if_header: KW_IF expr block
-else_if_expr: KW_ELSE KW_IF expr block
-else_stmt: KW_ELSE block
+if_header: KW_IF expr stmts
+else_if_expr: KW_ELSE KW_IF expr stmts
+else_stmt: KW_ELSE stmts
 
 match_expr: KW_MATCH [expr] LBRACE match_branches RBRACE
 match_branches: match_branch (COMMA match_branch)*

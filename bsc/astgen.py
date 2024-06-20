@@ -190,6 +190,9 @@ class AstGen(Transformer):
                 assert False # unreachable
         return op_assign
 
+    def inline_stmt(self, *nodes):
+        return [nodes[1]]
+
     def block(self, *nodes):
         return list(nodes[1:-1])
 
