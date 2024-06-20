@@ -1,0 +1,14 @@
+tests/invalid_code/duplicate_symbols.bs:4:1: error: duplicate symbol `MyEnum` in package `duplicate_symbols`
+   └ note: another enum with the same name was defined before
+tests/invalid_code/duplicate_symbols.bs:9:1: error: duplicate symbol `MyMod` in package `duplicate_symbols`
+   └ note: a module with the same name has already been defined
+tests/invalid_code/duplicate_symbols.bs:19:1: error: duplicate symbol `YEP` in package `duplicate_symbols`
+   └ note: another constant with the same name was defined before
+tests/invalid_code/duplicate_symbols.bs:22:5: error: duplicate symbol `super` in package `duplicate_symbols`
+   └ note: another variable with the same name was defined before
+tests/invalid_code/duplicate_symbols.bs:25:1: error: duplicate symbol `main` in package `duplicate_symbols`
+   └ note: another function with the same name was defined before
+tests/invalid_code/duplicate_symbols.bs:25:20: error: duplicate symbol `arg` in function `main`
+   └ note: another argument with the same name was already declared previously
+tests/invalid_code/duplicate_symbols.bs:27:9: error: duplicate symbol `x` in function `main`
+   └ note: another variable with the same name was defined before
