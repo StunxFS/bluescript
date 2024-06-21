@@ -42,9 +42,9 @@ enum WorldLevel {
             $lua("function x() end")
         }
         return match s {
-            "overworld" => .overworld,
-            "midgard" => .midgard,
-            "underworld" => .underworld,
+            "overworld" => .overworld
+            "midgard" => .midgard
+            "underworld" => .underworld
             else => .undefined
         }
     }
@@ -92,13 +92,16 @@ fn init(verbose: bool = !false, year: number = 2004) {
     _ = math::pow(2)
     mod.my_func()
 
-    var _x = $len("")
+    var len = $len("")
     // for elem in arr {}
     // for i in 0..$len(arr) {}
 
-    if true {
+    if true:
         q = 3
-    }
+    else if len == 0:
+        return 99 + 99
+    else:
+        return error("oops")
 
     if false {
         s = if true {
@@ -110,19 +113,20 @@ fn init(verbose: bool = !false, year: number = 2004) {
         }
     }
 
-    while nil {
+    while true:
         m += 4
-    }
 
     match name {
-        "holaa" => m = 99,
-        "wb", "js" => m = 1000,
-        else => exit(0)
+        "holaa" => m = 99
+        "wb", "js" => m = 1000
+        else => {
+            exit(0)
+        }
     }
 
     var b = true
     match {
-        b => true,
+        b => true
         else => false
     }
 }
