@@ -45,7 +45,7 @@ enum_field: NAME [OP_ASSIGN expr]
 class_decl: [access_modifier] KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
 class_field: [access_modifier] NAME COLON type [OP_ASSIGN expr]
 
-fn_decl: [access_modifier] KW_FN NAME LPAREN [fn_args] RPAREN [BANG | type] [stmts]
+fn_decl: [access_modifier] KW_FN NAME LPAREN [fn_args] RPAREN [BANG | type] [block]
 fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)*
 fn_arg: NAME COLON type [OP_ASSIGN expr]
 
