@@ -125,8 +125,7 @@ if_header: KW_IF expr stmts
 else_if_expr: KW_ELSE KW_IF expr stmts
 else_stmt: KW_ELSE stmts
 
-match_expr: KW_MATCH [expr] LBRACE match_branches RBRACE
-match_branches: match_branch match_branch*
+match_expr: KW_MATCH [expr] LBRACE match_branch* RBRACE
 match_branch: expr (COMMA expr)* ARROW stmt
        | KW_ELSE ARROW stmt
 
