@@ -29,7 +29,7 @@ const ALPHA = 0b00101010110101
 
 class Item {}
 
-pub fn sumtype(x: number | string | Item) {}
+pub fn sumtype(x: int | string | Item) {}
 
 enum WorldLevel {
     overworld
@@ -53,31 +53,31 @@ enum WorldLevel {
 // @abstract
 class Person {
     name: string
-    age: number = 15
+    age: int = 15
 
     items: []Item = [Item()]
-    magic: [4]number = #[1, 2, 3, 4]
+    magic: [4]int = #[1, 2, 3, 4]
 
     var static_var = nil
     const MAX = 999
 
-    map: {string:number} = {
+    map: {string:int} = {
         "First Key": 99,
         "Second Key": 100
     }
 
-    tuple: (number, ?string) = (1, nil)
+    tuple: (int, ?string) = (1, nil)
 
-    fn setAge(self, age: number) {
+    fn setAge(self, age: int) {
         self.age = age
     }
 
-    fn mkdir(path: lua::string = ".") number {
+    fn mkdir(path: lua::string = ".") int {
         $assert(path)
     }
 }
 
-fn init(verbose: bool = !false, year: number = 2004) {
+fn init(verbose: bool = !false, year: int = 2004) {
     const age = 9
 
     var w = WorldLevel.midgard
@@ -131,13 +131,13 @@ fn init(verbose: bool = !false, year: number = 2004) {
     }
 }
 
-fn div(a: number, b: number) number {
+fn div(a: int, b: int) int {
     if a == 0 || b == 0:
         return error("division by zero")
     return a / b
 }
 
-fn loop(max: number) {
+fn loop(max: int) {
     var i = 0
     while i < max:
         i += 1

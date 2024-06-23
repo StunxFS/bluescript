@@ -51,14 +51,6 @@ class Context:
         )
         self.string_type = BasicType.with_typesym(self.universe.syms[5])
 
-        self.universe.add_sym(
-            TypeSym(
-                AccessModifier.private, TypeKind.sumtype, "number", [], Scope(),
-                info = SumTypeInfo([self.int_type, self.float_type])
-            )
-        )
-        self.number_type = BasicType.with_typesym(self.universe.syms[6])
-
         self.source_files = []
 
         self.astgen = AstGen(self)
