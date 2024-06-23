@@ -132,14 +132,23 @@ fn init(verbose: bool = !false, year: number = 2004) {
 }
 
 fn div(a: number, b: number) number {
-    if a == 0 || b == 0: 
+    if a == 0 || b == 0:
         return error("division by zero")
     return a / b
 }
 
 fn loop(max: number) {
     var i = 0
-    while i < number: 
+    while i < max:
         i += 1
     $assert(i == max)
 }
+
+fn add_int(a: int) int {
+    return a + a
+}
+
+fn add_float(a: float) float {
+    return a + a
+}
+

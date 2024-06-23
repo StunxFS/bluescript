@@ -101,7 +101,8 @@ class TypeKind(IntEnum):
     void = auto()
     any = auto()
     bool = auto()
-    number = auto()
+    int = auto()
+    float = auto()
     string = auto()
     array = auto()
     map = auto()
@@ -118,8 +119,10 @@ class TypeKind(IntEnum):
                 return "any"
             case TypeKind.bool:
                 return "bool"
-            case TypeKind.number:
-                return "number"
+            case TypeKind.int:
+                return "int"
+            case TypeKind.float:
+                return "float"
             case TypeKind.string:
                 return "string"
             case TypeKind.array:
@@ -140,6 +143,10 @@ class TypeKind(IntEnum):
 class EnumInfo:
     def __init__(self, fields):
         self.fields = fields
+
+class SumTypeInfo:
+    def __init__(self, types):
+        self.types = types
 
 class TypeField:
     def __init__(self, access_modifier, name, typ, default_value):

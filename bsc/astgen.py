@@ -505,6 +505,10 @@ class AstGen(Transformer):
                     return self.ctx.any_type
                 case "bool":
                     return self.ctx.bool_type
+                case "int":
+                    return self.ctx.int_type
+                case "float":
+                    return self.ctx.float_type
                 case "number":
                     return self.ctx.number_type
                 case "string":

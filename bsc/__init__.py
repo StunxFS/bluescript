@@ -10,7 +10,7 @@ from bsc.prefs import Prefs
 from bsc.astgen import AstGen
 from bsc.sema import Sema
 from bsc.codegen import Codegen
-from bsc.sym import Scope, TypeSym, AccessModifier, TypeKind, TypeField
+from bsc.sym import Scope, TypeSym, SumTypeInfo, AccessModifier, TypeKind, TypeField
 
 class Context:
     def __init__(self):
@@ -33,18 +33,31 @@ class Context:
         self.bool_type = BasicType.with_typesym(self.universe.syms[2])
 
         self.universe.add_sym(
+            TypeSym(AccessModifier.private, TypeKind.int, "int", [], Scope())
+        )
+        self.int_type = BasicType.with_typesym(self.universe.syms[3])
+
+        self.universe.add_sym(
             TypeSym(
-                AccessModifier.private, TypeKind.number, "number", [], Scope()
+                AccessModifier.private, TypeKind.float, "float", [], Scope()
             )
         )
-        self.number_type = BasicType.with_typesym(self.universe.syms[3])
+        self.float_type = BasicType.with_typesym(self.universe.syms[4])
 
         self.universe.add_sym(
             TypeSym(
                 AccessModifier.private, TypeKind.string, "string", [], Scope()
             )
         )
-        self.string_type = BasicType.with_typesym(self.universe.syms[4])
+        self.string_type = BasicType.with_typesym(self.universe.syms[5])
+
+        self.universe.add_sym(
+            TypeSym(
+                AccessModifier.private, TypeKind.sumtype, "number", [], Scope(),
+                info = SumTypeInfo([self.int_type, self.float_type])
+            )
+        )
+        self.number_type = BasicType.with_typesym(self.universe.syms[6])
 
         self.source_files = []
 
