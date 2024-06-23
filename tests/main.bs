@@ -1,5 +1,7 @@
 mod syntax
 
+const average = 0.9
+
 pub fn main() {
     print("hello")
 }

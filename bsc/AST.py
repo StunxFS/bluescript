@@ -185,7 +185,10 @@ class BlockStmt:
 
 # Expressions
 
-class ParExpr:
+class Expr:
+    pass
+
+class ParExpr(Expr):
     def __init__(self, expr, pos):
         self.expr = expr
         self.pos = pos
@@ -196,7 +199,7 @@ class ParExpr:
     def __repr__(self):
         return str(self)
 
-class BuiltinVar:
+class BuiltinVar(Expr):
     def __init__(self, name, pos):
         self.name = name
         self.pos = pos
@@ -207,7 +210,7 @@ class BuiltinVar:
     def __repr__(self):
         return str(self)
 
-class NilLiteral:
+class NilLiteral(Expr):
     def __init__(self, pos):
         self.pos = pos
 
@@ -217,7 +220,7 @@ class NilLiteral:
     def __repr__(self):
         return str(self)
 
-class BoolLiteral:
+class BoolLiteral(Expr):
     def __init__(self, value, pos):
         self.value = value
         self.pos = pos
@@ -228,7 +231,7 @@ class BoolLiteral:
     def __repr__(self):
         return str(self)
 
-class NumberLiteral:
+class NumberLiteral(Expr):
     def __init__(self, value, pos):
         self.value = value
         self.pos = pos
@@ -239,7 +242,7 @@ class NumberLiteral:
     def __repr__(self):
         return str(self)
 
-class StringLiteral:
+class StringLiteral(Expr):
     def __init__(self, value, pos):
         self.value = value
         self.pos = pos
@@ -250,7 +253,7 @@ class StringLiteral:
     def __repr__(self):
         return str(self)
 
-class SelfLiteral:
+class SelfLiteral(Expr):
     def __init__(self, pos):
         self.pos = pos
 
@@ -260,7 +263,7 @@ class SelfLiteral:
     def __repr__(self):
         return str(self)
 
-class ArrayLiteral:
+class ArrayLiteral(Expr):
     def __init__(self, elems, is_fixed, pos):
         self.elems = elems
         self.is_fixed = is_fixed
@@ -273,7 +276,7 @@ class ArrayLiteral:
     def __repr__(self):
         return str(self)
 
-class TupleLiteral:
+class TupleLiteral(Expr):
     def __init__(self, elems, pos):
         self.elems = elems
         self.pos = pos
@@ -284,7 +287,7 @@ class TupleLiteral:
     def __repr__(self):
         return str(self)
 
-class EnumLiteral:
+class EnumLiteral(Expr):
     def __init__(self, name, pos):
         self.name = name
         self.pos = pos
@@ -295,7 +298,7 @@ class EnumLiteral:
     def __repr__(self):
         return str(self)
 
-class Ident:
+class Ident(Expr):
     def __init__(self, name, pos):
         self.name = name
         self.pos = pos
@@ -306,7 +309,7 @@ class Ident:
     def __repr__(self):
         return str(self)
 
-class PathExpr:
+class PathExpr(Expr):
     def __init__(self, left, name, pos):
         self.left = left
         self.name = name
@@ -318,7 +321,7 @@ class PathExpr:
     def __repr__(self):
         return str(self)
 
-class SelectorExpr:
+class SelectorExpr(Expr):
     def __init__(self, left, name, pos):
         self.left = left
         self.name = name
@@ -330,7 +333,7 @@ class SelectorExpr:
     def __repr__(self):
         return str(self)
 
-class CallExpr:
+class CallExpr(Expr):
     def __init__(self, left, args, pos):
         self.left = left
         self.args = args
@@ -442,7 +445,7 @@ class BinaryOp(IntEnum):
     def __repr__(self):
         return str(self)
 
-class UnaryExpr:
+class UnaryExpr(Expr):
     def __init__(self, op, right, pos):
         self.op = op
         self.right = right
@@ -454,7 +457,7 @@ class UnaryExpr:
     def __repr__(self):
         return str(self)
 
-class BinaryExpr:
+class BinaryExpr(Expr):
     def __init__(self, left, op, right, pos):
         self.left = left
         self.op = op
@@ -467,7 +470,7 @@ class BinaryExpr:
     def __repr__(self):
         return str(self)
 
-class IfExpr:
+class IfExpr(Expr):
     def __init__(self, branches, pos):
         self.branches = branches
         self.pos = pos
@@ -499,7 +502,7 @@ class IfBranch:
         self.stmts = stmts
         self.pos = pos
 
-class MatchExpr:
+class MatchExpr(Expr):
     def __init__(self, expr, branches, pos):
         self.expr = expr
         self.branches = branches
@@ -530,7 +533,7 @@ class MatchBranch:
         self.stmt = stmt
         self.pos = pos
 
-class ReturnExpr:
+class ReturnExpr(Expr):
     def __init__(self, expr, pos):
         self.expr = expr
         self.pos = pos

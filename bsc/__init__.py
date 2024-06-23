@@ -23,33 +23,38 @@ class Context:
         self.void_type = BasicType.with_typesym(self.universe.syms[0])
 
         self.universe.add_sym(
+            TypeSym(AccessModifier.private, TypeKind.nil, "nil", [], Scope())
+        )
+        self.nil_type = BasicType.with_typesym(self.universe.syms[1])
+
+        self.universe.add_sym(
             TypeSym(AccessModifier.private, TypeKind.any, "any", [], Scope())
         )
-        self.any_type = BasicType.with_typesym(self.universe.syms[1])
+        self.any_type = BasicType.with_typesym(self.universe.syms[2])
 
         self.universe.add_sym(
             TypeSym(AccessModifier.private, TypeKind.bool, "bool", [], Scope())
         )
-        self.bool_type = BasicType.with_typesym(self.universe.syms[2])
+        self.bool_type = BasicType.with_typesym(self.universe.syms[3])
 
         self.universe.add_sym(
             TypeSym(AccessModifier.private, TypeKind.int, "int", [], Scope())
         )
-        self.int_type = BasicType.with_typesym(self.universe.syms[3])
+        self.int_type = BasicType.with_typesym(self.universe.syms[4])
 
         self.universe.add_sym(
             TypeSym(
                 AccessModifier.private, TypeKind.float, "float", [], Scope()
             )
         )
-        self.float_type = BasicType.with_typesym(self.universe.syms[4])
+        self.float_type = BasicType.with_typesym(self.universe.syms[5])
 
         self.universe.add_sym(
             TypeSym(
                 AccessModifier.private, TypeKind.string, "string", [], Scope()
             )
         )
-        self.string_type = BasicType.with_typesym(self.universe.syms[5])
+        self.string_type = BasicType.with_typesym(self.universe.syms[6])
 
         self.source_files = []
 

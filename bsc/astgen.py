@@ -454,15 +454,11 @@ class AstGen(Transformer):
         expr = None
         if nodes[1]:
             expr = nodes[1]
-        return MatchExpr(expr, nodes[3], self.mkpos(nodes[0]))
-
-    def match_branches(self, *nodes):
         branches = []
-        for node in nodes:
-            if str(node) == ",":
-                continue
+        for node in nodes[3:]:
+            if isinstance(node, Token): break
             branches.append(node)
-        return branches
+        return MatchExpr(expr, branches, self.mkpos(nodes[0]))
 
     def match_branch(self, *nodes):
         is_else = str(nodes[0]) == "else"

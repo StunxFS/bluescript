@@ -99,6 +99,7 @@ class Const(Sym):
 
 class TypeKind(IntEnum):
     void = auto()
+    nil = auto()
     any = auto()
     bool = auto()
     int = auto()
@@ -115,6 +116,8 @@ class TypeKind(IntEnum):
         match self:
             case TypeKind.void:
                 return "<void>"
+            case TypeKind.nil:
+                return "nil"
             case TypeKind.any:
                 return "any"
             case TypeKind.bool:

@@ -68,7 +68,8 @@ class Sema:
                 self.cur_mod = old_mod
                 self.close_scope()
             return
-        self.check_decls(decl.decls)
+        if decl.is_inline:
+            self.check_decls(decl.decls)
 
     def check_enum_decl(self, decl):
         old_sym = self.cur_sym
@@ -118,13 +119,13 @@ class Sema:
                 self.check_stmts(decl.stmts)
             self.cur_sym = old_sym
             self.close_scope()
-            return
-        if decl.has_body:
             if len(decl.sym.scope.syms) > 200:
                 report.error(
                     f"function `{decl.name}` exceeded the maximum number of local variables allowed (200)",
                     decl.pos
                 )
+            return
+        if decl.has_body:
             self.check_stmts(decl.stmts)
 
     def check_const_decl(self, decl):
@@ -141,6 +142,10 @@ class Sema:
                 )
             self.add_sym(decl.sym, decl.pos)
             return
+        expr_typ = self.check_expr(decl.expr)
+        if expr_typ == None:
+            decl.typ = expr_typ
+            decl.sym.typ = expr_typ
 
     def check_var_decl(self, stmt):
         if self.first_pass:
@@ -167,10 +172,37 @@ class Sema:
             self.check_stmt(stmt)
 
     def check_stmt(self, stmt):
-        if isinstance(stmt, ConstDecl):
+        if isinstance(stmt, Expr):
+            if self.check_expr(stmt) != self.ctx.void_type:
+                report.warn("expression evaluated but not used", stmt.pos)
+        elif isinstance(stmt, ConstDecl):
             self.check_const_decl(stmt)
         elif isinstance(stmt, VarDecl):
             self.check_var_decl(stmt)
+        elif isinstance(stmt, BlockStmt):
+            self.check_stmts(stmt.stmts)
+
+    ## === Expressions ==================================
+
+    def check_expr(self, expr):
+        if self.first_pass: return self.ctx.void_type
+        if isinstance(expr, ParExpr):
+            expr.typ = self.check_expr(expr.expr)
+        elif isinstance(expr, NilLiteral):
+            expr.typ = self.ctx.nil_type
+        elif isinstance(expr, BoolLiteral):
+            expr.typ = self.ctx.bool_type
+        elif isinstance(expr, NumberLiteral):
+            if any(ch in expr.value for ch in [".", "e", "E"]
+                   ) and expr.value[:2].lower() not in ['0x', '0o', '0b']:
+                expr.typ = self.ctx.float_type
+            else:
+                expr.typ = self.ctx.int_type
+        elif isinstance(expr, StringLiteral):
+            expr.typ = self.ctx.string_type
+        else:
+            expr.typ = self.ctx.void_type # tmp
+        return expr.typ
 
     ## === Utilities ====================================
 
