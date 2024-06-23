@@ -52,13 +52,17 @@ class LuaIfBranch:
 
 class LuaBlock:
     def __init__(self):
-        self.chunk = []
+        self.stmts = []
 
 class LuaAssignment:
     def __init__(self, lefts, rights, is_local = True):
         self.is_local = is_local
         self.lefts = lefts
         self.rights = rights
+
+class LuaReturn:
+    def __init__(self, expr):
+        self.expr = expr
 
 # Expressions
 

@@ -13,6 +13,8 @@ class Codegen:
         self.cur_module = None
         self.decls = []
 
+        self.cur_fn = None
+
     def gen_files(self, source_files):
         for file in source_files:
             self.gen_file(file)
@@ -78,19 +80,91 @@ class Codegen:
                         )
                     ], False)
                 )
+        self.cur_fn = luafn
+        self.gen_stmts(decl.stmts)
+        self.cur_fn = None
         self.decls.append(luafn)
 
+    ## == Statements ============================================
+
+    def gen_stmts(self, stmts):
+        for stmt in stmts:
+            self.gen_stmt(stmt)
+
+    def gen_stmt(self, stmt):
+        if isinstance(stmt, Expr):
+            self.gen_expr(stmt)
+
+    ## == Expressions ===========================================
+
     def gen_expr(self, expr):
-        if isinstance(expr, BinaryExpr):
-            return LuaBinaryExpr(
-                self.gen_expr(expr.left), expr.op.to_lua_op(),
-                self.gen_expr(expr.right)
-            )
-        elif isinstance(expr, UnaryExpr):
-            return LuaUnaryExpr(expr.op.to_lua_op(), self.gen_expr(expr.right))
-        elif isinstance(expr, NumberLiteral):
-            return LuaNumberLit(expr.value)
+        if isinstance(expr, NilLiteral):
+            return LuaNil()
         elif isinstance(expr, BoolLiteral):
             return LuaBooleanLit("true" if expr.value else "false")
-        elif isinstance(expr, NilLiteral):
-            return LuaNil()
+        elif isinstance(expr, NumberLiteral):
+            return LuaNumberLit(expr.value)
+        elif isinstance(expr, UnaryExpr):
+            right = self.gen_expr(expr.right)
+            if isinstance(right, LuaBooleanLit) and expr.op == UnaryOp.bang:
+                return LuaBooleanLit(str((not right.value).lower()))
+            elif isinstance(right, LuaNumberLit) and expr.op == UnaryOp.bit_not:
+                return LuaNumberLit(str(~int(right.value)))
+            return LuaUnaryExpr(expr.op.to_lua_op(), right)
+        elif isinstance(expr, BinaryExpr):
+            left = self.gen_expr(expr.left)
+            right = self.gen_expr(expr.right)
+            if isinstance(left,
+                          LuaNumberLit) and isinstance(right, LuaNumberLit):
+                leftn = int(left.value)
+                rightn = int(right.value)
+                match expr.op:
+                    case BinaryOp.plus:
+                        return LuaNumberLit(str(leftn + rightn))
+                    case BinaryOp.minus:
+                        return LuaNumberLit(str(leftn - rightn))
+                    case BinaryOp.mul:
+                        return LuaNumberLit(str(leftn * rightn))
+                    case BinaryOp.div:
+                        return LuaNumberLit(str(leftn // rightn))
+                    case BinaryOp.mod:
+                        return LuaNumberLit(str(leftn % rightn))
+                    case BinaryOp.bit_and:
+                        return LuaNumberLit(str(leftn & rightn))
+                    case BinaryOp.bit_or:
+                        return LuaNumberLit(str(leftn | rightn))
+                    case BinaryOp.bit_xor:
+                        return LuaNumberLit(str(leftn ^ rightn))
+                    case BinaryOp.lshift:
+                        return LuaNumberLit(str(leftn << rightn))
+                    case BinaryOp.rshift:
+                        return LuaNumberLit(str(leftn >> rightn))
+                    case BinaryOp.eq:
+                        return LuaBooleanLit(leftn == rightn)
+                    case BinaryOp.neq:
+                        return LuaBooleanLit(leftn != rightn)
+                    case BinaryOp.lt:
+                        return LuaBooleanLit(leftn < rightn)
+                    case BinaryOp.gt:
+                        return LuaBooleanLit(leftn > rightn)
+                    case BinaryOp.le:
+                        return LuaBooleanLit(leftn <= rightn)
+                    case BinaryOp.ge:
+                        return LuaBooleanLit(leftn >= rightn)
+            elif isinstance(left, LuaBooleanLit
+                            ) and isinstance(right, LuaBooleanLit):
+                leftb = left.value
+                rightb = right.value
+                match expr.op:
+                    case BinaryOp.logical_and:
+                        return LuaBooleanLit(leftn and rightn)
+                    case BinaryOp.logical_or:
+                        return LuaBooleanLit(leftn or rightn)
+            return LuaBinaryExpr(left, expr.op.to_lua_op(), right)
+        elif isinstance(expr, ReturnExpr):
+            if expr.expr == None:
+                ret_expr = None
+            else:
+                ret_expr = self.gen_expr(expr.expr)
+            self.cur_fn.add_stmt(LuaReturn(ret_expr))
+            return None
