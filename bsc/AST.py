@@ -115,7 +115,7 @@ class VarIdent:
 
 # Statements
 
-class OpAssign(IntEnum):
+class AssignOp(IntEnum):
     Assign = auto()
     PlusAssign = auto()
     MinusAssign = auto()
@@ -128,23 +128,23 @@ class OpAssign(IntEnum):
 
     def __str__(self):
         match self:
-            case OpAssign.Assign:
+            case AssignOp.Assign:
                 return "="
-            case OpAssign.PlusAssign:
+            case AssignOp.PlusAssign:
                 return "+="
-            case OpAssign.MinusAssign:
+            case AssignOp.MinusAssign:
                 return "-="
-            case OpAssign.DivAssign:
+            case AssignOp.DivAssign:
                 return "-="
-            case OpAssign.MulAssign:
+            case AssignOp.MulAssign:
                 return "*="
-            case OpAssign.ModAssign:
+            case AssignOp.ModAssign:
                 return "%="
-            case OpAssign.AndAssign:
+            case AssignOp.AndAssign:
                 return "&="
-            case OpAssign.OrAssign:
+            case AssignOp.OrAssign:
                 return "|="
-            case OpAssign.XorAssign:
+            case AssignOp.XorAssign:
                 return "^="
         assert False # unreachable
 
@@ -371,6 +371,9 @@ class UnaryOp(IntEnum):
                 return "-"
             case _:
                 assert False #unreachable
+
+    def __repr__(self):
+        return str(self)
 
 class BinaryOp(IntEnum):
     plus = auto()

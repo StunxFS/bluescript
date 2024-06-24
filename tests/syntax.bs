@@ -144,15 +144,15 @@ fn loop(max: int) {
     $assert(i == max)
 }
 
+fn comptime() int {
+    return 4 + 4
+}
+
 fn add_int(a: int) int {
     return a + a
 }
 
 fn add_float(a: float) float {
     return a + a
-}
-
-fn comptime() int {
-    return 4 + 4
 }
 

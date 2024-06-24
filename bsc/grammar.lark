@@ -72,8 +72,8 @@ inline_stmt: COLON stmt
 block: LBRACE stmt* RBRACE // returns array of stmts in AstGen
 block_stmt: [KW_UNSAFE] LBRACE stmt* RBRACE // returns BlockStmt in AstGen
 
-assignment: expr (COMMA expr)* op_assign expr
-op_assign: OP_ASSIGN
+assignment: expr (COMMA expr)* assign_op expr
+assign_op: OP_ASSIGN
        | OP_ASSIGN
        | OP_PLUS_ASSIGN
        | OP_MINUS_ASSIGN
@@ -86,28 +86,28 @@ op_assign: OP_ASSIGN
 
 // Expressions
 
-?expr: and_expr
-and_expr: or_expr (LOGICAL_OR or_expr)*
-or_expr: compare_expr (LOGICAL_AND compare_expr)*
-compare_expr: bitwise_expr (compare_op bitwise_expr)?
-bitwise_expr: bitshift_expr (bitwise_op bitshift_expr)*
-bitshift_expr: addition_expr (bitshift_op addition_expr)*
-addition_expr: multiply_expr (addition_op multiply_expr)*
-multiply_expr: unary_expr (multiply_op unary_expr)*
-unary_expr: unary_op* primary_expr
-?primary_expr: literal
-       | par_expr
-       | DOLLAR NAME -> builtin_var
-       | expr DOT NAME -> selector_expr
-       | path_expr
-       | DOT NAME -> enum_literal
-       | [HASH] LBRACKET [expr (COMMA expr)*] RBRACKET -> array_literal
-       | LBRACE expr COLON expr (COMMA expr COLON expr)* RBRACE -> map_literal
-       | LPAREN expr (COMMA expr)* RPAREN -> tuple_literal
-       | expr LPAREN [expr (COMMA expr)*] RPAREN -> call_expr
-       | if_expr
+?expr: or_expr
+or_expr: (and_expr LOGICAL_OR)* and_expr
+and_expr: (compare_expr LOGICAL_AND)* compare_expr
+compare_expr: (bitwise_expr compare_op)* bitwise_expr
+bitwise_expr: (bitshift_expr bitwise_op)* bitshift_expr
+bitshift_expr: (addition_expr bitshift_op)* addition_expr
+addition_expr: (multiply_expr addition_op)* multiply_expr
+multiply_expr: (unary_expr multiply_op)* unary_expr
+unary_expr: unary_op primary_expr | primary_expr
+?primary_expr: return_expr
        | match_expr
-       | return_expr
+       | if_expr
+       | par_expr
+       | expr LPAREN [expr (COMMA expr)*] RPAREN -> call_expr
+       | LPAREN expr (COMMA expr)* RPAREN -> tuple_literal
+       | LBRACE expr COLON expr (COMMA expr COLON expr)* RBRACE -> map_literal
+       | [HASH] LBRACKET [expr (COMMA expr)*] RBRACKET -> array_literal
+       | DOT NAME -> enum_literal
+       | path_expr
+       | expr DOT NAME -> selector_expr
+       | DOLLAR NAME -> builtin_var
+       | literal
 
 compare_op: LT | GT | LE | GE | EQ | NEQ
 bitwise_op: BIT_AND | BIT_OR | BIT_XOR
@@ -195,26 +195,26 @@ OP_BIT_AND_ASSIGN: "&="
 OP_BIT_OR_ASSIGN: "|="
 OP_BIT_XOR_ASSIGN: "^="
 
-KW_AS.1: "as"
-KW_CLASS.1: "class"
-KW_CONST.1: "const"
-KW_ELSE.1: "else"
-KW_ENUM.1: "enum"
-KW_EXTERN.1: "extern"
-KW_FALSE.1: "false"
-KW_FN.1: "fn"
-KW_IF.1: "if"
-KW_MATCH.1: "match"
-KW_MOD.1: "mod"
-KW_NIL.1: "nil"
-KW_PKG.1: "pkg"
-KW_PROT.1: "prot"
-KW_PUB.1: "pub"
-KW_RETURN.1: "return"
-KW_SELF.1: "self"
-KW_TRUE.1: "true"
-KW_USE.1: "use"
-KW_UNSAFE.1: "unsafe"
-KW_VAR.1: "var"
-KW_WHILE.1: "while"
+KW_AS.2: "as"
+KW_CLASS.2: "class"
+KW_CONST.2: "const"
+KW_ELSE.2: "else"
+KW_ENUM.2: "enum"
+KW_EXTERN.2: "extern"
+KW_FALSE.2: "false"
+KW_FN.2: "fn"
+KW_IF.2: "if"
+KW_MATCH.2: "match"
+KW_MOD.2: "mod"
+KW_NIL.2: "nil"
+KW_PKG.2: "pkg"
+KW_PROT.2: "prot"
+KW_PUB.2: "pub"
+KW_RETURN.2: "return"
+KW_SELF.2: "self"
+KW_TRUE.2: "true"
+KW_USE.2: "use"
+KW_UNSAFE.2: "unsafe"
+KW_VAR.2: "var"
+KW_WHILE.2: "while"
 

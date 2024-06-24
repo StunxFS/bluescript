@@ -155,40 +155,40 @@ class AstGen(Transformer):
 
     def assignment(self, *nodes):
         lefts = []
-        op_assign = ""
+        assign_op = ""
         for node in nodes:
             if str(node) == ",":
                 continue
-            if isinstance(node, OpAssign):
+            if isinstance(node, AssignOp):
                 break
             lefts.append(node)
         right = nodes[-1]
-        return AssignStmt(lefts, op_assign, right, lefts[0].pos + nodes[-1].pos)
+        return AssignStmt(lefts, assign_op, right, lefts[0].pos + nodes[-1].pos)
 
-    def op_assign(self, *nodes):
-        op_assign = str(nodes[0])
-        match op_assign:
+    def assign_op(self, *nodes):
+        assign_op = str(nodes[0])
+        match assign_op:
             case "=":
-                op_assign = OpAssign.Assign
+                assign_op = AssignOp.Assign
             case "+=":
-                op_assign = OpAssign.PlusAssign
+                assign_op = AssignOp.PlusAssign
             case "-=":
-                op_assign = OpAssign.MinusAssign
+                assign_op = AssignOp.MinusAssign
             case "/=":
-                op_assign = OpAssign.DivAssign
+                assign_op = AssignOp.DivAssign
             case "*=":
-                op_assign = OpAssign.MulAssign
+                assign_op = AssignOp.MulAssign
             case "%=":
-                op_assign = OpAssign.ModAssign
+                assign_op = AssignOp.ModAssign
             case "&=":
-                op_assign = OpAssign.AndAssign
+                assign_op = AssignOp.AndAssign
             case "|=":
-                op_assign = OpAssign.OrAssign
+                assign_op = AssignOp.OrAssign
             case "^=":
-                op_assign = OpAssign.XorAssign
+                assign_op = AssignOp.XorAssign
             case _:
                 assert False # unreachable
-        return op_assign
+        return assign_op
 
     def inline_stmt(self, *nodes):
         return [nodes[1]]
@@ -298,8 +298,15 @@ class AstGen(Transformer):
 
     def compare_expr(self, *nodes):
         left = nodes[0]
-        if len(nodes) == 3:
-            return BinaryExpr(left, nodes[1], nodes[2], left.pos + nodes[2].pos)
+        i = 0
+        nodes = nodes[1:]
+        while i < len(nodes):
+            tok = nodes[i]
+            if isinstance(tok, BinaryOp):
+                right = nodes[i + 1]
+                left = BinaryExpr(left, tok, right, left.pos + right.pos)
+                i += 1
+            i += 1
         return left
 
     def bitwise_expr(self, *nodes):
@@ -358,9 +365,7 @@ class AstGen(Transformer):
         if len(nodes) == 1:
             return nodes[0]
         right = nodes[-1]
-        for op in nodes[:-1]:
-            right = UnaryExpr(op, right, right.pos)
-        return right
+        return UnaryExpr(nodes[0], nodes[1], right.pos)
 
     def compare_op(self, *nodes):
         match nodes[0].value:

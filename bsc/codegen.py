@@ -112,6 +112,7 @@ class Codegen:
                 return LuaNumberLit(str(~int(right.value)))
             return LuaUnaryExpr(expr.op.to_lua_op(), right)
         elif isinstance(expr, BinaryExpr):
+            print("left:",expr.left,"| right:",expr.right)
             left = self.gen_expr(expr.left)
             right = self.gen_expr(expr.right)
             if isinstance(left,
