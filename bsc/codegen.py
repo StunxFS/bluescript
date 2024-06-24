@@ -112,7 +112,6 @@ class Codegen:
                 return LuaNumberLit(str(~int(right.value)))
             return LuaUnaryExpr(expr.op.to_lua_op(), right)
         elif isinstance(expr, BinaryExpr):
-            print("left:",expr.left,"| right:",expr.right)
             left = self.gen_expr(expr.left)
             right = self.gen_expr(expr.right)
             if isinstance(left,
@@ -158,9 +157,9 @@ class Codegen:
                 rightb = right.value
                 match expr.op:
                     case BinaryOp.logical_and:
-                        return LuaBooleanLit(leftn and rightn)
+                        return LuaBooleanLit(leftb and rightb)
                     case BinaryOp.logical_or:
-                        return LuaBooleanLit(leftn or rightn)
+                        return LuaBooleanLit(leftb or rightb)
             return LuaBinaryExpr(left, expr.op.to_lua_op(), right)
         elif isinstance(expr, ReturnExpr):
             if expr.expr == None:

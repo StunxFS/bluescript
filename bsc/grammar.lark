@@ -68,7 +68,7 @@ access_modifier: KW_PUB [LPAREN KW_PKG RPAREN] | KW_PROT
        | block_stmt
        | KW_WHILE expr stmts -> while_stmt
 
-inline_stmt: COLON stmt
+inline_stmt: COLON stmt // returns [stmt] in AstGen
 block: LBRACE stmt* RBRACE // returns array of stmts in AstGen
 block_stmt: [KW_UNSAFE] LBRACE stmt* RBRACE // returns BlockStmt in AstGen
 
@@ -87,13 +87,13 @@ assign_op: OP_ASSIGN
 // Expressions
 
 ?expr: or_expr
-or_expr: (and_expr LOGICAL_OR)* and_expr
-and_expr: (compare_expr LOGICAL_AND)* compare_expr
-compare_expr: (bitwise_expr compare_op)* bitwise_expr
-bitwise_expr: (bitshift_expr bitwise_op)* bitshift_expr
-bitshift_expr: (addition_expr bitshift_op)* addition_expr
-addition_expr: (multiply_expr addition_op)* multiply_expr
-multiply_expr: (unary_expr multiply_op)* unary_expr
+or_expr: and_expr | or_expr LOGICAL_OR and_expr
+and_expr: compare_expr | and_expr LOGICAL_AND compare_expr
+compare_expr: bitwise_expr | compare_expr compare_op bitwise_expr
+bitwise_expr: bitshift_expr | bitwise_expr bitwise_op bitshift_expr
+bitshift_expr: addition_expr | bitshift_expr bitshift_op addition_expr
+addition_expr: multiply_expr | addition_expr addition_op multiply_expr
+multiply_expr: unary_expr | multiply_expr multiply_op unary_expr
 unary_expr: unary_op primary_expr | primary_expr
 ?primary_expr: return_expr
        | match_expr
@@ -217,4 +217,3 @@ KW_USE.2: "use"
 KW_UNSAFE.2: "unsafe"
 KW_VAR.2: "var"
 KW_WHILE.2: "while"
-
