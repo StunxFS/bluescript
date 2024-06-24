@@ -154,7 +154,7 @@ class LuaRender:
         elif isinstance(expr, LuaBinaryExpr):
             self.write("(")
             self.render_expr(expr.left)
-            self.write(f") {expr.op} (")
+            self.write(f" {expr.op} ")
             self.render_expr(expr.right)
             self.write(")")
         elif isinstance(expr, LuaUnaryExpr):

@@ -143,7 +143,7 @@ class Sema:
             self.add_sym(decl.sym, decl.pos)
             return
         expr_typ = self.check_expr(decl.expr)
-        if expr_typ == None:
+        if decl.typ == None:
             decl.typ = expr_typ
             decl.sym.typ = expr_typ
 
@@ -200,9 +200,24 @@ class Sema:
                 expr.typ = self.ctx.int_type
         elif isinstance(expr, StringLiteral):
             expr.typ = self.ctx.string_type
+        elif isinstance(expr, Ident):
+            expr.typ = self.check_symbol(expr)
         else:
             expr.typ = self.ctx.void_type # tmp
         return expr.typ
+
+    ## === Symbols ======================================
+
+    def check_symbol(self, expr):
+        ret_type = self.ctx.void_type
+        if local_sym := self.cur_scope.lookup(expr.name):
+            expr.sym = local_sym
+            ret_type = local_sym.typ
+        else:
+            report.error(
+                f"cannot find symbol `{expr.name}` in this scope", expr.pos
+            )
+        return ret_type
 
     ## === Utilities ====================================
 

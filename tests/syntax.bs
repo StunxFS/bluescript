@@ -88,7 +88,7 @@ fn init(verbose: bool = 2004 != 2004, year: int = 2004) {
     var q, m, c = (99, true, nil)
     var name = "StunxFS"
     name = 999
-    println("Hello World!")
+    // println("Hello World!")
     _ = math::pow(2)
     mod.my_func()
 

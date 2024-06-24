@@ -35,10 +35,11 @@ class AccessModifier(IntEnum):
         return str(self)
 
 class Sym:
-    def __init__(self, access_modifier, name):
+    def __init__(self, access_modifier, name, pos = None):
         self.parent = None
         self.access_modifier = access_modifier
         self.name = name
+        self.pos = pos
 
     def typeof(self):
         if isinstance(self, Module):
@@ -81,8 +82,8 @@ class ObjectLevel(IntEnum):
     local = auto()
 
 class Object(Sym):
-    def __init__(self, access_modifier, name, level, typ, scope):
-        super().__init__(access_modifier, name)
+    def __init__(self, access_modifier, name, level, typ, scope, pos = None):
+        super().__init__(access_modifier, name, pos = pos)
         self.level = level
         self.typ = typ
         self.scope = scope
@@ -91,8 +92,8 @@ class Object(Sym):
         return self.level in (ObjectLevel.argument, ObjectLevel.local)
 
 class Const(Sym):
-    def __init__(self, access_modifier, name, typ, expr, scope):
-        super().__init__(access_modifier, name)
+    def __init__(self, access_modifier, name, typ, expr, scope, pos = None):
+        super().__init__(access_modifier, name, pos = pos)
         self.typ = typ
         self.expr = expr
         self.scope = scope
@@ -159,8 +160,11 @@ class TypeField:
         self.default_value = default_value
 
 class TypeSym(Sym):
-    def __init__(self, access_modifier, kind, name, fields, scope, info = None):
-        super().__init__(access_modifier, name)
+    def __init__(
+        self, access_modifier, kind, name, fields, scope, info = None,
+        pos = None
+    ):
+        super().__init__(access_modifier, name, pos = pos)
         self.kind = kind
         self.info = info
         self.fields = fields
@@ -171,8 +175,11 @@ class TypeSym(Sym):
         return str(self.kind)
 
 class Module(Sym):
-    def __init__(self, access_modifier, name, scope, is_pkg, is_inline = False):
-        super().__init__(access_modifier, name)
+    def __init__(
+        self, access_modifier, name, scope, is_pkg, is_inline = False,
+        pos = None
+    ):
+        super().__init__(access_modifier, name, pos = pos)
         scope.owner = self
         self.scope = scope
         self.is_pkg = is_pkg
@@ -185,8 +192,8 @@ class FunctionArg:
         self.default_value = default_value
 
 class Function(Sym):
-    def __init__(self, access_modifier, name, args, scope):
-        super().__init__(access_modifier, name)
+    def __init__(self, access_modifier, name, args, scope, pos = None):
+        super().__init__(access_modifier, name, pos = pos)
         self.args = args
         scope.owner = self
         self.scope = scope

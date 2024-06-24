@@ -3,6 +3,7 @@
 # LICENSE file.
 
 from bsc.AST import *
+from bsc.sym import *
 from bsc.lua_ast import *
 from bsc.lua_ast.render import LuaRender
 
@@ -161,6 +162,11 @@ class Codegen:
                     case BinaryOp.logical_or:
                         return LuaBooleanLit(leftb or rightb)
             return LuaBinaryExpr(left, expr.op.to_lua_op(), right)
+        elif isinstance(expr, Ident):
+            if isinstance(expr.sym, Object):
+                return LuaIdent(expr.name)
+            if expr.sym != None: return LuaIdent(expr.sym.codegen_name())
+            return LuaIdent(expr.name)
         elif isinstance(expr, ReturnExpr):
             if expr.expr == None:
                 ret_expr = None

@@ -302,6 +302,7 @@ class Ident(Expr):
     def __init__(self, name, pos):
         self.name = name
         self.pos = pos
+        self.sym = None
 
     def __str__(self):
         return self.name
@@ -326,6 +327,7 @@ class SelectorExpr(Expr):
         self.left = left
         self.name = name
         self.pos = pos
+        self.sym = None
 
     def __str__(self):
         return f"{self.left}.{self.name}"
