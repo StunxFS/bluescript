@@ -11,10 +11,11 @@ class Codegen:
     def __init__(self, ctx):
         self.ctx = ctx
         self.modules = []
-        self.cur_module = None
-        self.decls = []
 
+        self.cur_module = None
+        self.cur_decls = []
         self.cur_fn = None
+        self.cur_block = None
 
     def gen_files(self, source_files):
         for file in source_files:
@@ -25,9 +26,9 @@ class Codegen:
     def gen_file(self, file):
         self.cur_module = LuaModule(file.mod_sym.name)
         self.gen_decls(file.decls)
-        self.cur_module.decls = self.decls
+        self.cur_module.decls = self.cur_decls
         self.modules.append(self.cur_module)
-        self.decls = []
+        self.cur_decls = []
 
     def gen_decls(self, decls):
         for decl in decls:
@@ -35,34 +36,46 @@ class Codegen:
 
     def gen_decl(self, decl):
         if isinstance(decl, ModDecl):
-            self.gen_mod(decl)
+            self.gen_mod_decl(decl)
+        elif isinstance(decl, ConstDecl):
+            self.gen_const_decl(decl)
         elif isinstance(decl, EnumDecl):
             self.gen_enum_decl(decl)
         elif isinstance(decl, FnDecl):
             self.gen_fn_decl(decl)
 
-    def gen_mod(self, decl):
+    def gen_mod_decl(self, decl):
         if decl.is_inline:
-            old_decls = self.decls
-            self.decls = []
+            old_decls = self.cur_decls
+            self.cur_decls = []
             self.gen_decls(decl.decls)
             old_decls.append(
-                LuaModule(decl.sym.codegen_qualname(), self.decls, True)
+                LuaModule(decl.sym.codegen_qualname(), self.cur_decls, True)
             )
-            self.decls = old_decls
+            self.cur_decls = old_decls
         else:
-            self.decls.append(
+            self.cur_decls.append(
                 LuaModule(
                     decl.sym.codegen_qualname(), [], False,
                     lua_filename = decl.name
                 )
             )
 
+    def gen_const_decl(self, decl):
+        is_local = decl.is_local
+        name = decl.name if is_local else decl.sym.codegen_qualname()
+        lua_assign = LuaAssignment([LuaIdent(name)], [self.gen_expr(decl.expr)],
+                                   is_local)
+        if is_local:
+            self.cur_block.add_stmt(lua_assign)
+        else:
+            self.cur_decls.append(lua_assign)
+
     def gen_enum_decl(self, decl):
         fields = []
         for i, f in enumerate(decl.fields):
             fields.append(LuaTableField(f.name, str(i)))
-        self.decls.append(LuaTable(decl.sym.codegen_qualname(), fields))
+        self.cur_decls.append(LuaTable(decl.sym.codegen_qualname(), fields))
         self.gen_decls(decl.decls)
 
     def gen_fn_decl(self, decl):
@@ -74,7 +87,7 @@ class Codegen:
         for arg in decl.args:
             if arg.default_value != None:
                 left = LuaIdent(arg.name)
-                luafn.add_stmt(
+                luafn.block.add_stmt(
                     LuaAssignment([left], [
                         LuaBinaryExpr(
                             left, "or", self.gen_expr(arg.default_value)
@@ -82,9 +95,10 @@ class Codegen:
                     ], False)
                 )
         self.cur_fn = luafn
+        self.cur_block = luafn.block
         self.gen_stmts(decl.stmts)
         self.cur_fn = None
-        self.decls.append(luafn)
+        self.cur_decls.append(luafn)
 
     ## == Statements ============================================
 
@@ -95,6 +109,8 @@ class Codegen:
     def gen_stmt(self, stmt):
         if isinstance(stmt, Expr):
             self.gen_expr(stmt)
+        elif isinstance(stmt, ConstDecl):
+            self.gen_const_decl(stmt)
 
     ## == Expressions ===========================================
 
@@ -167,10 +183,18 @@ class Codegen:
                 return LuaIdent(expr.name)
             if expr.sym != None: return LuaIdent(expr.sym.codegen_name())
             return LuaIdent(expr.name)
+        elif isinstance(expr, BlockExpr):
+            old_block = self.cur_block
+            block = LuaBlock()
+            self.cur_block = block
+            self.gen_stmts(expr.stmts)
+            self.cur_block = old_block
+            self.cur_block.add_stmt(block)
+            return None
         elif isinstance(expr, ReturnExpr):
             if expr.expr == None:
                 ret_expr = None
             else:
                 ret_expr = self.gen_expr(expr.expr)
-            self.cur_fn.add_stmt(LuaReturn(ret_expr))
+            self.cur_block.add_stmt(LuaReturn(ret_expr))
             return None

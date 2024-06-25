@@ -23,10 +23,7 @@ class LuaFunction:
     def __init__(self, name, args):
         self.name = name
         self.args = args
-        self.stmts = []
-
-    def add_stmt(self, stmt):
-        self.stmts.append(stmt)
+        self.block = LuaBlock()
 
 # Statements
 
@@ -53,6 +50,9 @@ class LuaIfBranch:
 class LuaBlock:
     def __init__(self):
         self.stmts = []
+
+    def add_stmt(self, stmt):
+        self.stmts.append(stmt)
 
 class LuaAssignment:
     def __init__(self, lefts, rights, is_local = True):

@@ -65,12 +65,12 @@ access_modifier: KW_PUB [LPAREN KW_PKG RPAREN] | KW_PROT
        | var_decl
        | const_decl
        | assignment
-       | block_stmt
+       | block_expr
        | KW_WHILE expr stmts -> while_stmt
 
 inline_stmt: COLON stmt // returns [stmt] in AstGen
 block: LBRACE stmt* RBRACE // returns array of stmts in AstGen
-block_stmt: [KW_UNSAFE] LBRACE stmt* RBRACE // returns BlockStmt in AstGen
+block_expr: [KW_UNSAFE] LBRACE stmt* RBRACE // returns BlockExpr in AstGen
 
 assignment: expr (COMMA expr)* assign_op expr
 assign_op: OP_ASSIGN

@@ -51,6 +51,8 @@ class LuaRender:
             self.render_mod(decl)
         elif isinstance(decl, LuaTable):
             self.render_table(decl)
+        elif isinstance(decl, LuaAssignment):
+            self.render_assign_decl(decl)
         elif isinstance(decl, LuaFunction):
             self.render_fn_decl(decl)
 
@@ -84,9 +86,25 @@ class LuaRender:
                 self.write(", ")
         self.writeln(")")
         self.indent += 1
-        self.render_stmts(decl.stmts)
+        self.render_stmts(decl.block.stmts)
         self.indent -= 1
         self.writeln("end\n")
+
+    def render_assign_decl(self, decl):
+        if decl.is_local:
+            self.write("local ")
+        for i, left in enumerate(decl.lefts):
+            self.render_ident(left)
+            if i < len(decl.lefts) - 1:
+                self.write(", ")
+        self.write(" = ")
+        for i, right in enumerate(decl.rights):
+            self.render_expr(right)
+            if i < len(decl.rights) - 1:
+                self.write(", ")
+        self.writeln()
+        if not decl.is_local:
+            self.writeln()
 
     def render_stmts(self, stmts):
         for stmt in stmts:
@@ -123,22 +141,11 @@ class LuaRender:
         elif isinstance(stmt, LuaBlock):
             self.writeln("do")
             self.indent += 1
-            self.gen_stmts(stmt.stmts)
+            self.render_stmts(stmt.stmts)
             self.indent -= 1
             self.writeln("end")
         elif isinstance(stmt, LuaAssignment):
-            if stmt.is_local:
-                self.write("local ")
-            for i, left in enumerate(stmt.lefts):
-                self.render_ident(left)
-                if i < len(stmt.lefts) - 1:
-                    self.write(", ")
-            self.write(" = ")
-            for i, right in enumerate(stmt.rights):
-                self.render_expr(right)
-                if i < len(stmt.rights) - 1:
-                    self.write(", ")
-            self.writeln()
+            self.render_assign_decl(stmt)
         elif isinstance(stmt, LuaReturn):
             self.write("return")
             if stmt.expr != None:

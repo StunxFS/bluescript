@@ -134,12 +134,12 @@ class Sema:
                 decl.access_modifier, decl.name, decl.typ, decl.expr,
                 self.cur_scope
             )
-            if isinstance(
-                self.cur_sym, Function
-            ) and decl.access_modifier != AccessModifier.private:
-                report.error(
-                    "local constants cannot have access modifier", decl.pos
-                )
+            if isinstance(self.cur_sym, Function):
+                decl.is_local = True
+                if decl.access_modifier != AccessModifier.private:
+                    report.error(
+                        "local constants cannot have access modifier", decl.pos
+                    )
             self.add_sym(decl.sym, decl.pos)
             return
         expr_typ = self.check_expr(decl.expr)
@@ -179,13 +179,13 @@ class Sema:
             self.check_const_decl(stmt)
         elif isinstance(stmt, VarDecl):
             self.check_var_decl(stmt)
-        elif isinstance(stmt, BlockStmt):
-            self.check_stmts(stmt.stmts)
 
     ## === Expressions ==================================
 
     def check_expr(self, expr):
-        if self.first_pass: return self.ctx.void_type
+        if self.first_pass and not isinstance(expr, BlockExpr):
+            return self.ctx.void_type
+
         if isinstance(expr, ParExpr):
             expr.typ = self.check_expr(expr.expr)
         elif isinstance(expr, NilLiteral):
@@ -202,6 +202,9 @@ class Sema:
             expr.typ = self.ctx.string_type
         elif isinstance(expr, Ident):
             expr.typ = self.check_symbol(expr)
+        elif isinstance(expr, BlockExpr):
+            self.check_stmts(expr.stmts)
+            expr.typ = self.ctx.void_type
         else:
             expr.typ = self.ctx.void_type # tmp
         return expr.typ

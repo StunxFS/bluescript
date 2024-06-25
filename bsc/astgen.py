@@ -110,7 +110,7 @@ class AstGen(Transformer):
         else:
             args = []
         ret_type = nodes[6]
-        if isinstance(ret_type, BlockStmt
+        if isinstance(ret_type, BlockExpr
                       ) or isinstance(ret_type, Token) or not ret_type:
             ret_type = self.ctx.void_type
         stmts = []
@@ -195,11 +195,6 @@ class AstGen(Transformer):
 
     def block(self, *nodes):
         return list(nodes[1:-1])
-
-    def block_stmt(self, *nodes):
-        is_unsafe = nodes[0] != None
-        stmts = list(nodes[2:-1])
-        return BlockStmt(is_unsafe, stmts, self.mkpos(nodes[0] or nodes[1]))
 
     def while_stmt(self, *nodes):
         return WhileStmt(nodes[1], nodes[2], self.mkpos(nodes[0]))
@@ -481,6 +476,11 @@ class AstGen(Transformer):
                 cases.append(case)
             stmt = nodes[-1]
         return MatchBranch(cases, is_else, stmt, pos + nodes[-1].pos)
+
+    def block_expr(self, *nodes):
+        is_unsafe = nodes[0] != None
+        stmts = list(nodes[2:-1])
+        return BlockExpr(is_unsafe, stmts, self.mkpos(nodes[0] or nodes[1]))
 
     def return_expr(self, *nodes):
         return ReturnExpr(nodes[1], self.mkpos(nodes[0]))
