@@ -25,27 +25,28 @@ module: extern_pkg* decl*
        | class_decl
        | fn_decl
 
-extern_pkg: KW_EXTERN KW_PKG NAME [KW_AS NAME]
+extern_pkg: KW_EXTERN KW_PKG NAME [KW_AS NAME] SEMICOLON
 
-use_decl: [access_modifier] KW_USE use_tree
+use_decl: [access_modifier] KW_USE use_tree SEMICOLON
 use_tree: path_expr DOUBLE_COLON MUL
        | path_expr DOUBLE_COLON LBRACE [use_tree (COMMA use_tree)*] RBRACE
        | path_expr [KW_AS NAME]
 
-mod_decl: [access_modifier] KW_MOD NAME [LBRACE decl* RBRACE]
+mod_decl: [access_modifier] KW_MOD NAME (LBRACE decl* RBRACE | SEMICOLON)
 
-const_decl: [access_modifier] KW_CONST NAME [COLON type] OP_ASSIGN expr
+const_decl: [access_modifier] KW_CONST NAME [COLON type] OP_ASSIGN expr SEMICOLON
 
-var_decl: [access_modifier] KW_VAR var_ident (COMMA var_ident)* OP_ASSIGN expr
+var_decl: [access_modifier] KW_VAR var_ident (COMMA var_ident)* OP_ASSIGN expr SEMICOLON
 var_ident: NAME [COLON type]
 
-enum_decl: [access_modifier] KW_ENUM NAME LBRACE enum_field* decl* RBRACE
+enum_decl: [access_modifier] KW_ENUM NAME LBRACE enum_fields decl* RBRACE
+?enum_fields: enum_field (COMMA enum_field)*
 enum_field: NAME [OP_ASSIGN expr]
 
 class_decl: [access_modifier] KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
-class_field: [access_modifier] NAME COLON type [OP_ASSIGN expr]
+class_field: [access_modifier] NAME COLON type [OP_ASSIGN expr] SEMICOLON
 
-fn_decl: [access_modifier] KW_FN NAME LPAREN [fn_args] RPAREN [BANG | type] [block]
+fn_decl: [access_modifier] KW_FN NAME LPAREN [fn_args] RPAREN [BANG | type] (SEMICOLON | block)
 fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)*
 fn_arg: NAME COLON type [OP_ASSIGN expr]
 
@@ -60,18 +61,24 @@ access_modifier: KW_PUB [LPAREN KW_PKG RPAREN] | KW_PROT
 
 // Statements
 
-?stmts: inline_stmt | block
-?stmt: expr_stmt
+?stmts: inline_stmt
+?stmt: block_expr
        | var_decl
        | const_decl
-       | assignment
-       | KW_WHILE expr stmts -> while_stmt
-
-expr_stmt: expr
+       | while_stmt
+       | match_stmt
+       | if_stmt
+       | expr_stmt SEMICOLON
+       | assignment SEMICOLON
 
 inline_stmt: COLON stmt // returns [stmt] in AstGen
 block: LBRACE stmt* RBRACE // returns array of stmts in AstGen
 block_expr: [KW_UNSAFE] LBRACE stmt* RBRACE // returns BlockExpr in AstGen
+
+expr_stmt: expr
+while_stmt: KW_WHILE expr stmts
+match_stmt: match_expr
+if_stmt: if_expr
 
 assignment: expr (COMMA expr)* assign_op expr
 assign_op: OP_ASSIGN
@@ -123,13 +130,14 @@ par_expr: LPAREN expr RPAREN
 path_expr: NAME (DOUBLE_COLON NAME)*
 
 if_expr: if_header else_if_expr* else_stmt?
-if_header: KW_IF expr stmts
-else_if_expr: KW_ELSE KW_IF expr stmts
-else_stmt: KW_ELSE stmts
+if_header: KW_IF expr expr
+else_if_expr: KW_ELSE KW_IF expr expr
+else_stmt: KW_ELSE expr
 
 match_expr: KW_MATCH [expr] LBRACE match_branch* RBRACE
-match_branch: expr (COMMA expr)* ARROW stmt
-       | KW_ELSE ARROW stmt
+?match_branches: match_branch (COMMA match_branch)*
+match_branch: expr (COMMA expr)* ARROW expr
+       | KW_ELSE ARROW expr
 
 return_expr: KW_RETURN [expr]
 
@@ -160,6 +168,7 @@ SLASH: "/"
 ARROW: "=>"
 COMMA: ","
 DOT: "."
+SEMICOLON: ";"
 DOUBLE_COLON: "::"
 COLON: ":"
 BANG: "!"

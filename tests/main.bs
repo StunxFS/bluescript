@@ -1,11 +1,11 @@
-mod syntax
+mod syntax;
 
-const average = 0.9
+const average = 0.9;
 
 fn main() {
-    print("hello")
+    print("hello");
     {
-        const X = 1
+        const X = 1;
     }
 }
 

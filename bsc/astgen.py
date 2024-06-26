@@ -2,8 +2,7 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
-import os
-from lark import Lark, v_args, Transformer, Token, Tree
+from lark import Lark, v_args, Transformer, Token, visitors
 
 from bsc.AST import *
 from bsc.sym import AccessModifier, Module, Scope
@@ -64,7 +63,7 @@ class AstGen(Transformer):
         access_modifier = self.get_access_modifier(nodes)
         pos = self.mkpos(nodes[0] or nodes[1])
         name = nodes[2].name
-        is_inline = nodes[3] != None
+        is_inline = len(nodes) > 3
         decls = []
         if is_inline:
             decls = list(nodes[4:-1])
@@ -201,6 +200,12 @@ class AstGen(Transformer):
 
     def while_stmt(self, *nodes):
         return WhileStmt(nodes[1], nodes[2], self.mkpos(nodes[0]))
+
+    def match_stmt(self, *nodes):
+        return ExprStmt(nodes[0])
+
+    def if_stmt(self, *nodes):
+        return ExprStmt(nodes[0])
 
     # Expressions
     def par_expr(self, *nodes):
@@ -535,6 +540,10 @@ class AstGen(Transformer):
     def sum_type(self, *nodes):
         types = list(filter(lambda node: not isinstance(node, Token), nodes))
         return SumType(types, nodes[0].pos)
+
+    # Discard ;
+    def SEMICOLON(self, *nodes):
+        return visitors.Discard
 
     # Utilities
     def get_access_modifier(self, node):
