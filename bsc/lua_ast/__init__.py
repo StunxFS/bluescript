@@ -96,8 +96,9 @@ class LuaParenExpr:
         self.expr = expr
 
 class LuaNumberLit:
-    def __init__(self, value):
+    def __init__(self, value, is_float = False):
         self.value = value
+        self.is_float = is_float
 
 class LuaBooleanLit:
     def __init__(self, value):

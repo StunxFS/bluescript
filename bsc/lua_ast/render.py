@@ -103,8 +103,6 @@ class LuaRender:
             if i < len(decl.rights) - 1:
                 self.write(", ")
         self.writeln()
-        if not decl.is_local:
-            self.writeln()
 
     def render_stmts(self, stmts):
         for stmt in stmts:
@@ -183,7 +181,8 @@ class LuaRender:
         elif isinstance(expr, LuaIdent):
             self.write(expr.name)
         elif isinstance(expr, LuaNumberLit):
-            self.write(expr.value)
+            if "." in expr.value: self.write(expr.value)
+            else: self.write(hex(int(expr.value, 0)))
         elif isinstance(expr, LuaBooleanLit):
             self.write(str(expr.value).lower())
         elif isinstance(expr, LuaNil):

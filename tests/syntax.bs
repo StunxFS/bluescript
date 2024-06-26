@@ -96,12 +96,13 @@ fn init(verbose: bool = 2004 != 2004, year: int = 2004) {
     // for elem in arr {}
     // for i in 0..$len(arr) {}
 
-    if true:
+    if true {
         q = 3;
-    else if len == 0:
+    } else if len == 0 {
         return 99 + 99;
-    else:
+    } else {
         return error("oops");
+    }
 
     if false {
         s = if true {
@@ -110,15 +111,16 @@ fn init(verbose: bool = 2004 != 2004, year: int = 2004) {
             99
         } else {
             100
-        }
+        };
     }
 
-    while true:
+    while true {
         m += 4;
+    }
 
     match name {
-        "holaa" => m = 99
-        "wb", "js" => m = 1000
+        "holaa" => m = 99,
+        "wb", "js" => m = 1000,
         else => {
             exit(0)
         }
@@ -126,21 +128,23 @@ fn init(verbose: bool = 2004 != 2004, year: int = 2004) {
 
     var b = true;
     match {
-        b => true
+        b => true,
         else => false
     }
 }
 
 fn div(a: int, b: int) int {
-    if a == 0 || b == 0:
+    if a == 0 || b == 0 {
         return error("division by zero");
+    }
     return a / b;
 }
 
 fn loop(max: int) {
     var i = 0;
-    while i < max:
+    while i < max {
         i += 1;
+    }
     $assert(i == max);
 }
 

@@ -158,16 +158,6 @@ class AssignOp(IntEnum):
                 return "^="
         assert False # unreachable
 
-class AssignStmt(Stmt):
-    def __init__(self, lefts, op, right, pos):
-        self.lefts = lefts
-        self.op = op
-        self.right = right
-        self.pos = pos
-
-    def __str__(self):
-        return f"{', '.join([str(left) for left in self.lefts])} {self.op} {str(self.right)}"
-
 class WhileStmt(Stmt):
     def __init__(self, cond, stmts, pos):
         self.cond = cond
@@ -561,6 +551,16 @@ class ReturnExpr(Expr):
 
     def __repr__(self):
         return str(self)
+
+class AssignExpr(Expr):
+    def __init__(self, lefts, op, right, pos):
+        self.lefts = lefts
+        self.op = op
+        self.right = right
+        self.pos = pos
+
+    def __str__(self):
+        return f"{', '.join([str(left) for left in self.lefts])} {self.op} {str(self.right)}"
 
 # Types
 class BasicType:

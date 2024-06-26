@@ -81,15 +81,15 @@ class AstGen(Transformer):
         pos = self.mkpos(nodes[1])
         access_modifier = self.get_access_modifier(nodes[0])
         name = nodes[2].name
-        enum_fields = []
+        enum_fields = nodes[4]
         decls = []
-        for node in nodes[4:]:
-            if str(node) == "}": break
-            if isinstance(node, EnumField):
-                enum_fields.append(node)
-            else:
-                decls.append(node)
+        for node in nodes[5:]:
+            if isinstance(node, Token): break
+            decls.append(node)
         return EnumDecl(access_modifier, name, enum_fields, decls, pos)
+
+    def enum_fields(self, *nodes):
+        return list(filter(lambda field: not isinstance(field, Token), nodes))
 
     def enum_field(self, *nodes):
         return EnumField(nodes[0].name, nodes[-1])
@@ -113,7 +113,7 @@ class AstGen(Transformer):
                       ) or isinstance(ret_type, Token) or not ret_type:
             ret_type = self.ctx.void_type
         stmts = []
-        if nodes[-1] != None:
+        if len(nodes) == 8:
             stmts = nodes[-1]
         else:
             stmts = None
@@ -165,7 +165,7 @@ class AstGen(Transformer):
                 break
             lefts.append(node)
         right = nodes[-1]
-        return AssignStmt(lefts, assign_op, right, lefts[0].pos + nodes[-1].pos)
+        return AssignExpr(lefts, assign_op, right, lefts[0].pos + nodes[-1].pos)
 
     def assign_op(self, *nodes):
         assign_op = str(nodes[0])
@@ -191,9 +191,6 @@ class AstGen(Transformer):
             case _:
                 assert False # unreachable
         return assign_op
-
-    def inline_stmt(self, *nodes):
-        return [nodes[1]]
 
     def block(self, *nodes):
         return list(nodes[1:-1])

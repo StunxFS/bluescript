@@ -40,7 +40,7 @@ var_decl: [access_modifier] KW_VAR var_ident (COMMA var_ident)* OP_ASSIGN expr S
 var_ident: NAME [COLON type]
 
 enum_decl: [access_modifier] KW_ENUM NAME LBRACE enum_fields decl* RBRACE
-?enum_fields: enum_field (COMMA enum_field)*
+enum_fields: enum_field (COMMA enum_field)*
 enum_field: NAME [OP_ASSIGN expr]
 
 class_decl: [access_modifier] KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
@@ -61,7 +61,6 @@ access_modifier: KW_PUB [LPAREN KW_PKG RPAREN] | KW_PROT
 
 // Statements
 
-?stmts: inline_stmt
 ?stmt: block_expr
        | var_decl
        | const_decl
@@ -69,28 +68,14 @@ access_modifier: KW_PUB [LPAREN KW_PKG RPAREN] | KW_PROT
        | match_stmt
        | if_stmt
        | expr_stmt SEMICOLON
-       | assignment SEMICOLON
 
-inline_stmt: COLON stmt // returns [stmt] in AstGen
 block: LBRACE stmt* RBRACE // returns array of stmts in AstGen
-block_expr: [KW_UNSAFE] LBRACE stmt* RBRACE // returns BlockExpr in AstGen
+block_expr: [KW_UNSAFE] LBRACE stmt* [expr] RBRACE // returns BlockExpr in AstGen
 
 expr_stmt: expr
-while_stmt: KW_WHILE expr stmts
+while_stmt: KW_WHILE expr block
 match_stmt: match_expr
 if_stmt: if_expr
-
-assignment: expr (COMMA expr)* assign_op expr
-assign_op: OP_ASSIGN
-       | OP_ASSIGN
-       | OP_PLUS_ASSIGN
-       | OP_MINUS_ASSIGN
-       | OP_DIV_ASSIGN
-       | OP_MUL_ASSIGN
-       | OP_MOD_ASSIGN
-       | OP_BIT_AND_ASSIGN
-       | OP_BIT_OR_ASSIGN
-       | OP_BIT_XOR_ASSIGN
 
 // Expressions
 
@@ -104,6 +89,7 @@ addition_expr: multiply_expr | addition_expr addition_op multiply_expr
 multiply_expr: unary_expr | multiply_expr multiply_op unary_expr
 unary_expr: unary_op primary_expr | primary_expr
 ?primary_expr: par_expr
+       | assignment
        | return_expr
        | match_expr
        | if_expr
@@ -127,14 +113,26 @@ unary_op: BANG | BIT_NOT | MINUS
 
 par_expr: LPAREN expr RPAREN
 
+assignment: expr (COMMA expr)* assign_op expr
+assign_op: OP_ASSIGN
+       | OP_ASSIGN
+       | OP_PLUS_ASSIGN
+       | OP_MINUS_ASSIGN
+       | OP_DIV_ASSIGN
+       | OP_MUL_ASSIGN
+       | OP_MOD_ASSIGN
+       | OP_BIT_AND_ASSIGN
+       | OP_BIT_OR_ASSIGN
+       | OP_BIT_XOR_ASSIGN
+
 path_expr: NAME (DOUBLE_COLON NAME)*
 
 if_expr: if_header else_if_expr* else_stmt?
 if_header: KW_IF expr expr
-else_if_expr: KW_ELSE KW_IF expr expr
-else_stmt: KW_ELSE expr
+else_if_expr: KW_ELSE KW_IF expr block_expr
+else_stmt: KW_ELSE block_expr
 
-match_expr: KW_MATCH [expr] LBRACE match_branch* RBRACE
+match_expr: KW_MATCH [expr] LBRACE match_branches RBRACE
 ?match_branches: match_branch (COMMA match_branch)*
 match_branch: expr (COMMA expr)* ARROW expr
        | KW_ELSE ARROW expr
