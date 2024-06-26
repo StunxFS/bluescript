@@ -153,6 +153,9 @@ class AstGen(Transformer):
 
     # Statements
 
+    def expr_stmt(self, *nodes):
+        return ExprStmt(nodes[0])
+
     def assignment(self, *nodes):
         lefts = []
         assign_op = ""

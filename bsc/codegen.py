@@ -107,8 +107,8 @@ class Codegen:
             self.gen_stmt(stmt)
 
     def gen_stmt(self, stmt):
-        if isinstance(stmt, Expr):
-            self.gen_expr(stmt)
+        if isinstance(stmt, ExprStmt):
+            self.gen_expr(stmt.expr)
         elif isinstance(stmt, ConstDecl):
             self.gen_const_decl(stmt)
 

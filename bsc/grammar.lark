@@ -61,12 +61,13 @@ access_modifier: KW_PUB [LPAREN KW_PKG RPAREN] | KW_PROT
 // Statements
 
 ?stmts: inline_stmt | block
-?stmt: expr
+?stmt: expr_stmt
        | var_decl
        | const_decl
        | assignment
-       | block_expr
        | KW_WHILE expr stmts -> while_stmt
+
+expr_stmt: expr
 
 inline_stmt: COLON stmt // returns [stmt] in AstGen
 block: LBRACE stmt* RBRACE // returns array of stmts in AstGen
@@ -95,10 +96,11 @@ bitshift_expr: addition_expr | bitshift_expr bitshift_op addition_expr
 addition_expr: multiply_expr | addition_expr addition_op multiply_expr
 multiply_expr: unary_expr | multiply_expr multiply_op unary_expr
 unary_expr: unary_op primary_expr | primary_expr
-?primary_expr: return_expr
+?primary_expr: par_expr
+       | return_expr
        | match_expr
        | if_expr
-       | par_expr
+       | block_expr
        | expr LPAREN [expr (COMMA expr)*] RPAREN -> call_expr
        | LPAREN expr (COMMA expr)* RPAREN -> tuple_literal
        | LBRACE expr COLON expr (COMMA expr COLON expr)* RBRACE -> map_literal

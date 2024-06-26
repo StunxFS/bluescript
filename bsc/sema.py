@@ -172,8 +172,8 @@ class Sema:
             self.check_stmt(stmt)
 
     def check_stmt(self, stmt):
-        if isinstance(stmt, Expr):
-            if self.check_expr(stmt) != self.ctx.void_type:
+        if isinstance(stmt, ExprStmt):
+            if self.check_expr(stmt.expr) != self.ctx.void_type:
                 report.warn("expression evaluated but not used", stmt.pos)
         elif isinstance(stmt, ConstDecl):
             self.check_const_decl(stmt)

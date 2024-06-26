@@ -116,6 +116,15 @@ class VarIdent:
 
 # Statements
 
+class Stmt:
+    pass
+
+class ExprStmt(Stmt):
+    def __init__(self, expr):
+        assert isinstance(expr, Expr)
+        self.expr = expr
+        self.pos = expr.pos
+
 class AssignOp(IntEnum):
     Assign = auto()
     PlusAssign = auto()
@@ -149,7 +158,7 @@ class AssignOp(IntEnum):
                 return "^="
         assert False # unreachable
 
-class AssignStmt:
+class AssignStmt(Stmt):
     def __init__(self, lefts, op, right, pos):
         self.lefts = lefts
         self.op = op
@@ -159,7 +168,7 @@ class AssignStmt:
     def __str__(self):
         return f"{', '.join([str(left) for left in self.lefts])} {self.op} {str(self.right)}"
 
-class WhileStmt:
+class WhileStmt(Stmt):
     def __init__(self, cond, stmts, pos):
         self.cond = cond
         self.stmts = stmts
