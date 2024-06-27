@@ -204,7 +204,10 @@ class Sema:
             expr.typ = self.check_symbol(expr)
         elif isinstance(expr, BlockExpr):
             self.check_stmts(expr.stmts)
-            expr.typ = self.ctx.void_type
+            if expr.expr != None:
+                expr.typ = self.check_expr(expr.expr)
+            else:
+                expr.typ = self.ctx.void_type
         else:
             expr.typ = self.ctx.void_type # tmp
         return expr.typ

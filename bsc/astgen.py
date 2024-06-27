@@ -214,6 +214,9 @@ class AstGen(Transformer):
     def block(self, *nodes):
         return list(nodes[1:-1])
 
+    def block_stmt(self, *nodes):
+        return ExprStmt(nodes[0])
+
     def while_stmt(self, *nodes):
         return WhileStmt(nodes[1], nodes[2], self.mkpos(nodes[0]))
 
@@ -478,11 +481,10 @@ class AstGen(Transformer):
         expr = None
         if nodes[1]:
             expr = nodes[1]
-        branches = []
-        for node in nodes[3:]:
-            if isinstance(node, Token): break
-            branches.append(node)
-        return MatchExpr(expr, branches, self.mkpos(nodes[0]))
+        return MatchExpr(expr, nodes[3], self.mkpos(nodes[0]))
+
+    def match_branches(self, *nodes):
+        return [node for node in nodes if isinstance(node, MatchBranch)]
 
     def match_branch(self, *nodes):
         is_else = str(nodes[0]) == "else"
@@ -503,8 +505,11 @@ class AstGen(Transformer):
 
     def block_expr(self, *nodes):
         is_unsafe = nodes[0] != None
-        stmts = list(nodes[2:-1])
-        return BlockExpr(is_unsafe, stmts, self.mkpos(nodes[0] or nodes[1]))
+        stmts = list(nodes[2:-2])
+        expr = nodes[-2]
+        return BlockExpr(
+            is_unsafe, stmts, expr, self.mkpos(nodes[0] or nodes[1])
+        )
 
     def return_expr(self, *nodes):
         return ReturnExpr(nodes[1], self.mkpos(nodes[0]))

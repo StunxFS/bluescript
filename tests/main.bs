@@ -4,9 +4,6 @@ const average = 0.9;
 
 fn main() {
     print("hello");
-    {
-        const X = 1;
-    }
 }
 
 pub(pkg) fn my_fn(a: number) {}

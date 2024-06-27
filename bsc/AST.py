@@ -472,27 +472,21 @@ class IfExpr(Expr):
         s = ""
         for i, branch in enumerate(self.branches):
             if branch.is_else:
-                s += " else {\n"
-                for stmt in branch.stmts:
-                    s += f"    {stmt}\n"
-                s += "}"
+                s += f" else {branch.expr}"
                 break
             if i > 0:
                 s += " else "
-            s += f"if {branch.cond} {{\n"
-            for stmt in branch.stmts:
-                s += f"    {stmt}\n"
-            s += "}"
+            s += f"if {branch.cond} {branch.expr}"
         return s
 
     def __repr__(self):
         return str(self)
 
 class IfBranch:
-    def __init__(self, cond, is_else, stmts, pos):
+    def __init__(self, cond, is_else, expr, pos):
         self.cond = cond
         self.is_else = is_else
-        self.stmts = stmts
+        self.expr = expr
         self.pos = pos
 
 class MatchExpr(Expr):
@@ -527,9 +521,10 @@ class MatchBranch:
         self.pos = pos
 
 class BlockExpr(Expr):
-    def __init__(self, is_unsafe, stmts, pos):
+    def __init__(self, is_unsafe, stmts, expr, pos):
         self.is_unsafe = is_unsafe
         self.stmts = stmts
+        self.expr = expr
         self.pos = pos
         self.typ = None
 

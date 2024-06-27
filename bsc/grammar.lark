@@ -61,7 +61,7 @@ access_modifier: KW_PUB [LPAREN KW_PKG RPAREN] | KW_PROT
 
 // Statements
 
-?stmt: block_expr
+?stmt: block_stmt
        | var_decl
        | const_decl
        | while_stmt
@@ -71,6 +71,7 @@ access_modifier: KW_PUB [LPAREN KW_PKG RPAREN] | KW_PROT
 
 block: LBRACE stmt* RBRACE // returns array of stmts in AstGen
 block_expr: [KW_UNSAFE] LBRACE stmt* [expr] RBRACE // returns BlockExpr in AstGen
+block_stmt: block_expr
 
 expr_stmt: expr
 while_stmt: KW_WHILE expr block
