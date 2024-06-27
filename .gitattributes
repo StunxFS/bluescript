@@ -1,1 +1,1 @@
-*.bs linguist-language=Zig text=auto eol=lf
+*.bs linguist-language=Rust text=auto eol=lf

@@ -14,10 +14,15 @@ convenient and powerful syntax.
 
 </div>
 
+BlueScript claims to give the developer a comfortable, simple and effective programming 
+language, with a modern and simple syntax.
+
+BlueScript exists to improve script development with Lua.
+
 ## The most basic example: "Hello World!"
 
 ```rs
 fn main() {
-    println("Hello World!")
+    println("Hello World!");
 }
 ```
