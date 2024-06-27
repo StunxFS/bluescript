@@ -74,8 +74,11 @@ class Codegen:
     def gen_enum_decl(self, decl):
         fields = []
         for i, f in enumerate(decl.fields):
-            fields.append(LuaTableField(f.name, str(i)))
-        self.cur_decls.append(LuaTable(decl.sym.codegen_qualname(), fields))
+            fields.append(LuaTableField(LuaIdent(f.name), LuaNumberLit(str(i))))
+        self.cur_decls.append(
+            LuaAssignment([LuaIdent(decl.sym.codegen_qualname())],
+                          [LuaTable(fields)], False)
+        )
         self.gen_decls(decl.decls)
 
     def gen_fn_decl(self, decl):

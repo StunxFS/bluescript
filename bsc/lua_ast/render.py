@@ -66,18 +66,6 @@ class LuaRender:
                 f"{decl.name} = require(\"{BSC_OUT_DIR}.{decl.lua_filename}\") -- load module file\n"
             )
 
-    def render_table(self, decl):
-        self.writeln(f"{decl.name} = {{")
-        self.indent += 1
-        for i, field in enumerate(decl.fields):
-            self.write(f"{field.name} = {field.value}")
-            if i < len(decl.fields) - 1:
-                self.writeln(",")
-            else:
-                self.writeln()
-        self.indent -= 1
-        self.writeln("}\n")
-
     def render_fn_decl(self, decl):
         self.write(f"function {decl.name}(")
         for i, arg in enumerate(decl.args):
@@ -97,11 +85,12 @@ class LuaRender:
             self.render_ident(left)
             if i < len(decl.lefts) - 1:
                 self.write(", ")
-        self.write(" = ")
-        for i, right in enumerate(decl.rights):
-            self.render_expr(right)
-            if i < len(decl.rights) - 1:
-                self.write(", ")
+        if len(decl.rights) > 0:
+            self.write(" = ")
+            for i, right in enumerate(decl.rights):
+                self.render_expr(right)
+                if i < len(decl.rights) - 1:
+                    self.write(", ")
         self.writeln()
 
     def render_stmts(self, stmts):
@@ -156,6 +145,20 @@ class LuaRender:
             self.write("(")
             self.render_expr(expr.expr)
             self.write(")")
+        elif isinstance(expr, LuaTable):
+            self.writeln("{")
+            self.indent += 1
+            for i, field in enumerate(expr.fields):
+                if field.key != None:
+                    self.render_expr(field.key)
+                    self.write(" = ")
+                self.render_expr(field.value)
+                if i < len(expr.fields) - 1:
+                    self.writeln(",")
+                else:
+                    self.writeln()
+            self.indent -= 1
+            self.writeln("}")
         elif isinstance(expr, LuaBinaryExpr):
             self.write("(")
             self.render_expr(expr.left)

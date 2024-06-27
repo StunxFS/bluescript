@@ -10,13 +10,12 @@ class LuaModule:
         self.lua_filename = lua_filename
 
 class LuaTableField:
-    def __init__(self, name, value):
-        self.name = name
+    def __init__(self, key, value):
+        self.key = key
         self.value = value
 
 class LuaTable:
-    def __init__(self, name, fields):
-        self.name = name
+    def __init__(self, fields):
         self.fields = fields
 
 class LuaFunction:

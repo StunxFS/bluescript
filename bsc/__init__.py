@@ -17,14 +17,16 @@ class Context:
         self.prefs = Prefs()
 
         self.universe = Scope(is_universe = True)
-        
+
         self.universe.add_sym(
             TypeSym(AccessModifier.private, TypeKind.void, "void", [], Scope())
         )
         self.void_type = BasicType.with_typesym(self.universe.syms[0])
 
         self.universe.add_sym(
-            TypeSym(AccessModifier.private, TypeKind.never, "never", [], Scope())
+            TypeSym(
+                AccessModifier.private, TypeKind.never, "never", [], Scope()
+            )
         )
         self.never_type = BasicType.with_typesym(self.universe.syms[1])
 
