@@ -2,7 +2,7 @@ mod syntax;
 
 const average = 0.9;
 
-fn main() {
+fn main() void {
     print("hello");
 }
 

@@ -100,6 +100,7 @@ class Const(Sym):
 
 class TypeKind(IntEnum):
     void = auto()
+    never = auto()
     nil = auto()
     any = auto()
     bool = auto()
@@ -116,7 +117,9 @@ class TypeKind(IntEnum):
     def __str__(self):
         match self:
             case TypeKind.void:
-                return "<void>"
+                return "void"
+            case TypeKind.never:
+                return "never"
             case TypeKind.nil:
                 return "nil"
             case TypeKind.any:

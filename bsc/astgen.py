@@ -531,6 +531,10 @@ class AstGen(Transformer):
         left = names[0]
         if isinstance(left, Ident):
             match left.name:
+                case "void":
+                    return self.ctx.void_type
+                case "never":
+                    return self.ctx.never_type
                 case "any":
                     return self.ctx.any_type
                 case "bool":
