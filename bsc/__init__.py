@@ -67,6 +67,8 @@ class Context:
 
     def compile(self):
         self.parse_input()
+        if report.errors > 0:
+            exit(1)
         self.import_modules()
         if report.errors > 0:
             exit(1)

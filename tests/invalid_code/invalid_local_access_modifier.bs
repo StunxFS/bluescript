@@ -1,4 +1,4 @@
 fn main() {
-    pub var a = 1
-    pub const b = 2
+    pub var a = 1;
+    pub const b = 2;
 }

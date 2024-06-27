@@ -2,11 +2,11 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
-from lark import Lark, v_args, Transformer, Token, visitors
+from lark import Lark, v_args, Transformer, Token, visitors, exceptions
 
 from bsc.AST import *
 from bsc.sym import AccessModifier, Module, Scope
-from bsc import utils
+from bsc import utils, report
 
 bs_parser = Lark.open(
     "grammar.lark", rel_to = __file__, parser = 'earley', start = "module"
@@ -28,10 +28,29 @@ class AstGen(Transformer):
             AccessModifier.public, mod_name, Scope(self.ctx.universe, True),
             is_pkg
         )
-        self.source_file = SourceFile(
-            self.file, self.transform(bs_parser.parse(open(file).read())),
-            self.mod_sym, deps = self.source_file_deps
-        )
+        try:
+            self.source_file = SourceFile(
+                self.file, self.transform(bs_parser.parse(open(file).read())),
+                self.mod_sym, deps = self.source_file_deps
+            )
+        except exceptions.UnexpectedCharacters as e:
+            report.error(
+                f"unexpected character `{e.char}`",
+                Pos(file, e.line, e.column, 1, e.pos_in_stream)
+            )
+            return SourceFile("", [], None)
+        except exceptions.UnexpectedToken as e:
+            report.error(
+                f"expected {e.expected}, got {e.token}, ",
+                Pos(file, e.line, e.column, 1, e.pos_in_stream)
+            )
+            return SourceFile("", [], None)
+        except exceptions.UnexpectedEOF as e:
+            report.error(
+                f"unexpected end of file, expected {e.expected}",
+                Pos(file, e.line, e.column, 1, e.pos_in_stream)
+            )
+            return SourceFile("", [], None)
         try:
             if is_pkg:
                 self.ctx.universe.add_sym(self.source_file.mod_sym)

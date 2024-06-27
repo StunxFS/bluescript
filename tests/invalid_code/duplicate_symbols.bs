@@ -15,14 +15,14 @@ enum MyClass {
     a
 }
 
-const YEP = 1
-const YEP = 1
+const YEP = 1;
+const YEP = 1;
 
-var super = 0
-var super = 0
+var super = 0;
+var super = 0;
 
 fn main() {}
 fn main(arg: bool, arg: bool) {
-    var x = 0
-    var x = 0
+    var x = 0;
+    var x = 0;
 }
