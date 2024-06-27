@@ -150,7 +150,12 @@ class LuaRender:
             self.indent += 1
             for i, field in enumerate(expr.fields):
                 if field.key != None:
+                    needs_brackets = not isinstance(field.key, LuaIdent)
+                    if needs_brackets:
+                        self.write("[")
                     self.render_expr(field.key)
+                    if needs_brackets:
+                        self.write("]")
                     self.write(" = ")
                 self.render_expr(field.value)
                 if i < len(expr.fields) - 1:
