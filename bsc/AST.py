@@ -80,6 +80,7 @@ class FnDecl:
         self.stmts = stmts
         self.has_body = stmts != None
         self.is_main = is_main
+        self.is_method = False
         self.sym = None
         self.pos = pos
 

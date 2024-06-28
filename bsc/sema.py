@@ -57,6 +57,7 @@ class Sema:
     def check_mod_decl(self, decl):
         old_sym = self.cur_sym
         old_mod = self.cur_mod
+        old_scope = self.cur_scope
         if self.first_pass:
             if decl.is_inline:
                 self.add_sym(decl.sym, decl.pos)
@@ -69,28 +70,36 @@ class Sema:
                 self.close_scope()
             return
         if decl.is_inline:
+            self.cur_mod = decl.sym
+            self.cur_sym = decl.sym
             self.check_decls(decl.decls)
+            self.cur_sym = old_sym
+            self.cur_mod = old_mod
 
     def check_enum_decl(self, decl):
         old_sym = self.cur_sym
+        old_scope = self.cur_scope
         if self.first_pass:
             fields = []
             for i, field in enumerate(decl.fields):
                 fields.append((field.name, i))
             decl.sym = TypeSym(
                 decl.access_modifier, TypeKind.enum, decl.name, [],
-                self.open_scope(), info = EnumInfo(fields)
+                self.open_scope(), info = EnumInfo(fields), pos = decl.pos
             )
             self.add_sym(decl.sym, decl.pos)
             self.cur_sym = decl.sym
             self.cur_scope = decl.sym.scope
             self.check_decls(decl.decls)
             self.cur_sym = old_sym
+            self.cur_scope = old_scope
             self.close_scope()
             return
         if len(decl.fields) == 0:
             report.error(f"enum `{decl.name}` cannot be empty", decl.pos)
+        self.cur_sym = decl.sym
         self.check_decls(decl.decls)
+        self.cur_sym = old_sym
 
     def check_fn_decl(self, decl):
         old_sym = self.cur_sym
@@ -103,7 +112,7 @@ class Sema:
                         FunctionArg(arg.name, arg.type, arg.default_value),
                         decl.args
                     )
-                ), self.open_scope()
+                ), self.open_scope(True), decl.pos
             )
             self.add_sym(decl.sym, decl.pos)
             self.cur_sym = decl.sym
@@ -126,13 +135,15 @@ class Sema:
                 )
             return
         if decl.has_body:
+            self.cur_sym = decl.sym
             self.check_stmts(decl.stmts)
+            self.cur_sym = old_sym
 
     def check_const_decl(self, decl):
         if self.first_pass:
             decl.sym = Const(
                 decl.access_modifier, decl.name, decl.typ, decl.expr,
-                self.cur_scope
+                self.cur_scope, decl.pos
             )
             if isinstance(self.cur_sym, Function):
                 decl.is_local = True
@@ -160,7 +171,7 @@ class Sema:
                         )
                 left.sym = Object(
                     stmt.access_modifier, left.name, level, left.typ,
-                    self.cur_scope
+                    self.cur_scope, pos = stmt.pos
                 )
                 self.add_sym(left.sym, left.pos)
             return
@@ -216,12 +227,20 @@ class Sema:
 
     def check_symbol(self, expr):
         ret_type = self.ctx.void_type
-        if local_sym := self.cur_scope.lookup(expr.name):
+        if local_sym := self.cur_sym.scope.lookup(expr.name):
             expr.sym = local_sym
             ret_type = local_sym.typ
+        elif module_sym := self.cur_mod.scope.lookup(expr.name):
+            expr.sym = module_sym
+            ret_type = module_sym.typ
         else:
             report.error(
                 f"cannot find symbol `{expr.name}` in this scope", expr.pos
+            )
+        if expr.sym != None and expr.sym.pos != None and expr.sym.pos.line > expr.pos.line:
+            report.error(
+                f"{expr.sym.typeof()} `{expr.name}` is used before its declaration",
+                expr.pos
             )
         return ret_type
 

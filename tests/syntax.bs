@@ -31,7 +31,7 @@ class Item {}
 
 pub fn sumtype(x: int | string | Item) {}
 
-enum WorldLevel {
+pub enum WorldLevel {
     overworld,
     midgard,
     underworld,

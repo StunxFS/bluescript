@@ -12,6 +12,7 @@ class Codegen:
         self.ctx = ctx
         self.modules = []
 
+        self.cur_file = None
         self.cur_module = None
         self.cur_decls = []
         self.cur_fn = None
@@ -24,9 +25,18 @@ class Codegen:
         render.render_modules()
 
     def gen_file(self, file):
+        self.cur_file = file
         self.cur_module = LuaModule(file.mod_sym.name)
         self.gen_decls(file.decls)
-        self.cur_module.decls = self.cur_decls
+
+        module_fields = []
+        for sym in file.mod_sym.scope.syms:
+            if sym.access_modifier.is_public():
+                module_fields.append(
+                    LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
+                )
+        self.cur_decls.append(LuaReturn(LuaTable(module_fields)))
+        self.cur_module.stmts = self.cur_decls
         self.modules.append(self.cur_module)
         self.cur_decls = []
 
@@ -46,27 +56,35 @@ class Codegen:
 
     def gen_mod_decl(self, decl):
         if decl.is_inline:
+            self.cur_decls.append(LuaAssignment([LuaIdent(decl.name)], []))
             old_decls = self.cur_decls
+
             self.cur_decls = []
             self.gen_decls(decl.decls)
-            old_decls.append(
-                LuaModule(decl.sym.codegen_qualname(), self.cur_decls, True)
+
+            module_fields = []
+            for sym in decl.sym.scope.syms:
+                if sym.access_modifier.is_public():
+                    module_fields.append(
+                        LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
+                    )
+            self.cur_decls.append(
+                LuaAssignment([LuaIdent(decl.name)], [LuaTable(module_fields)],
+                              False)
             )
+
+            mod_decls = self.cur_decls
             self.cur_decls = old_decls
+            self.cur_decls.append(LuaBlock(mod_decls))
         else:
             self.cur_decls.append(
-                LuaModule(
-                    decl.sym.codegen_qualname(), [], False,
-                    lua_filename = decl.name
-                )
+                LuaModule(decl.sym.name, [], False, lua_filename = decl.name)
             )
 
     def gen_const_decl(self, decl):
-        is_local = decl.is_local
-        name = decl.name if is_local else decl.sym.codegen_qualname()
-        lua_assign = LuaAssignment([LuaIdent(name)], [self.gen_expr(decl.expr)],
-                                   is_local)
-        if is_local:
+        name = decl.name if decl.is_local else decl.sym.name
+        lua_assign = LuaAssignment([LuaIdent(name)], [self.gen_expr(decl.expr)])
+        if decl.is_local:
             self.cur_block.add_stmt(lua_assign)
         else:
             self.cur_decls.append(lua_assign)
@@ -76,8 +94,7 @@ class Codegen:
         for i, f in enumerate(decl.fields):
             fields.append(LuaTableField(LuaIdent(f.name), LuaNumberLit(str(i))))
         self.cur_decls.append(
-            LuaAssignment([LuaIdent(decl.sym.codegen_qualname())],
-                          [LuaTable(fields)], False)
+            LuaAssignment([LuaIdent(decl.sym).name], [LuaTable(fields)], False)
         )
         self.gen_decls(decl.decls)
 
@@ -86,7 +103,10 @@ class Codegen:
         args = []
         for arg in decl.args:
             args.append(LuaIdent(arg.name))
-        luafn = LuaFunction(decl.sym.codegen_qualname(), args)
+        luafn = LuaFunction(
+            decl.sym.codegen_qualname(), args,
+            is_associated = decl.sym.is_associated()
+        )
         for arg in decl.args:
             if arg.default_value != None:
                 left = LuaIdent(arg.name)
@@ -182,9 +202,11 @@ class Codegen:
                         return LuaBooleanLit(leftb or rightb)
             return LuaBinaryExpr(left, expr.op.to_lua_op(), right)
         elif isinstance(expr, Ident):
-            if isinstance(expr.sym, Object):
+            if isinstance(
+                expr.sym, Object
+            ) and expr.sym.level != ObjectLevel.static:
                 return LuaIdent(expr.name)
-            if expr.sym != None: return LuaIdent(expr.sym.codegen_name())
+            if expr.sym != None: return LuaIdent(expr.sym.name)
             return LuaIdent(expr.name)
         elif isinstance(expr, BlockExpr):
             old_block = self.cur_block

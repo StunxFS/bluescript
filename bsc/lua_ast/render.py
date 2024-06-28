@@ -34,71 +34,26 @@ class LuaRender:
             "-- WARNING: DO NOT MODIFY MANUALLY! YOUR CHANGES WILL BE OVERWRITTEN --\n"
         )
 
-        self.writeln(f"local {module.name} = {{}} -- package\n")
-        self.render_decls(module.decls)
-        self.writeln(f"return {module.name}\n")
+        self.render_stmts(module.stmts)
 
         with open(f"{BSC_OUT_DIR}/{module.name}.lua", "w") as f:
             f.write(str(self.lua_file))
         self.lua_file.clear()
-
-    def render_decls(self, decls):
-        for decl in decls:
-            self.render_decl(decl)
-
-    def render_decl(self, decl):
-        if isinstance(decl, LuaModule):
-            self.render_mod(decl)
-        elif isinstance(decl, LuaTable):
-            self.render_table(decl)
-        elif isinstance(decl, LuaAssignment):
-            self.render_assign_decl(decl)
-        elif isinstance(decl, LuaFunction):
-            self.render_fn_decl(decl)
-
-    def render_mod(self, decl):
-        if decl.is_inline:
-            self.writeln(f"{decl.name} = {{}} -- inline module\n")
-            self.render_decls(decl.decls)
-            self.writeln(f"-- end module `{decl.name}`\n")
-        else:
-            self.writeln(
-                f"{decl.name} = require(\"{BSC_OUT_DIR}.{decl.lua_filename}\") -- load module file\n"
-            )
-
-    def render_fn_decl(self, decl):
-        self.write(f"function {decl.name}(")
-        for i, arg in enumerate(decl.args):
-            self.write(arg.name)
-            if i < len(decl.args) - 1:
-                self.write(", ")
-        self.writeln(")")
-        self.indent += 1
-        self.render_stmts(decl.block.stmts)
-        self.indent -= 1
-        self.writeln("end\n")
-
-    def render_assign_decl(self, decl):
-        if decl.is_local:
-            self.write("local ")
-        for i, left in enumerate(decl.lefts):
-            self.render_ident(left)
-            if i < len(decl.lefts) - 1:
-                self.write(", ")
-        if len(decl.rights) > 0:
-            self.write(" = ")
-            for i, right in enumerate(decl.rights):
-                self.render_expr(right)
-                if i < len(decl.rights) - 1:
-                    self.write(", ")
-        self.writeln()
 
     def render_stmts(self, stmts):
         for stmt in stmts:
             self.render_stmt(stmt)
 
     def render_stmt(self, stmt):
-        if isinstance(stmt, LuaWhile):
+        if isinstance(stmt, LuaModule):
+            self.render_mod(stmt)
+        elif isinstance(stmt, LuaFunction):
+            self.render_fn_stmt(stmt)
+        elif isinstance(stmt, LuaTable):
+            self.render_table(stmt)
+        elif isinstance(stmt, LuaAssignment):
+            self.render_assign_stmt(stmt)
+        elif isinstance(stmt, LuaWhile):
             self.write("while ")
             self.render_expr(stmt.cond)
             self.writeln(" do")
@@ -130,9 +85,9 @@ class LuaRender:
             self.indent += 1
             self.render_stmts(stmt.stmts)
             self.indent -= 1
-            self.writeln("end")
+            self.writeln("end\n")
         elif isinstance(stmt, LuaAssignment):
-            self.render_assign_decl(stmt)
+            self.render_assign_stmt(stmt)
         elif isinstance(stmt, LuaReturn):
             self.write("return")
             if stmt.expr != None:
@@ -140,12 +95,48 @@ class LuaRender:
                 self.render_expr(stmt.expr)
             self.writeln()
 
+    def render_mod(self, stmt):
+        self.writeln(
+            f"local {stmt.name} = require(\"{BSC_OUT_DIR}.{stmt.lua_filename}\") -- load module file\n"
+        )
+
+    def render_fn_stmt(self, stmt):
+        if not stmt.is_associated:
+            self.write("local ")
+        self.write(f"function {stmt.name}(")
+        for i, arg in enumerate(stmt.args):
+            self.write(arg.name)
+            if i < len(stmt.args) - 1:
+                self.write(", ")
+        self.writeln(")")
+        self.indent += 1
+        self.render_stmts(stmt.block.stmts)
+        self.indent -= 1
+        self.writeln("end\n")
+
+    def render_assign_stmt(self, stmt):
+        if stmt.is_local: self.write("local ")
+        for i, left in enumerate(stmt.lefts):
+            self.render_ident(left)
+            if i < len(stmt.lefts) - 1:
+                self.write(", ")
+        if len(stmt.rights) > 0:
+            self.write(" = ")
+            for i, right in enumerate(stmt.rights):
+                self.render_expr(right)
+                if i < len(stmt.rights) - 1:
+                    self.write(", ")
+        self.writeln()
+
     def render_expr(self, expr):
         if isinstance(expr, LuaParenExpr):
             self.write("(")
             self.render_expr(expr.expr)
             self.write(")")
         elif isinstance(expr, LuaTable):
+            if len(expr.fields) == 0:
+                self.writeln("{}")
+                return
             self.writeln("{")
             self.indent += 1
             for i, field in enumerate(expr.fields):

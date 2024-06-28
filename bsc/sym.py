@@ -13,10 +13,13 @@ class AccessModifier(IntEnum):
     protected = auto()
 
     def is_public(self):
-        self == AccessModifier.public
+        return self == AccessModifier.public
 
     def is_private(self):
-        return self == AccessModifier.private or self == AccessModifier.internal or self == AccessModifier.protected
+        return self in (
+            AccessModifier.private, AccessModifier.internal,
+            AccessModifier.protected
+        )
 
     def __str__(self):
         match self:
@@ -59,12 +62,9 @@ class Sym:
             return f"{self.parent.qualname(sep)}{sep}{self.name}"
         return self.name
 
-    def codegen_qualname(self, sep = "."):
-        if self.parent:
-            if isinstance(self.parent, Module) and not self.parent.is_inline:
-                return f"{self.parent.name}{sep}{self.name}"
-            if not self.parent.scope.is_universe:
-                return f"{self.parent.codegen_qualname(sep)}{sep}{self.name}"
+    def codegen_qualname(self):
+        if isinstance(self.parent, TypeSym):
+            return f"{self.parent.name}.{self.name}"
         return self.name
 
     def __eq__(self, other):
@@ -200,6 +200,9 @@ class Function(Sym):
         self.args = args
         scope.owner = self
         self.scope = scope
+
+    def is_associated(self):
+        return isinstance(self.parent, TypeSym)
 
 class Scope:
     def __init__(

@@ -3,9 +3,9 @@
 # LICENSE file.
 
 class LuaModule:
-    def __init__(self, name, decls = [], is_inline = False, lua_filename = ""):
+    def __init__(self, name, stmts = [], is_inline = False, lua_filename = ""):
         self.name = name
-        self.decls = decls
+        self.stmts = stmts.copy()
         self.is_inline = is_inline
         self.lua_filename = lua_filename
 
@@ -19,9 +19,10 @@ class LuaTable:
         self.fields = fields
 
 class LuaFunction:
-    def __init__(self, name, args):
+    def __init__(self, name, args, is_associated = False):
         self.name = name
         self.args = args
+        self.is_associated = is_associated
         self.block = LuaBlock()
 
 # Statements
@@ -47,8 +48,8 @@ class LuaIfBranch:
         self.stmts = stmts
 
 class LuaBlock:
-    def __init__(self):
-        self.stmts = []
+    def __init__(self, stmts = []):
+        self.stmts = stmts.copy()
 
     def add_stmt(self, stmt):
         self.stmts.append(stmt)

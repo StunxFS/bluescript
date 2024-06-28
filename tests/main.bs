@@ -4,6 +4,7 @@ const average = 0.9;
 
 fn main() void {
     print("hello");
+    const XXX = average;
 }
 
 pub(pkg) fn my_fn(a: number) {}
@@ -11,5 +12,9 @@ pub(pkg) fn my_fn(a: number) {}
 mod my_module {
     pub fn new_func() {}
     pub fn other_func() {}
+
+    pub mod nested_module {
+        pub fn nested_func() {}
+    }
 }
 

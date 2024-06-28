@@ -79,8 +79,8 @@ class AstGen(Transformer):
         return ExternPkg(pkg_name, alias_name, pos)
 
     def mod_decl(self, *nodes):
-        access_modifier = self.get_access_modifier(nodes)
-        pos = self.mkpos(nodes[0] or nodes[1])
+        access_modifier = self.get_access_modifier(nodes[0])
+        pos = self.mkpos(nodes[1])
         name = nodes[2].name
         is_inline = len(nodes) > 3
         decls = []
@@ -92,6 +92,8 @@ class AstGen(Transformer):
             access_modifier, name, Scope(self.mod_sym.scope, True), False,
             is_inline
         )
+        if is_inline:
+            mod_sym.pos = pos
         if not is_inline:
             self.source_file_deps.append(mod_sym)
         return ModDecl(access_modifier, name, is_inline, decls, pos, mod_sym)
