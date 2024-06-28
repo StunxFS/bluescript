@@ -568,9 +568,14 @@ class AstGen(Transformer):
         types = list(filter(lambda node: not isinstance(node, Token), nodes))
         return SumType(types, nodes[0].pos)
 
-    # Discard ;
+    # Discard `;`
     def SEMICOLON(self, *nodes):
         return visitors.Discard
+
+    # This really shouldn't be necessary... but due to a bug, we have to return 
+    # the only node that has `stmt`
+    def stmt(self, *nodes):
+        return nodes[0]
 
     # Utilities
     def get_access_modifier(self, node):
