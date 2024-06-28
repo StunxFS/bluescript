@@ -101,7 +101,7 @@ class LuaRender:
         )
 
     def render_fn_stmt(self, stmt):
-        if not stmt.is_associated:
+        if not stmt.is_static:
             self.write("local ")
         self.write(f"function {stmt.name}(")
         for i, arg in enumerate(stmt.args):

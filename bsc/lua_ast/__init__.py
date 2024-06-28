@@ -19,10 +19,10 @@ class LuaTable:
         self.fields = fields
 
 class LuaFunction:
-    def __init__(self, name, args, is_associated = False):
+    def __init__(self, name, args, is_static = False):
         self.name = name
         self.args = args
-        self.is_associated = is_associated
+        self.is_static = is_static
         self.block = LuaBlock()
 
 # Statements

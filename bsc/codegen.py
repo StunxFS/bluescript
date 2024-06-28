@@ -31,7 +31,8 @@ class Codegen:
 
         module_fields = []
         for sym in file.mod_sym.scope.syms:
-            if sym.access_modifier.is_public():
+            if (file.mod_sym.is_pkg
+                and sym.name == "main") or sym.access_modifier.is_public():
                 module_fields.append(
                     LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
                 )
@@ -104,8 +105,7 @@ class Codegen:
         for arg in decl.args:
             args.append(LuaIdent(arg.name))
         luafn = LuaFunction(
-            decl.sym.codegen_qualname(), args,
-            is_associated = decl.sym.is_associated()
+            decl.sym.codegen_qualname(), args, is_static = decl.sym.is_static()
         )
         for arg in decl.args:
             if arg.default_value != None:

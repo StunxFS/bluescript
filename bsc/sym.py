@@ -201,7 +201,7 @@ class Function(Sym):
         scope.owner = self
         self.scope = scope
 
-    def is_associated(self):
+    def is_static(self):
         return isinstance(self.parent, TypeSym)
 
 class Scope:
