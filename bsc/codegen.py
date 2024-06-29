@@ -36,8 +36,7 @@ class Codegen:
         else:
             module_fields = []
             for sym in file.mod_sym.scope.syms:
-                if (file.mod_sym.is_pkg
-                    and sym.name == "main") or sym.access_modifier.is_public():
+                if sym.access_modifier.is_public():
                     module_fields.append(
                         LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
                     )
