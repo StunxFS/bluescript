@@ -187,9 +187,6 @@ class LuaRender:
         elif isinstance(expr, LuaNil):
             self.write("nil")
 
-    def render_ident(self, ident):
-        self.write(ident.name)
-
     ## Utils
 
     def write(self, s):
