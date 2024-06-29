@@ -135,7 +135,7 @@ class LuaRender:
             self.write(")")
         elif isinstance(expr, LuaTable):
             if len(expr.fields) == 0:
-                self.writeln("{}")
+                self.write("{}")
                 return
             self.writeln("{")
             self.indent += 1
