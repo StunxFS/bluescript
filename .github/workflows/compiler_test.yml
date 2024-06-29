@@ -28,5 +28,4 @@ jobs:
         run: |
           python3 bsc examples/hello_world.bs
           python3 bsc tests/main.bs
-          echo 'local main = require("bsc-out.main"); main.main()' > bsc-out/x.lua 
-          luajit bsc-out/x.lua
+          luajit bsc-out/main.lua

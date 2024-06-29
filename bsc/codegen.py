@@ -30,14 +30,19 @@ class Codegen:
         self.cur_block = self.cur_module.block
         self.gen_decls(file.decls)
 
-        module_fields = []
-        for sym in file.mod_sym.scope.syms:
-            if (file.mod_sym.is_pkg
-                and sym.name == "main") or sym.access_modifier.is_public():
-                module_fields.append(
-                    LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
-                )
-        self.cur_block.add_stmt(LuaReturn(LuaTable(module_fields)))
+        if self.cur_file.mod_sym.is_pkg and not self.ctx.prefs.is_library:
+            self.cur_block.add_comment("the entry point")
+            self.cur_block.add_stmt(LuaCallExpr(LuaIdent("main"), []))
+        else:
+            module_fields = []
+            for sym in file.mod_sym.scope.syms:
+                if (file.mod_sym.is_pkg
+                    and sym.name == "main") or sym.access_modifier.is_public():
+                    module_fields.append(
+                        LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
+                    )
+            self.cur_block.add_stmt(LuaReturn(LuaTable(module_fields)))
+
         self.cur_module.stmts = self.cur_block
         self.modules.append(self.cur_module)
         self.cur_block = LuaBlock()
@@ -58,6 +63,7 @@ class Codegen:
 
     def gen_mod_decl(self, decl):
         if decl.is_inline:
+            self.cur_block.add_comment(f"inline module `{decl.sym.qualname()}`")
             self.cur_block.add_stmt(LuaAssignment([LuaIdent(decl.name)], []))
             old_block = self.cur_block
 
@@ -79,6 +85,7 @@ class Codegen:
             self.cur_block = old_block
             self.cur_block.add_stmt(mod_decls)
         else:
+            self.cur_block.add_comment(f"extern module `{decl.sym.qualname()}`")
             self.cur_block.add_stmt(
                 LuaAssignment([LuaIdent(decl.sym.name)], [
                     LuaCallExpr(

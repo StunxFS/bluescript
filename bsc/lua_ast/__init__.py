@@ -2,6 +2,10 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
+class LuaComment:
+    def __init__(self, comment):
+        self.comment = comment
+
 class LuaModule:
     def __init__(self, name):
         self.name = name
@@ -48,6 +52,9 @@ class LuaIfBranch:
 class LuaBlock:
     def __init__(self, stmts = []):
         self.stmts = stmts.copy()
+
+    def add_comment(self, comment):
+        self.add_stmt(LuaComment(comment))
 
     def add_stmt(self, stmt):
         self.stmts.append(stmt)

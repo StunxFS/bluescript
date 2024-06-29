@@ -44,7 +44,9 @@ class LuaRender:
             self.render_stmt(stmt)
 
     def render_stmt(self, stmt):
-        if isinstance(stmt, LuaFunction):
+        if isinstance(stmt, LuaComment):
+            self.writeln(f"-- {stmt.comment}")
+        elif isinstance(stmt, LuaFunction):
             self.render_fn_stmt(stmt)
         elif isinstance(stmt, LuaTable):
             self.render_table(stmt)
@@ -89,6 +91,8 @@ class LuaRender:
                 self.write(" ")
                 self.render_expr(stmt.expr)
             self.writeln()
+        else:
+            self.render_expr(stmt) # support for using expressions as statements
 
     def render_mod(self, stmt):
         self.writeln(
