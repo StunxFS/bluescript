@@ -572,7 +572,7 @@ class AstGen(Transformer):
     def SEMICOLON(self, *nodes):
         return visitors.Discard
 
-    # This really shouldn't be necessary... but due to a bug, we have to return 
+    # This really shouldn't be necessary... but due to a bug, we have to return
     # the only node that has `stmt`
     def stmt(self, *nodes):
         return nodes[0]

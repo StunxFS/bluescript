@@ -3,10 +3,9 @@
 # LICENSE file.
 
 import os
-from bsc import sym, utils
+from bsc import utils
 from bsc.lua_ast import *
-
-BSC_OUT_DIR = "bsc-out"
+from bsc.utils import BSC_OUT_DIR
 
 class LuaRender:
     def __init__(self, ctx, modules):
@@ -34,7 +33,7 @@ class LuaRender:
             "-- WARNING: DO NOT MODIFY MANUALLY! YOUR CHANGES WILL BE OVERWRITTEN --\n"
         )
 
-        self.render_stmts(module.stmts)
+        self.render_stmts(module.block.stmts)
 
         with open(f"{BSC_OUT_DIR}/{module.name}.lua", "w") as f:
             f.write(str(self.lua_file))
@@ -45,9 +44,7 @@ class LuaRender:
             self.render_stmt(stmt)
 
     def render_stmt(self, stmt):
-        if isinstance(stmt, LuaModule):
-            self.render_mod(stmt)
-        elif isinstance(stmt, LuaFunction):
+        if isinstance(stmt, LuaFunction):
             self.render_fn_stmt(stmt)
         elif isinstance(stmt, LuaTable):
             self.render_table(stmt)
@@ -177,9 +174,13 @@ class LuaRender:
             self.write(f".{expr.name}")
         elif isinstance(expr, LuaIdent):
             self.write(expr.name)
+        elif isinstance(expr, LuaStringLit):
+            self.write(f'"{expr.value}"')
         elif isinstance(expr, LuaNumberLit):
-            if "." in expr.value: self.write(expr.value)
-            else: self.write(hex(int(expr.value, 0)))
+            if expr.value.startswith("0b") or expr.value.startswith("0o"):
+                self.write(hex(int(expr.value, 0)))
+            else:
+                self.write(expr.value)
         elif isinstance(expr, LuaBooleanLit):
             self.write("true" if expr.value else "false")
         elif isinstance(expr, LuaNil):

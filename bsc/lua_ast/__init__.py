@@ -3,11 +3,9 @@
 # LICENSE file.
 
 class LuaModule:
-    def __init__(self, name, stmts = [], is_inline = False, lua_filename = ""):
+    def __init__(self, name):
         self.name = name
-        self.stmts = stmts.copy()
-        self.is_inline = is_inline
-        self.lua_filename = lua_filename
+        self.block = LuaBlock()
 
 class LuaTableField:
     def __init__(self, key, value):
@@ -66,6 +64,10 @@ class LuaReturn:
 
 # Expressions
 
+class LuaParenExpr:
+    def __init__(self, expr):
+        self.expr = expr
+
 class LuaBinaryExpr:
     def __init__(self, left, op, right):
         self.left = left
@@ -91,9 +93,9 @@ class LuaIdent:
     def __init__(self, name):
         self.name = name
 
-class LuaParenExpr:
-    def __init__(self, expr):
-        self.expr = expr
+class LuaStringLit:
+    def __init__(self, value):
+        self.value = value
 
 class LuaNumberLit:
     def __init__(self, value, is_float = False):

@@ -1,10 +1,14 @@
 mod syntax;
 
-const average = 0.9;
+const dec_num = 616;
+const hex_num = 0xFFFF;
+const bin_num = 0b10101;
+const octal_num = 0o666;
+const float_num = 0.5e4;
 
 fn main() void {
     print("hello");
-    const XXX = average;
+    const XXX = dec_num;
 }
 
 pub(pkg) fn my_fn(a: number) {}

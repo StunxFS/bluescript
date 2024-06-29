@@ -7,6 +7,8 @@ import os, sys, subprocess
 
 VERSION = "0.1.0a"
 
+BSC_OUT_DIR = "bsc-out"
+
 class CompilerError(Exception):
     pass
 

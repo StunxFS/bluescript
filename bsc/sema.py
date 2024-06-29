@@ -92,7 +92,6 @@ class Sema:
             self.cur_scope = decl.sym.scope
             self.check_decls(decl.decls)
             self.cur_sym = old_sym
-            self.cur_scope = old_scope
             self.close_scope()
             return
         if len(decl.fields) == 0:

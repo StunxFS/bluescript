@@ -4,6 +4,7 @@
 
 from bsc.AST import *
 from bsc.sym import *
+from bsc.utils import BSC_OUT_DIR
 from bsc.lua_ast import *
 from bsc.lua_ast.render import LuaRender
 
@@ -14,7 +15,6 @@ class Codegen:
 
         self.cur_file = None
         self.cur_module = None
-        self.cur_decls = []
         self.cur_fn = None
         self.cur_block = None
 
@@ -27,6 +27,7 @@ class Codegen:
     def gen_file(self, file):
         self.cur_file = file
         self.cur_module = LuaModule(file.mod_sym.name)
+        self.cur_block = self.cur_module.block
         self.gen_decls(file.decls)
 
         module_fields = []
@@ -36,10 +37,10 @@ class Codegen:
                 module_fields.append(
                     LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
                 )
-        self.cur_decls.append(LuaReturn(LuaTable(module_fields)))
-        self.cur_module.stmts = self.cur_decls
+        self.cur_block.add_stmt(LuaReturn(LuaTable(module_fields)))
+        self.cur_module.stmts = self.cur_block
         self.modules.append(self.cur_module)
-        self.cur_decls = []
+        self.cur_block = LuaBlock()
 
     def gen_decls(self, decls):
         for decl in decls:
@@ -57,10 +58,10 @@ class Codegen:
 
     def gen_mod_decl(self, decl):
         if decl.is_inline:
-            self.cur_decls.append(LuaAssignment([LuaIdent(decl.name)], []))
-            old_decls = self.cur_decls
+            self.cur_block.add_stmt(LuaAssignment([LuaIdent(decl.name)], []))
+            old_block = self.cur_block
 
-            self.cur_decls = []
+            self.cur_block = LuaBlock()
             self.gen_decls(decl.decls)
 
             module_fields = []
@@ -69,38 +70,41 @@ class Codegen:
                     module_fields.append(
                         LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
                     )
-            self.cur_decls.append(
+            self.cur_block.add_stmt(
                 LuaAssignment([LuaIdent(decl.name)], [LuaTable(module_fields)],
                               False)
             )
 
-            mod_decls = self.cur_decls
-            self.cur_decls = old_decls
-            self.cur_decls.append(LuaBlock(mod_decls))
+            mod_decls = self.cur_block
+            self.cur_block = old_block
+            self.cur_block.add_stmt(mod_decls)
         else:
-            self.cur_decls.append(
-                LuaModule(decl.sym.name, [], False, lua_filename = decl.name)
+            self.cur_block.add_stmt(
+                LuaAssignment([LuaIdent(decl.sym.name)], [
+                    LuaCallExpr(
+                        LuaIdent("require"),
+                        [LuaStringLit(f"{BSC_OUT_DIR}.{decl.name}")]
+                    )
+                ])
             )
 
     def gen_const_decl(self, decl):
         name = decl.name if decl.is_local else decl.sym.name
         lua_assign = LuaAssignment([LuaIdent(name)], [self.gen_expr(decl.expr)])
-        if decl.is_local:
-            self.cur_block.add_stmt(lua_assign)
-        else:
-            self.cur_decls.append(lua_assign)
+        self.cur_block.add_stmt(lua_assign)
 
     def gen_enum_decl(self, decl):
         fields = []
         for i, f in enumerate(decl.fields):
             fields.append(LuaTableField(LuaIdent(f.name), LuaNumberLit(str(i))))
-        self.cur_decls.append(
-            LuaAssignment([LuaIdent(decl.sym).name], [LuaTable(fields)], False)
+        self.cur_block.add_stmt(
+            LuaAssignment([LuaIdent(decl.sym.name)], [LuaTable(fields)], False)
         )
         self.gen_decls(decl.decls)
 
     def gen_fn_decl(self, decl):
         if not decl.has_body: return
+        old_block = self.cur_block
         args = []
         for arg in decl.args:
             args.append(LuaIdent(arg.name))
@@ -121,7 +125,8 @@ class Codegen:
         self.cur_block = luafn.block
         self.gen_stmts(decl.stmts)
         self.cur_fn = None
-        self.cur_decls.append(luafn)
+        self.cur_block = old_block
+        self.cur_block.add_stmt(luafn)
 
     ## == Statements ============================================
 
