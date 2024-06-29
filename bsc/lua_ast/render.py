@@ -154,7 +154,7 @@ class LuaRender:
                 else:
                     self.writeln()
             self.indent -= 1
-            self.writeln("}")
+            self.write("}")
         elif isinstance(expr, LuaBinaryExpr):
             self.write("(")
             self.render_expr(expr.left)
@@ -180,10 +180,10 @@ class LuaRender:
         elif isinstance(expr, LuaIdent):
             self.write(expr.name)
         elif isinstance(expr, LuaNumberLit):
-            if "." in expr.value: self.write(expr.value)
+            if "." in expr.value: # is float self.write(expr.value)
             else: self.write(hex(int(expr.value, 0)))
         elif isinstance(expr, LuaBooleanLit):
-            self.write(str(expr.value).lower())
+            self.write("true" if expr.value else "false")
         elif isinstance(expr, LuaNil):
             self.write("nil")
 
