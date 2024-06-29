@@ -117,7 +117,7 @@ class LuaRender:
     def render_assign_stmt(self, stmt):
         if stmt.is_local: self.write("local ")
         for i, left in enumerate(stmt.lefts):
-            self.render_ident(left)
+            self.render_expr(left)
             if i < len(stmt.lefts) - 1:
                 self.write(", ")
         if len(stmt.rights) > 0:
