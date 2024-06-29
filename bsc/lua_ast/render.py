@@ -86,8 +86,6 @@ class LuaRender:
             self.render_stmts(stmt.stmts)
             self.indent -= 1
             self.writeln("end\n")
-        elif isinstance(stmt, LuaAssignment):
-            self.render_assign_stmt(stmt)
         elif isinstance(stmt, LuaReturn):
             self.write("return")
             if stmt.expr != None:
