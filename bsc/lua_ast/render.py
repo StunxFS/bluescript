@@ -94,11 +94,6 @@ class LuaRender:
         else:
             self.render_expr(stmt) # support for using expressions as statements
 
-    def render_mod(self, stmt):
-        self.writeln(
-            f"local {stmt.name} = require(\"{BSC_OUT_DIR}.{stmt.lua_filename}\") -- load module file\n"
-        )
-
     def render_fn_stmt(self, stmt):
         if not stmt.is_static:
             self.write("local ")
@@ -166,7 +161,14 @@ class LuaRender:
             self.render_expr(expr.right)
             self.write(")")
         elif isinstance(expr, LuaCallExpr):
-            self.render_expr(expr.left)
+            if expr.left != None:
+                self.render_expr(expr.left)
+                if expr.is_method:
+                    self.write(":")
+                else:
+                    self.write(".")
+            if len(expr.name) > 0:
+                self.write(expr.name)
             self.write("(")
             for i, arg in enumerate(expr.args):
                 self.render_expr(arg)

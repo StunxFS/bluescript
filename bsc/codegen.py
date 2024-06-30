@@ -32,7 +32,7 @@ class Codegen:
 
         if self.cur_file.mod_sym.is_pkg and not self.ctx.prefs.is_library:
             self.cur_block.add_comment("the entry point")
-            self.cur_block.add_stmt(LuaCallExpr(LuaIdent("main"), []))
+            self.cur_block.add_stmt(LuaCallExpr("main"))
         else:
             module_fields = []
             for sym in file.mod_sym.scope.syms:
@@ -88,8 +88,7 @@ class Codegen:
             self.cur_block.add_stmt(
                 LuaAssignment([LuaIdent(decl.sym.name)], [
                     LuaCallExpr(
-                        LuaIdent("require"),
-                        [LuaStringLit(f"{BSC_OUT_DIR}.{decl.name}")]
+                        "require", [LuaStringLit(f"{BSC_OUT_DIR}.{decl.name}")]
                     )
                 ])
             )

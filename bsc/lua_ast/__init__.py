@@ -87,9 +87,11 @@ class LuaUnaryExpr:
         self.right = right
 
 class LuaCallExpr:
-    def __init__(self, left, args):
+    def __init__(self, name, args = [], left = None, is_method = False):
+        self.name = name
+        self.args = args.copy()
         self.left = left
-        self.args = args
+        self.is_method = is_method
 
 class LuaSelector:
     def __init__(self, left, name):
