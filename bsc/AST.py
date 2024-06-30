@@ -444,6 +444,7 @@ class UnaryExpr(Expr):
         self.op = op
         self.right = right
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return f"{self.op}{self.right}"
@@ -457,6 +458,7 @@ class BinaryExpr(Expr):
         self.op = op
         self.right = right
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return f"{self.left} {self.op} {self.right}"
@@ -554,6 +556,7 @@ class AssignExpr(Expr):
         self.op = op
         self.right = right
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return f"{', '.join([str(left) for left in self.lefts])} {self.op} {str(self.right)}"

@@ -195,9 +195,12 @@ class Sema:
     def check_expr(self, expr):
         if self.first_pass and not isinstance(expr, BlockExpr):
             return self.ctx.void_type
-
         if isinstance(expr, ParExpr):
             expr.typ = self.check_expr(expr.expr)
+        elif isinstance(expr, AssignExpr):
+            #self.check_expr(expr.lefts)
+            self.check_expr(expr.right)
+            expr.typ = self.ctx.void_type
         elif isinstance(expr, NilLiteral):
             expr.typ = self.ctx.nil_type
         elif isinstance(expr, BoolLiteral):
@@ -218,6 +221,31 @@ class Sema:
                 expr.typ = self.check_expr(expr.expr)
             else:
                 expr.typ = self.ctx.void_type
+        elif isinstance(expr, UnaryExpr):
+            right_t = self.check_expr(expr.right)
+            match expr.op:
+                case UnaryOp.bang:
+                    if right_t != self.ctx.bool_type:
+                        report.error(
+                            f"operator `!` is not defined for type `{right_t}`",
+                            expr.pos,
+                            ["operator `!` is only defined for type `bool`"]
+                        )
+                case UnaryOp.minus:
+                    if right_t not in (self.ctx.int_type, self.ctx.float_type):
+                        report.error(
+                            f"operator `-` is not defined for type `{right_t}`",
+                            expr.pos, [
+                                "operator `-` is only defined for `int` and `float` types"
+                            ]
+                        )
+                case UnaryOp.bit_not:
+                    if right_t != self.ctx.int_type:
+                        report.error(
+                            f"operator `~` is not defined for type `{right_t}`",
+                            expr.pos,
+                            ["operator `~` is only defined for type `int`"]
+                        )
         else:
             expr.typ = self.ctx.void_type # tmp
         return expr.typ

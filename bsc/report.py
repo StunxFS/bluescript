@@ -13,13 +13,15 @@ def _format(pos, kind, kindc, msg):
         ), msg
     )
 
-def error(msg, pos):
+def error(msg, pos, notes_ = []):
     global errors
     utils.eprint(_format(pos, "error:", utils.red, msg))
+    notes(notes_)
     errors += 1
 
-def warn(msg, pos):
+def warn(msg, pos, notes_ = []):
     utils.eprint(_format(pos, "warning:", utils.yellow, msg))
+    notes(notes_)
 
 def notes(notes):
     for i, note in enumerate(notes):
