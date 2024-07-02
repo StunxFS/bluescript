@@ -206,11 +206,7 @@ class Sema:
         elif isinstance(expr, BoolLiteral):
             expr.typ = self.ctx.bool_type
         elif isinstance(expr, NumberLiteral):
-            if any(ch in expr.value for ch in [".", "e", "E"]
-                   ) and expr.value[:2].lower() not in ['0x', '0o', '0b']:
-                expr.typ = self.ctx.float_type
-            else:
-                expr.typ = self.ctx.int_type
+            expr.typ = self.ctx.number_type
         elif isinstance(expr, StringLiteral):
             expr.typ = self.ctx.string_type
         elif isinstance(expr, Ident):
@@ -232,11 +228,11 @@ class Sema:
                             ["operator `!` is only defined for type `bool`"]
                         )
                 case UnaryOp.minus:
-                    if right_t not in (self.ctx.int_type, self.ctx.float_type):
+                    if right_t not in (self.ctx.int_type, self.ctx.number_type):
                         report.error(
                             f"operator `-` is not defined for type `{right_t}`",
                             expr.pos, [
-                                "operator `-` is only defined for `int` and `float` types"
+                                "operator `-` is only defined for `int` and `number` types"
                             ]
                         )
                 case UnaryOp.bit_not:

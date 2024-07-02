@@ -107,9 +107,9 @@ class LuaStringLit:
         self.value = value
 
 class LuaNumberLit:
-    def __init__(self, value, is_float = False):
+    def __init__(self, value, is_number = False):
         self.value = value
-        self.is_float = is_float
+        self.is_number = is_number
 
 class LuaBooleanLit:
     def __init__(self, value):

@@ -105,7 +105,7 @@ class TypeKind(IntEnum):
     any = auto()
     bool = auto()
     int = auto()
-    float = auto()
+    number = auto()
     string = auto()
     array = auto()
     map = auto()
@@ -128,8 +128,8 @@ class TypeKind(IntEnum):
                 return "bool"
             case TypeKind.int:
                 return "int"
-            case TypeKind.float:
-                return "float"
+            case TypeKind.number:
+                return "number"
             case TypeKind.string:
                 return "string"
             case TypeKind.array:

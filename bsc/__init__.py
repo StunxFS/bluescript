@@ -52,10 +52,10 @@ class Context:
 
         self.universe.add_sym(
             TypeSym(
-                AccessModifier.private, TypeKind.float, "float", [], Scope()
+                AccessModifier.private, TypeKind.number, "number", [], Scope()
             )
         )
-        self.float_type = BasicType.with_typesym(self.universe.syms[6])
+        self.number_type = BasicType.with_typesym(self.universe.syms[6])
 
         self.universe.add_sym(
             TypeSym(

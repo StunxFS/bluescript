@@ -156,7 +156,7 @@ fn add_int(a: int) int {
     return a + a;
 }
 
-fn add_float(a: float) float {
+fn add_number(a: number) number {
     return a + a;
 }
 
