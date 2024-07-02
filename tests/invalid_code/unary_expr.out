@@ -1,6 +1,6 @@
-tests/invalid_code/unary_expr.bs:2:10: error: operator `~` is not defined for type `number`
+tests/invalid_code/unary_expr.bs:2:10: error: operator `~` is not defined for type `float`
    └ note: operator `~` is only defined for type `int`
 tests/invalid_code/unary_expr.bs:3:10: error: operator `!` is not defined for type `int`
    └ note: operator `!` is only defined for type `bool`
 tests/invalid_code/unary_expr.bs:4:10: error: operator `-` is not defined for type `string`
-   └ note: operator `-` is only defined for `int` and `number` types
+   └ note: operator `-` is only defined for `int` and `float` types
