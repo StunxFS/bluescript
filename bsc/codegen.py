@@ -153,7 +153,7 @@ class Codegen:
         elif isinstance(expr, BoolLiteral):
             return LuaBooleanLit("true" if expr.value else "false")
         elif isinstance(expr, NumberLiteral):
-            return LuaNumberLit(expr.value)
+            return LuaNumberLit(expr.value, expr.typ == self.ctx.float_type)
         elif isinstance(expr, UnaryExpr):
             right = self.gen_expr(expr.right)
             if isinstance(right, LuaBooleanLit) and expr.op == UnaryOp.bang:
@@ -162,12 +162,15 @@ class Codegen:
                 return LuaNumberLit(str(~int(right.value)))
             return LuaUnaryExpr(expr.op.to_lua_op(), right)
         elif isinstance(expr, BinaryExpr):
+            op = expr.op.to_lua_op()
             left = self.gen_expr(expr.left)
             right = self.gen_expr(expr.right)
             if isinstance(left,
                           LuaNumberLit) and isinstance(right, LuaNumberLit):
-                leftn = int(left.value)
-                rightn = int(right.value)
+                leftn = float(left.value) if left.is_float else int(left.value)
+                rightn = float(right.value
+                               ) if left.is_float else int(right.value)
+                if left.is_float and op == "/": op = "//"
                 match expr.op:
                     case BinaryOp.plus:
                         return LuaNumberLit(str(leftn + rightn))
@@ -176,7 +179,12 @@ class Codegen:
                     case BinaryOp.mul:
                         return LuaNumberLit(str(leftn * rightn))
                     case BinaryOp.div:
-                        return LuaNumberLit(str(leftn // rightn))
+                        return LuaNumberLit(
+                            str(
+                                leftn / rightn if left.is_float else leftn //
+                                rightn
+                            ), left.is_float
+                        )
                     case BinaryOp.mod:
                         return LuaNumberLit(str(leftn % rightn))
                     case BinaryOp.bit_and:
@@ -210,7 +218,7 @@ class Codegen:
                         return LuaBooleanLit(leftb and rightb)
                     case BinaryOp.logical_or:
                         return LuaBooleanLit(leftb or rightb)
-            return LuaBinaryExpr(left, expr.op.to_lua_op(), right)
+            return LuaBinaryExpr(left, op, right)
         elif isinstance(expr, Ident):
             if isinstance(
                 expr.sym, Object

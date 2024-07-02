@@ -181,6 +181,7 @@ class ParExpr(Expr):
     def __init__(self, expr, pos):
         self.expr = expr
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return f"({self.expr})"
@@ -192,6 +193,7 @@ class BuiltinVar(Expr):
     def __init__(self, name, pos):
         self.name = name
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return f"${self.name}"
@@ -202,6 +204,7 @@ class BuiltinVar(Expr):
 class NilLiteral(Expr):
     def __init__(self, pos):
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return "nil"
@@ -213,6 +216,7 @@ class BoolLiteral(Expr):
     def __init__(self, value, pos):
         self.value = value
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return str(self.value)
@@ -224,6 +228,7 @@ class NumberLiteral(Expr):
     def __init__(self, value, pos):
         self.value = value
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return self.value
@@ -235,6 +240,7 @@ class StringLiteral(Expr):
     def __init__(self, value, pos):
         self.value = value
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return self.value
@@ -245,6 +251,7 @@ class StringLiteral(Expr):
 class SelfLiteral(Expr):
     def __init__(self, pos):
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return "self"
@@ -257,6 +264,7 @@ class ArrayLiteral(Expr):
         self.elems = elems
         self.is_fixed = is_fixed
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         _str = "#[" if self.is_fixed else "["
@@ -269,6 +277,7 @@ class TupleLiteral(Expr):
     def __init__(self, elems, pos):
         self.elems = elems
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return f"[{', '.join([str(elem) for elem in self.elems])}]"
@@ -280,6 +289,7 @@ class EnumLiteral(Expr):
     def __init__(self, name, pos):
         self.name = name
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return f".{self.name}"
@@ -292,6 +302,7 @@ class Ident(Expr):
         self.name = name
         self.pos = pos
         self.sym = None
+        self.typ = None
 
     def __str__(self):
         return self.name
@@ -304,6 +315,7 @@ class PathExpr(Expr):
         self.left = left
         self.name = name
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return f"{self.left}::{self.name}"
@@ -317,6 +329,7 @@ class SelectorExpr(Expr):
         self.name = name
         self.pos = pos
         self.sym = None
+        self.typ = None
 
     def __str__(self):
         return f"{self.left}.{self.name}"
@@ -329,6 +342,7 @@ class CallExpr(Expr):
         self.left = left
         self.args = args
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         return f"{self.left}({', '.join([str(arg) for arg in self.args])})"
@@ -470,6 +484,7 @@ class IfExpr(Expr):
     def __init__(self, branches, pos):
         self.branches = branches
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         s = ""
@@ -491,12 +506,14 @@ class IfBranch:
         self.is_else = is_else
         self.expr = expr
         self.pos = pos
+        self.typ = None
 
 class MatchExpr(Expr):
     def __init__(self, expr, branches, pos):
         self.expr = expr
         self.branches = branches
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         if self.expr:
@@ -522,6 +539,7 @@ class MatchBranch:
         self.is_else = is_else
         self.stmt = stmt
         self.pos = pos
+        self.typ = None
 
 class BlockExpr(Expr):
     def __init__(self, is_unsafe, stmts, expr, pos):
@@ -541,6 +559,7 @@ class ReturnExpr(Expr):
     def __init__(self, expr, pos):
         self.expr = expr
         self.pos = pos
+        self.typ = None
 
     def __str__(self):
         if self.expr != None:

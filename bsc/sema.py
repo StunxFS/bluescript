@@ -207,7 +207,7 @@ class Sema:
             expr.typ = self.ctx.bool_type
         elif isinstance(expr, NumberLiteral):
             if any(ch in expr.value for ch in [".", "e", "E"]
-                   ) and expr.value[:2].lower() not in ['0x', '0o', '0b']:
+                   ) and (expr.value[:2].lower() not in ['0x', '0o', '0b']):
                 expr.typ = self.ctx.float_type
             else:
                 expr.typ = self.ctx.int_type
@@ -246,6 +246,9 @@ class Sema:
                             expr.pos,
                             ["operator `~` is only defined for type `int`"]
                         )
+        elif isinstance(expr, BinaryExpr):
+            self.check_expr(expr.left)
+            self.check_expr(expr.right)
         else:
             expr.typ = self.ctx.void_type # tmp
         return expr.typ

@@ -6,6 +6,9 @@ const bin_num = 0b10101;
 const octal_num = 0o666;
 const float_num = 0.5e4;
 
+const f = 1.0 / 2.0;
+const i = 1 / 2;
+
 fn main() void {
     print("hello");
     const XXX = dec_num;
