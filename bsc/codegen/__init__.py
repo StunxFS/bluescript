@@ -233,11 +233,11 @@ class Codegen:
             self.gen_stmts(expr.stmts)
             self.cur_block = old_block
             self.cur_block.add_stmt(block)
-            return None
+            return LuaSkip()
         elif isinstance(expr, ReturnExpr):
             if expr.expr == None:
                 ret_expr = None
             else:
                 ret_expr = self.gen_expr(expr.expr)
             self.cur_block.add_stmt(LuaReturn(ret_expr))
-            return None
+            return LuaSkip()

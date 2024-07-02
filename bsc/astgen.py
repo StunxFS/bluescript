@@ -251,6 +251,10 @@ class AstGen(Transformer):
         return SelfLiteral(self.mkpos(lit))
 
     def NAME(self, lit):
+        if lit == "nil":
+            return NilLiteral(self.mkpos(lit))
+        if lit in ("true", "false"):
+            return BoolLiteral(str(lit) == "true", self.mkpos(lit))
         return Ident(lit.value, self.mkpos(lit))
 
     def path_expr(self, *nodes):

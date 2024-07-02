@@ -1,0 +1,4 @@
+tests/invalid_code/binary_expr.bs:2:14: error: operator `&&` is not defined for type `string`
+   └ note: operator `&&` is only defined for type `bool`
+tests/invalid_code/binary_expr.bs:3:16: error: operator `||` is not defined for type `int`
+   └ note: operator `||` is only defined for type `bool`

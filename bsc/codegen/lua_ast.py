@@ -2,6 +2,9 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
+class LuaSkip:
+    pass
+
 class LuaComment:
     def __init__(self, comment):
         self.comment = comment

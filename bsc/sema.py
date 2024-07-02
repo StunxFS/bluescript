@@ -247,8 +247,34 @@ class Sema:
                             ["operator `~` is only defined for type `int`"]
                         )
         elif isinstance(expr, BinaryExpr):
-            self.check_expr(expr.left)
-            self.check_expr(expr.right)
+            left_t = self.check_expr(expr.left)
+            right_t = self.check_expr(expr.right)
+            match expr.op:
+                case BinaryOp.logical_and | BinaryOp.logical_or:
+                    if not (
+                        left_t == self.ctx.bool_type
+                        and right_t == self.ctx.bool_type
+                    ):
+                        report.error(
+                            f"operator `{expr.op}` is not defined for type `{right_t}`",
+                            expr.pos, [
+                                f"operator `{expr.op}` is only defined for type `bool`"
+                            ]
+                        )
+            if expr.op.is_relational():
+                expr.typ = self.ctx.bool_type
+            else:
+                expr.typ = left_t
+        elif isinstance(expr, IfExpr):
+            branch_t = None
+            for i, branch in enumerate(expr.branches):
+                if (not branch.is_else) and self.check_expr(
+                    branch.cond
+                ) != self.ctx.bool_type:
+                    report.error("non-boolean `if` condition", branch.cond.pos)
+                branch_t = self.check_expr(branch.expr)
+                if i == 0:
+                    expr.typ = branch_t
         else:
             expr.typ = self.ctx.void_type # tmp
         return expr.typ

@@ -107,7 +107,7 @@ fn init(verbose: bool = 2004 != 2004, year: int = 2004) {
     if false {
         s = if true {
             99
-        } else if 99 {
+        } else if 99 == 99 {
             99
         } else {
             100

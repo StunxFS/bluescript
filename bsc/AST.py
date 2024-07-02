@@ -400,6 +400,12 @@ class BinaryOp(IntEnum):
     logical_and = auto()
     logical_or = auto()
 
+    def is_relational(self):
+        return self in (
+            BinaryOp.eq, BinaryOp.neq, BinaryOp.lt, BinaryOp.gt, BinaryOp.le,
+            BinaryOp.ge, BinaryOp.logical_and, BinaryOp.logical_or
+        )
+
     def to_lua_op(self):
         match self:
             case BinaryOp.logical_and:
