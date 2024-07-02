@@ -4,7 +4,7 @@
 
 import os
 from bsc import utils
-from bsc.lua_ast import *
+from bsc.codegen.lua_ast import *
 from bsc.utils import BSC_OUT_DIR
 
 class LuaRender:
