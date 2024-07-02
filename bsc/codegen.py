@@ -6,7 +6,7 @@ from bsc.AST import *
 from bsc.sym import *
 from bsc.utils import BSC_OUT_DIR
 from bsc.codegen.lua_ast import *
-from bsc.codegen.render import LuaRender
+from bsc.codegen.lua_render import LuaRender
 
 class Codegen:
     def __init__(self, ctx):
