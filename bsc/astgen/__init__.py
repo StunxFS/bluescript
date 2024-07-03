@@ -562,7 +562,13 @@ class AstGen(Transformer):
         return BasicType(left, left.pos)
 
     def option_type_decl(self, *nodes):
-        return OptionType(nodes[1], self.mkpos(nodes[0]))
+        inner_type = nodes[1]
+        pos = self.mkpos(nodes[0])
+        if isinstance(inner_type, OptionType):
+            report.error(
+                "cannot declare an option type using another option type", pos
+            )
+        return OptionType(inner_type, pos)
 
     def array_type_decl(self, *nodes):
         has_size = not isinstance(nodes[1], Token)

@@ -1,0 +1,1 @@
+tests/invalid_code/invalid_option_type.bs:1:11: error: cannot declare an option type using another option type
