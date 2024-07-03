@@ -126,6 +126,12 @@ class ExprStmt(Stmt):
         self.expr = expr
         self.pos = expr.pos
 
+    def __str__(self):
+        return f"{self.expr};"
+
+    def __repr__(self):
+        return str(self)
+
 class AssignOp(IntEnum):
     Assign = auto()
     PlusAssign = auto()
@@ -301,6 +307,7 @@ class Ident(Expr):
     def __init__(self, name, pos):
         self.name = name
         self.pos = pos
+        self.scope = None
         self.sym = None
         self.typ = None
 
@@ -553,6 +560,7 @@ class BlockExpr(Expr):
         self.stmts = stmts
         self.expr = expr
         self.pos = pos
+        self.scope = None
         self.typ = None
 
     def __str__(self):

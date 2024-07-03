@@ -5,12 +5,12 @@
 import os
 
 from bsc import report, utils
-from bsc.AST import BasicType, ModDecl
-from bsc.prefs import Prefs
 from bsc.astgen import AstGen
+from bsc.astgen.AST import BasicType, ModDecl
+from bsc.prefs import Prefs
 from bsc.sema import Sema
 from bsc.codegen import Codegen
-from bsc.sym import Scope, TypeSym, SumTypeInfo, AccessModifier, TypeKind, TypeField
+from bsc.sym import Scope, TypeSym, AccessModifier, TypeKind
 
 class Context:
     def __init__(self):

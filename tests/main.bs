@@ -14,7 +14,7 @@ fn main() void {
     const XXX = dec_num;
 }
 
-pub(pkg) fn my_fn(a: number) {}
+pub(pkg) fn my_fn(a: float) {}
 
 mod my_module {
     pub fn new_func() {}

@@ -2,11 +2,11 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
-from bsc.AST import *
 from bsc.sym import *
-from bsc.utils import BSC_OUT_DIR
+from bsc.astgen.AST import *
 from bsc.codegen.lua_ast import *
 from bsc.codegen.lua_render import LuaRender
+from bsc.utils import BSC_OUT_DIR
 
 class Codegen:
     def __init__(self, ctx):

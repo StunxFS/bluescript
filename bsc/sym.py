@@ -74,6 +74,9 @@ class Sym:
         return str(self)
 
     def __str__(self):
+        if (isinstance(self, Object) and self.level != ObjectLevel.static
+            ) or (isinstance(self, Const) and self.is_local):
+            return self.name
         return self.qualname()
 
 class ObjectLevel(IntEnum):
@@ -92,11 +95,15 @@ class Object(Sym):
         return self.level in (ObjectLevel.argument, ObjectLevel.local)
 
 class Const(Sym):
-    def __init__(self, access_modifier, name, typ, expr, scope, pos = None):
+    def __init__(
+        self, access_modifier, name, typ, expr, scope, is_local = False,
+        pos = None
+    ):
         super().__init__(access_modifier, name, pos = pos)
         self.typ = typ
         self.expr = expr
         self.scope = scope
+        self.is_local = is_local
 
 class TypeKind(IntEnum):
     void = auto()

@@ -2,8 +2,8 @@
 # source code is governed by an MIT license that can be found in the
 # LICENSE file.
 
-from bsc.AST import *
 from bsc.sym import *
+from bsc.astgen.AST import *
 from bsc import utils, report
 
 class Sema:
@@ -72,7 +72,9 @@ class Sema:
         if decl.is_inline:
             self.cur_mod = decl.sym
             self.cur_sym = decl.sym
+            self.cur_scope = decl.sym.scope
             self.check_decls(decl.decls)
+            self.cur_scope = old_scope
             self.cur_sym = old_sym
             self.cur_mod = old_mod
 
@@ -102,6 +104,7 @@ class Sema:
 
     def check_fn_decl(self, decl):
         old_sym = self.cur_sym
+        old_scope = self.cur_scope
         if self.first_pass:
             decl.sym = Function(
                 decl.access_modifier, decl.name,
@@ -135,14 +138,16 @@ class Sema:
             return
         if decl.has_body:
             self.cur_sym = decl.sym
+            self.cur_scope = decl.sym.scope
             self.check_stmts(decl.stmts)
+            self.cur_scope = old_scope
             self.cur_sym = old_sym
 
     def check_const_decl(self, decl):
         if self.first_pass:
             decl.sym = Const(
                 decl.access_modifier, decl.name, decl.typ, decl.expr,
-                self.cur_scope, decl.pos
+                self.cur_scope, isinstance(self.cur_sym, Function), decl.pos
             )
             if isinstance(self.cur_sym, Function):
                 decl.is_local = True
@@ -214,9 +219,24 @@ class Sema:
         elif isinstance(expr, StringLiteral):
             expr.typ = self.ctx.string_type
         elif isinstance(expr, Ident):
-            expr.typ = self.check_symbol(expr)
+            expr.typ = self.ctx.void_type
+            if sym := self.check_symbol(expr.name, expr.pos):
+                if isinstance(sym, (Object, Const)):
+                    expr.typ = sym.typ
+                else:
+                    report.error(
+                        f"expected value, found {sym.typeof()} `{sym.name}`",
+                        expr.pos
+                    )
         elif isinstance(expr, BlockExpr):
+            if self.first_pass:
+                expr.scope = self.open_scope()
+                self.check_stmts(expr.stmts)
+                return self.ctx.void_type
+            old_scope = self.cur_scope
+            self.cur_scope = expr.scope
             self.check_stmts(expr.stmts)
+            self.cur_scope = old_scope
             if expr.expr != None:
                 expr.typ = self.check_expr(expr.expr)
             else:
@@ -281,24 +301,22 @@ class Sema:
 
     ## === Symbols ======================================
 
-    def check_symbol(self, expr):
-        ret_type = self.ctx.void_type
-        if local_sym := self.cur_sym.scope.lookup(expr.name):
-            expr.sym = local_sym
-            ret_type = local_sym.typ
-        elif module_sym := self.cur_mod.scope.lookup(expr.name):
-            expr.sym = module_sym
-            ret_type = module_sym.typ
+    def check_symbol(self, name, pos):
+        ret_sym = None
+        if local_sym := self.cur_scope.lookup(name):
+            ret_sym = local_sym
+        elif symbol_sym := self.cur_sym.scope.lookup(name):
+            ret_sym = symbol_sym
+        elif module_sym := self.cur_mod.scope.lookup(name):
+            ret_sym = module_sym
         else:
+            report.error(f"cannot find symbol `{name}` in this scope", pos)
+        if ret_sym != None and ret_sym.pos != None and ret_sym.pos.line > pos.line:
             report.error(
-                f"cannot find symbol `{expr.name}` in this scope", expr.pos
+                f"{ret_sym.typeof()} `{ret_sym.name}` is used before its declaration",
+                pos
             )
-        if expr.sym != None and expr.sym.pos != None and expr.sym.pos.line > expr.pos.line:
-            report.error(
-                f"{expr.sym.typeof()} `{expr.name}` is used before its declaration",
-                expr.pos
-            )
-        return ret_type
+        return ret_sym
 
     ## === Utilities ====================================
 

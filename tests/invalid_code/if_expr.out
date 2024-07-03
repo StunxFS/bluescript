@@ -1,0 +1,1 @@
+tests/invalid_code/if_expr.bs:2:8: error: non-boolean `if` condition

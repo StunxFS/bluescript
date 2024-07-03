@@ -4,9 +4,9 @@
 
 from lark import Lark, v_args, Transformer, Token, visitors, exceptions
 
-from bsc.AST import *
-from bsc.sym import AccessModifier, Module, Scope
+from bsc.astgen.AST import *
 from bsc import utils, report
+from bsc.sym import AccessModifier, Module, Scope
 
 bs_parser = Lark.open(
     "grammar.lark", rel_to = __file__, parser = 'earley', start = "module"

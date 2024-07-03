@@ -1,0 +1,1 @@
+tests/invalid_code/unexpected_value.bs:6:15: error: expected value, found enum `MyEnum`
