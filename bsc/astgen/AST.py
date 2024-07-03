@@ -622,6 +622,22 @@ class BasicType:
             return str(self.expr) == str(other.expr)
         return False
 
+class ResultType:
+    def __init__(self, type, pos):
+        self.type = type
+        self.pos = pos
+
+    def __str__(self):
+        return f"!{self.type}"
+
+    def __repr__(self):
+        return str(self)
+
+    def __eq__(self, other):
+        if isinstance(other, ResultType):
+            return self.type == other.type
+        return False
+
 class OptionType:
     def __init__(self, type, pos):
         self.type = type
@@ -657,7 +673,7 @@ class ArrayType:
             return str(self.size) == str(other.size) and self.type == other.type
         return False
 
-class MapType:
+class TableType:
     def __init__(self, k_type, v_type, pos):
         self.k_type = k_type
         self.v_type = v_type
@@ -670,7 +686,7 @@ class MapType:
         return str(self)
 
     def __eq__(self, other):
-        if isinstance(other, MapType):
+        if isinstance(other, TableType):
             return self.k_type == other.k_type and self.v_type == other.v_type
         return False
 

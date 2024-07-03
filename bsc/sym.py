@@ -115,7 +115,7 @@ class TypeKind(IntEnum):
     float = auto()
     string = auto()
     array = auto()
-    map = auto()
+    table = auto()
     tuple = auto()
     sumtype = auto()
     enum = auto()
@@ -141,8 +141,8 @@ class TypeKind(IntEnum):
                 return "string"
             case TypeKind.array:
                 return "array"
-            case TypeKind.map:
-                return "map"
+            case TypeKind.table:
+                return "table"
             case TypeKind.tuple:
                 return "tuple"
             case TypeKind.sumtype:

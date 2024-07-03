@@ -130,9 +130,15 @@ class AstGen(Transformer):
         else:
             args = []
         ret_type = nodes[6]
-        if isinstance(ret_type, BlockExpr
-                      ) or isinstance(ret_type, Token) or not ret_type:
+        is_result = isinstance(ret_type, Token) and str(ret_type) == "!"
+        if is_result:
+            ret_type = nodes[7]
+        if isinstance(ret_type,
+                      BlockExpr) or isinstance(ret_type,
+                                               Token) or (not ret_type):
             ret_type = self.ctx.void_type
+        if is_result:
+            ret_type = ResultType(ret_type, self.mkpos(nodes[6]))
         stmts = []
         if len(nodes) == 8:
             stmts = nodes[-1]
@@ -533,7 +539,7 @@ class AstGen(Transformer):
         return AccessModifier.private
 
     # Types
-    def user_type(self, *names):
+    def user_type_decl(self, *names):
         left = names[0]
         if isinstance(left, Ident):
             match left.name:
@@ -555,20 +561,20 @@ class AstGen(Transformer):
                     return BasicType(left, left.pos)
         return BasicType(left, left.pos)
 
-    def option_type(self, *nodes):
+    def option_type_decl(self, *nodes):
         return OptionType(nodes[1], self.mkpos(nodes[0]))
 
-    def array_type(self, *nodes):
+    def array_type_decl(self, *nodes):
         has_size = not isinstance(nodes[1], Token)
         size = nodes[1] if has_size else None
         return ArrayType(
             size, nodes[3 if has_size else 2], self.mkpos(nodes[0])
         )
 
-    def map_type(self, *nodes):
-        return MapType(nodes[1], nodes[3], self.mkpos(nodes[0]))
+    def table_type_decl(self, *nodes):
+        return TableType(nodes[1], nodes[3], self.mkpos(nodes[0]))
 
-    def sum_type(self, *nodes):
+    def sum_type_decl(self, *nodes):
         types = list(filter(lambda node: not isinstance(node, Token), nodes))
         return SumType(types, nodes[0].pos)
 

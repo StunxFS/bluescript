@@ -9,7 +9,7 @@ const float_num = 0.5e4;
 const f = 1.0 / 2.0;
 const i = 1 / 2;
 
-fn main() void {
+fn main() !void {
     print("hello");
     const XXX = dec_num;
 }
