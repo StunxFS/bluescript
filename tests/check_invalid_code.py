@@ -37,3 +37,5 @@ for i, bs_file in enumerate(bs_files):
 passed = utils.bold(utils.green(f'{ok} PASSED'))
 failed = utils.bold(utils.red(f'{fail} FAILED'))
 print(f"{utils.bold('Summary:')} {passed}, {failed}")
+if fail > 0:
+    exit(fail)

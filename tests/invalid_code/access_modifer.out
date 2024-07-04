@@ -1,1 +1,1 @@
-tests/invalid_code/access_modifer.bs:8:26: error: cannot access private constant `x`
+tests/invalid_code/access_modifer.bs:14:26: error: cannot access private constant `x`
