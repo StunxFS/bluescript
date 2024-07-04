@@ -17,7 +17,7 @@ bs_files = glob.glob("tests/invalid_code/*.bs")
 for i, bs_file in enumerate(bs_files):
     out_file = bs_file[:-3] + ".out"
     print(f"  [{i+1}/{len(bs_files)}] {utils.bold(bs_file)}", end = "")
-    res = utils.execute(f"python3", "bsc", bs_file)
+    res = utils.execute(f"python3", "bsc", "--check", bs_file)
     if res.exit_code == 0:
         print(utils.bold(utils.red(" -> FAILED")))
         fail += 1

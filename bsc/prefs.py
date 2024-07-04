@@ -12,6 +12,7 @@ class Prefs:
         self.is_library = False
 
         self.pkg_name = ""
+        self.is_check = False
         self.is_verbose = False
 
     def parse_args(self):
@@ -28,13 +29,18 @@ class Prefs:
             help = 'specifies whether the input is a library or not'
         )
         parser.add_argument(
+            '--check', action = 'store_true',
+            help = 'scans, parses, and checks the files without compiling.'
+        )
+        parser.add_argument(
             '-v', '--verbose', action = 'store_true',
-            help = 'Enable verbosity in the compiler while compiling'
+            help = 'enable verbosity in the compiler while compiling'
         )
         args = parser.parse_args()
 
         self.is_library = args.lib
         self.pkg_name = args.pkg_name or ""
+        self.is_check = args.check
         self.is_verbose = args.verbose
 
         # check input file

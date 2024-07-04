@@ -83,7 +83,8 @@ class Context:
         self.sema.check_files(self.source_files)
         if report.errors > 0:
             exit(1)
-        self.codegen.gen_files(self.source_files)
+        if not self.prefs.is_check:
+            self.codegen.gen_files(self.source_files)
 
     def import_modules(self):
         for sf in self.source_files:

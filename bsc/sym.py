@@ -71,7 +71,9 @@ class Sym:
             case AccessModifier.internal:
                 return self.get_pkg() == other.get_pkg()
             case AccessModifier.private:
-                return self.get_mod() == other.get_mod()
+                if self_mod := self.get_mod():
+                    if other_mod := other.get_mod():
+                        return self_mod == other_mod
         return False
 
     def kind_of(self):
