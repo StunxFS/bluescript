@@ -3,7 +3,7 @@
 # LICENSE file.
 
 from bsc.sym import *
-from bsc.astgen.AST import *
+from bsc.astgen.ast import *
 from bsc import utils, report
 
 class Sema:

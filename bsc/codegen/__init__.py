@@ -3,7 +3,7 @@
 # LICENSE file.
 
 from bsc.sym import *
-from bsc.astgen.AST import *
+from bsc.astgen.ast import *
 from bsc.codegen.lua_ast import *
 from bsc.codegen.lua_render import LuaRender
 from bsc.utils import BSC_OUT_DIR

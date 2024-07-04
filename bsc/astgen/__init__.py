@@ -4,7 +4,7 @@
 
 from lark import Lark, v_args, Transformer, Token, visitors, exceptions
 
-from bsc.astgen.AST import *
+from bsc.astgen.ast import *
 from bsc import utils, report
 from bsc.sym import AccessModifier, Module, Scope
 

@@ -15,7 +15,7 @@ const i = 1 / 2;
 
 fn main() void {
     print("hello");
-    const XXX = consts::main;
+    const XXX = consts::dec_num;
 }
 
 pub(pkg) fn my_fn(a: float) {}

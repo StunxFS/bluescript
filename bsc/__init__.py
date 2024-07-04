@@ -6,7 +6,7 @@ import os
 
 from bsc import report, utils
 from bsc.astgen import AstGen
-from bsc.astgen.AST import BasicType, ModDecl
+from bsc.astgen.ast import BasicType, ModDecl
 from bsc.prefs import Prefs
 from bsc.sema import Sema
 from bsc.codegen import Codegen
