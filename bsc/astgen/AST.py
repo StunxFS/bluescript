@@ -322,6 +322,8 @@ class PathExpr(Expr):
         self.left = left
         self.name = name
         self.pos = pos
+        self.left_sym = None
+        self.sym = None
         self.typ = None
 
     def __str__(self):

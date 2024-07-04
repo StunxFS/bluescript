@@ -1,0 +1,11 @@
+mod my_mod {
+    const XXX = 1;
+
+    enum Afk { a }
+}
+
+fn main() {
+    const ABC = my_mod::XXX; // ok
+    const DEF = my_mod::Afk; // error
+    const GHI = my_mod::unown; // error
+}

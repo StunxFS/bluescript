@@ -225,7 +225,18 @@ class Sema:
                     expr.typ = sym.typ
                 else:
                     report.error(
-                        f"expected value, found {sym.typeof()} `{sym.name}`",
+                        f"expected value, found {sym.kind_of()} `{sym.name}`",
+                        expr.pos
+                    )
+        elif isinstance(expr, PathExpr):
+            expr.typ = self.ctx.void_type
+            self.check_path_expr(expr)
+            if expr.sym != None:
+                if isinstance(expr.sym, (Object, Const)):
+                    expr.typ = expr.sym.typ
+                else:
+                    report.error(
+                        f"expected value, found {expr.sym.kind_of()} `{expr.sym.name}`",
                         expr.pos
                     )
         elif isinstance(expr, BlockExpr):
@@ -299,6 +310,27 @@ class Sema:
             expr.typ = self.ctx.void_type # tmp
         return expr.typ
 
+    def check_path_expr(self, expr: PathExpr):
+        if isinstance(expr.left, Ident):
+            expr.left_sym = self.check_symbol(expr.left.name, expr.pos)
+        elif isinstance(expr.left, PathExpr):
+            expr.left_sym = self.check_path_expr(expr.left)
+        else:
+            report.error(
+                "invalid expression on left side of path", expr.left.pos
+            )
+
+        if expr.left_sym == None:
+            return
+
+        if path_sym := expr.left_sym.scope.find(expr.name):
+            expr.sym = path_sym
+        else:
+            report.error(
+                f"{expr.left_sym.kind_of()} `{expr.left_sym}` does not contain a symbol named `{expr.name}`",
+                expr.pos
+            )
+
     ## === Symbols ======================================
 
     def check_symbol(self, name, pos):
@@ -313,7 +345,7 @@ class Sema:
             report.error(f"cannot find symbol `{name}` in this scope", pos)
         if ret_sym != None and ret_sym.pos != None and ret_sym.pos.line > pos.line:
             report.error(
-                f"{ret_sym.typeof()} `{ret_sym.name}` is used before its declaration",
+                f"{ret_sym.kind_of()} `{ret_sym.name}` is used before its declaration",
                 pos
             )
         return ret_sym

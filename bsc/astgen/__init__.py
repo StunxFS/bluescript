@@ -131,16 +131,18 @@ class AstGen(Transformer):
             args = []
         ret_type = nodes[6]
         is_result = isinstance(ret_type, Token) and str(ret_type) == "!"
+        body_idx = 8
         if is_result:
             ret_type = nodes[7]
         if isinstance(ret_type,
                       BlockExpr) or isinstance(ret_type,
                                                Token) or (not ret_type):
+            body_idx += 1
             ret_type = self.ctx.void_type
         if is_result:
             ret_type = ResultType(ret_type, self.mkpos(nodes[6]))
         stmts = []
-        if len(nodes) == 8:
+        if len(nodes) == body_idx:
             stmts = nodes[-1]
         else:
             stmts = None

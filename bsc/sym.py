@@ -44,13 +44,13 @@ class Sym:
         self.name = name
         self.pos = pos
 
-    def typeof(self):
+    def kind_of(self):
         if isinstance(self, Module):
             return "package" if self.is_pkg else "module"
         elif isinstance(self, Const):
             return "constant"
         elif isinstance(self, TypeSym):
-            return self.type_kind()
+            return self.kind_of()
         elif isinstance(self, Function):
             return "function"
         elif isinstance(self, Object):
@@ -181,7 +181,7 @@ class TypeSym(Sym):
         scope.owner = self
         self.scope = scope
 
-    def type_kind(self):
+    def kind_of(self):
         return str(self.kind)
 
 class Module(Sym):
@@ -225,12 +225,17 @@ class Scope:
         self.detached_from_parent = detach_from_parent
         self.is_universe = is_universe
 
+    def find(self, name):
+        for sym in self.syms:
+            if sym.name == name:
+                return sym
+        return None
+
     def lookup(self, name):
         sc = self
         while True:
-            for sym in sc.syms:
-                if sym.name == name:
-                    return sym
+            if sym := sc.find(name):
+                return sym
             if sc.dont_lookup_scope():
                 break
             sc = sc.parent
@@ -242,7 +247,7 @@ class Scope:
     def add_sym(self, sym):
         if duplicate := self.lookup(sym.name):
             if self.owner:
-                errmsg = f"duplicate symbol `{sym.name}` in {self.owner.typeof()} `{self.owner}`"
+                errmsg = f"duplicate symbol `{sym.name}` in {self.owner.kind_of()} `{self.owner}`"
             else:
                 errmsg = f"duplicate symbol `{sym.name}` in global namespace"
             if duplicate.__class__ == sym.__class__:
@@ -251,9 +256,9 @@ class Scope:
                 ) and duplicate.level == ObjectLevel.argument:
                     note = f"another argument with the same name was already declared previously"
                 else:
-                    note = f"another {duplicate.typeof()} with the same name was defined before"
+                    note = f"another {duplicate.kind_of()} with the same name was defined before"
             else:
-                note = f"a {duplicate.typeof()} with the same name has already been defined"
+                note = f"a {duplicate.kind_of()} with the same name has already been defined"
             raise CompilerError(errmsg, note)
         sym.parent = self.owner
         self.syms.append(sym)

@@ -1,0 +1,2 @@
+tests/invalid_code/path_expr.bs:9:25: error: expected value, found enum `Afk`
+tests/invalid_code/path_expr.bs:10:25: error: module `path_expr::my_mod` does not contain a symbol named `unown`
