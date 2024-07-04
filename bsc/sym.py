@@ -69,7 +69,9 @@ class Sym:
             case AccessModifier.public:
                 return True # other is public
             case AccessModifier.internal:
-                return self.get_pkg() == other.get_pkg()
+                if self_pkg := self.get_pkg():
+                    if other_pkg := other.get_pkg():
+                        return self_pkg == other_pkg
             case AccessModifier.private:
                 if self_mod := self.get_mod():
                     if other_mod := other.get_mod():
