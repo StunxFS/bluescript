@@ -1,7 +1,7 @@
 mod my_mod {
-    const XXX = 1;
+    pub const XXX = 1;
 
-    enum Afk { a }
+    pub enum Afk { a }
 }
 
 fn main() {
