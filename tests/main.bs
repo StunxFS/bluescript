@@ -1,13 +1,15 @@
 mod syntax;
 
 mod consts {
-    const dec_num = 616;
+    pub const dec_num = 616;
     const hex_num = 0xFFFF;
     const bin_num = 0b10101;
     const octal_num = 0o666;
     const float_num = 0.5e4;
 
-    fn main() {}
+    fn main() {
+        const inner = dec_num;
+    }
 }
 
 const f = 1.0 / 2.0;

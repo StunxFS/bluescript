@@ -14,9 +14,19 @@ class Codegen:
         self.modules = []
 
         self.cur_file = None
+        self.cur_sym = None
+        self.sym_stack = []
+
         self.cur_module = None
         self.cur_fn = None
         self.cur_block = None
+
+    def switch_cur_sym(self, new_cur_sym = None):
+        if new_cur_sym == None:
+            self.cur_sym = self.sym_stack.pop()
+        else:
+            self.sym_stack.append(self.cur_sym)
+            self.cur_sym = new_cur_sym
 
     def gen_files(self, source_files):
         for file in source_files:
@@ -26,6 +36,7 @@ class Codegen:
 
     def gen_file(self, file):
         self.cur_file = file
+        self.switch_cur_sym(self.cur_file.mod_sym)
         self.cur_module = LuaModule(file.mod_sym.name)
         self.cur_block = self.cur_module.block
         self.gen_decls(file.decls)
@@ -45,6 +56,7 @@ class Codegen:
         self.cur_module.stmts = self.cur_block
         self.modules.append(self.cur_module)
         self.cur_block = LuaBlock()
+        self.switch_cur_sym()
 
     def gen_decls(self, decls):
         for decl in decls:
@@ -62,6 +74,7 @@ class Codegen:
 
     def gen_mod_decl(self, decl):
         if decl.is_inline:
+            self.switch_cur_sym(decl.sym)
             self.cur_block.add_comment(f"inline module `{decl.sym.qualname()}`")
             self.cur_block.add_stmt(LuaAssignment([LuaIdent(decl.name)], []))
             old_block = self.cur_block
@@ -83,6 +96,7 @@ class Codegen:
             mod_decls = self.cur_block
             self.cur_block = old_block
             self.cur_block.add_stmt(mod_decls)
+            self.switch_cur_sym()
         else:
             self.cur_block.add_comment(f"extern module `{decl.sym.qualname()}`")
             self.cur_block.add_stmt(
@@ -105,7 +119,9 @@ class Codegen:
         self.cur_block.add_stmt(
             LuaAssignment([LuaIdent(decl.sym.name)], [LuaTable(fields)], False)
         )
+        self.switch_cur_sym(decl.sym)
         self.gen_decls(decl.decls)
+        self.switch_cur_sym()
 
     def gen_fn_decl(self, decl):
         if not decl.has_body: return
@@ -114,7 +130,8 @@ class Codegen:
         for arg in decl.args:
             args.append(LuaIdent(arg.name))
         luafn = LuaFunction(
-            decl.sym.codegen_qualname(), args, is_static = decl.sym.is_static()
+            decl.sym.cg_method_qualname(), args,
+            is_static = decl.sym.is_static()
         )
         for arg in decl.args:
             if arg.default_value != None:
@@ -226,6 +243,10 @@ class Codegen:
                 return LuaIdent(expr.name)
             if expr.sym != None: return LuaIdent(expr.sym.name)
             return LuaIdent(expr.name)
+        elif isinstance(expr, PathExpr):
+            if expr.left_sym == self.cur_sym:
+                return LuaIdent(expr.name)
+            return LuaSelector(self.gen_expr(expr.left), expr.name)
         elif isinstance(expr, BlockExpr):
             old_block = self.cur_block
             block = LuaBlock()

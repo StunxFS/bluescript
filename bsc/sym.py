@@ -62,7 +62,7 @@ class Sym:
             return f"{self.parent.qualname(sep)}{sep}{self.name}"
         return self.name
 
-    def codegen_qualname(self):
+    def cg_method_qualname(self):
         if isinstance(self.parent, TypeSym):
             return f"{self.parent.name}.{self.name}"
         return self.name
