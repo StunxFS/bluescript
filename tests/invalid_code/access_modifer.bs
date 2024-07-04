@@ -2,6 +2,12 @@ mod my_mod {
     const x = 1;
     pub(pkg) const rs = 2014;
     pub const v = 4;
+
+    fn my_fn() {
+        const my_x = x; // ok
+        const my_rs = rs; // ok
+        const my_v = v; // ok
+    }
 }
 
 fn main() {
