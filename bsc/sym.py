@@ -44,6 +44,36 @@ class Sym:
         self.name = name
         self.pos = pos
 
+    def get_pkg(self):
+        s = self
+        while True:
+            if isinstance(s, Module) and s.is_pkg:
+                return s
+            if s.parent == None:
+                break
+            s = s.parent
+        return None
+
+    def get_mod(self):
+        s = self
+        while True:
+            if isinstance(s, Module):
+                return s
+            if s.parent == None:
+                break
+            s = s.parent
+        return None
+
+    def has_access_to(self, other):
+        match other.access_modifier:
+            case AccessModifier.public:
+                return True # other is public
+            case AccessModifier.internal:
+                return self.get_pkg() == other.get_pkg()
+            case AccessModifier.private:
+                return self.get_mod() == other.get_mod()
+        return False
+
     def kind_of(self):
         if isinstance(self, Module):
             return "package" if self.is_pkg else "module"

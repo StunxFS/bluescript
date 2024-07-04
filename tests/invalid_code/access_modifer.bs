@@ -1,0 +1,9 @@
+mod my_mod {
+    const x = 1;
+    pub const v = 4;
+}
+
+fn main() {
+    const my_x = my_mod::x; // error
+    const my_v = my_mod::v; // ok
+}

@@ -325,6 +325,11 @@ class Sema:
 
         if path_sym := expr.left_sym.scope.find(expr.name):
             expr.sym = path_sym
+            if not self.cur_sym.has_access_to(path_sym):
+                report.error(
+                    f"cannot access private {path_sym.kind_of()} `{path_sym.name}`",
+                    expr.pos
+                )
         else:
             report.error(
                 f"{expr.left_sym.kind_of()} `{expr.left_sym}` does not contain a symbol named `{expr.name}`",
@@ -337,9 +342,9 @@ class Sema:
         ret_sym = None
         if local_sym := self.cur_scope.lookup(name):
             ret_sym = local_sym
-        elif symbol_sym := self.cur_sym.scope.lookup(name):
+        elif symbol_sym := self.cur_sym.scope.find(name):
             ret_sym = symbol_sym
-        elif module_sym := self.cur_mod.scope.lookup(name):
+        elif module_sym := self.cur_mod.scope.find(name):
             ret_sym = module_sym
         else:
             report.error(f"cannot find symbol `{name}` in this scope", pos)
