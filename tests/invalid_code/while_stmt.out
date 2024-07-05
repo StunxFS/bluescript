@@ -1,0 +1,1 @@
+tests/invalid_code/while_stmt.bs:2:11: error: non-boolean `while` condition
