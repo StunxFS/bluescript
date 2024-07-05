@@ -22,7 +22,7 @@ module: extern_pkg* decl*
        | var_decl
        | const_decl
        | enum_decl
-       | class_decl
+       | record_decl
        | fn_decl
 
 extern_pkg: KW_EXTERN KW_PKG NAME [KW_AS NAME] SEMICOLON
@@ -43,8 +43,8 @@ enum_decl: [access_modifier] KW_ENUM NAME LBRACE enum_fields decl* RBRACE
 enum_fields: enum_field (COMMA enum_field)*
 enum_field: NAME [OP_ASSIGN expr]
 
-class_decl: [access_modifier] KW_CLASS NAME LBRACE (class_field | decl)* RBRACE
-class_field: [access_modifier] NAME COLON type_decl [OP_ASSIGN expr] SEMICOLON
+record_decl: [access_modifier] KW_RECORD NAME LBRACE (record_field | decl)* RBRACE
+record_field: [access_modifier] NAME COLON type_decl [OP_ASSIGN expr] SEMICOLON
 
 fn_decl: [access_modifier] KW_FN NAME LPAREN [fn_args] RPAREN [BANG? type_decl] (SEMICOLON | block)
 fn_args: (KW_SELF | fn_arg) (COMMA fn_arg)*
@@ -206,7 +206,7 @@ OP_BIT_OR_ASSIGN: "|="
 OP_BIT_XOR_ASSIGN: "^="
 
 KW_AS.5: "as"
-KW_CLASS.5: "class"
+KW_RECORD.5: "record"
 KW_CONST.5: "const"
 KW_ELSE.5: "else"
 KW_ENUM.5: "enum"

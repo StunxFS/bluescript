@@ -27,7 +27,7 @@ var myvar2, myvar3 = (1, 2, 3);
 
 const ALPHA = 0b00101010110101;
 
-class Item {}
+record Item {}
 
 pub fn sumtype(x: int | string | Item) {}
 
@@ -51,7 +51,7 @@ pub enum WorldLevel {
 }
 
 // @abstract
-class Person {
+record Person {
     name: string;
     age: int = 15;
 
@@ -61,7 +61,7 @@ class Person {
     var static_var = nil;
     const MAX = 999;
 
-    map: {string:int} = {
+    table: {string:int} = {
         "First Key": 99,
         "Second Key": 100
     };

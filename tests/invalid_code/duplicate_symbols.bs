@@ -10,8 +10,8 @@ enum MyMod {
     a
 }
 
-class MyClass { }
-enum MyClass {
+record MyRecord { }
+enum MyRecord {
     a
 }
 

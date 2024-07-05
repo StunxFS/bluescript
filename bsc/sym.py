@@ -153,7 +153,7 @@ class TypeKind(IntEnum):
     tuple = auto()
     sumtype = auto()
     enum = auto()
-    _class = auto()
+    record = auto()
 
     def __str__(self):
         match self:
@@ -183,8 +183,8 @@ class TypeKind(IntEnum):
                 return "sumtype"
             case TypeKind.enum:
                 return "enum"
-            case TypeKind._class:
-                return "class"
+            case TypeKind.record:
+                return "record"
             case _:
                 assert False # unreachable
 
