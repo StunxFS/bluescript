@@ -33,13 +33,13 @@ class LuaFunction:
 # Statements
 
 class LuaWhile:
-    def __init__(self, cond, stmts):
+    def __init__(self, cond, stmts = []):
         self.cond = cond
-        self.stmts = stmts
+        self.stmts = stmts.copy()
 
 class LuaRepeat:
-    def __init__(self, stmts, cond):
-        self.stmts = stmts
+    def __init__(self, cond, stmts = []):
+        self.stmts = stmts.copy()
         self.cond = cond
 
 class LuaIf:
@@ -47,10 +47,10 @@ class LuaIf:
         self.branches = branches
 
 class LuaIfBranch:
-    def __init__(self, cond, is_else, stmts):
+    def __init__(self, cond, is_else, stmts = []):
         self.cond = cond
         self.is_else = is_else
-        self.stmts = stmts
+        self.stmts = stmts.copy()
 
 class LuaBlock:
     def __init__(self, stmts = []):

@@ -161,6 +161,13 @@ class Codegen:
             self.gen_expr(stmt.expr)
         elif isinstance(stmt, ConstDecl):
             self.gen_const_decl(stmt)
+        elif isinstance(stmt, WhileStmt):
+            while_stmt = LuaWhile(self.gen_expr(stmt.cond))
+            old_block = self.cur_block
+            self.cur_block = LuaBlock()
+            self.gen_stmts(stmt.stmts)
+            self.cur_block = old_block
+            self.cur_block.add_stmt(while_stmt)
 
     ## == Expressions ===========================================
 

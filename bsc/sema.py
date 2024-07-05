@@ -194,6 +194,11 @@ class Sema:
             self.check_const_decl(stmt)
         elif isinstance(stmt, VarDecl):
             self.check_var_decl(stmt)
+        elif isinstance(stmt, WhileStmt):
+            if not self.first_pass:
+                if self.check_expr(stmt.cond) != self.ctx.bool_type:
+                    report.error("non-boolean `while` condition", stmt.cond.pos)
+            self.check_stmts(stmt.stmts)
 
     ## === Expressions ==================================
 
