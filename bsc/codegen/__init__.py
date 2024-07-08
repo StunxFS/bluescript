@@ -45,13 +45,7 @@ class Codegen:
             self.cur_block.add_comment("the entry point")
             self.cur_block.add_stmt(LuaCallExpr("main"))
         else:
-            module_fields = []
-            for sym in file.mod_sym.scope.syms:
-                if sym.access_modifier.is_public():
-                    module_fields.append(
-                        LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
-                    )
-            self.cur_block.add_stmt(LuaReturn(LuaTable(module_fields)))
+            self.export_public_symbols(file.mod_sym, True)
 
         self.cur_module.stmts = self.cur_block
         self.modules.append(self.cur_module)
@@ -266,14 +260,17 @@ class Codegen:
             self.cur_block.add_stmt(LuaReturn(ret_expr))
             return LuaSkip()
 
-    def export_public_symbols(self, decl_sym):
+    def export_public_symbols(self, decl_sym, return_table = False):
         exported_fields = []
         for sym in decl_sym.scope.syms:
             if sym.access_modifier.is_public():
                 exported_fields.append(
                     LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
                 )
-        self.cur_block.add_stmt(
-            LuaAssignment([LuaIdent(decl_sym.name)],
-                          [LuaTable(exported_fields)], False)
-        )
+        if return_table:
+            self.cur_block.add_stmt(LuaReturn(LuaTable(exported_fields)))
+        else:
+            self.cur_block.add_stmt(
+                LuaAssignment([LuaIdent(decl_sym.name)],
+                              [LuaTable(exported_fields)], False)
+            )
