@@ -102,12 +102,13 @@ class Codegen:
         self.cur_block = LuaBlock()
         for i, f in enumerate(decl.fields):
             self.cur_block.add_stmt(
-                LuaAssignment([LuaSelector(LuaIdent(decl.name), f.name)],
-                              [LuaNumberLit(str(i))], False)
+                LuaAssignment([LuaIdent(f.name)], [LuaNumberLit(str(i))])
             )
         self.switch_cur_sym(decl.sym)
         self.gen_decls(decl.decls)
-        self.export_public_symbols(decl.sym)
+        self.export_public_symbols(
+            decl.sym, custom_fields = [f.name for f in decl.fields]
+        )
         self.switch_cur_sym()
         old_block.add_stmt(self.cur_block)
         self.cur_block = old_block
@@ -260,13 +261,22 @@ class Codegen:
             self.cur_block.add_stmt(LuaReturn(ret_expr))
             return LuaSkip()
 
-    def export_public_symbols(self, decl_sym, return_table = False):
+    def export_public_symbols(
+        self, decl_sym, return_table = False, custom_fields = []
+    ):
         exported_fields = []
+
+        for custom_field in custom_fields:
+            exported_fields.append(
+                LuaTableField(LuaIdent(custom_field), LuaIdent(custom_field))
+            )
+
         for sym in decl_sym.scope.syms:
             if sym.access_modifier.is_public():
                 exported_fields.append(
                     LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
                 )
+
         if return_table:
             self.cur_block.add_stmt(LuaReturn(LuaTable(exported_fields)))
         else:
