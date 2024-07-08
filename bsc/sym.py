@@ -96,11 +96,6 @@ class Sym:
             return f"{self.parent.qualname(sep)}{sep}{self.name}"
         return self.name
 
-    def cg_method_qualname(self):
-        if isinstance(self.parent, TypeSym):
-            return f"{self.parent.name}.{self.name}"
-        return self.name
-
     def __eq__(self, other):
         return str(self) == str(other)
 

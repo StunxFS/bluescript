@@ -94,20 +94,6 @@ class LuaRender:
         else:
             self.render_expr(stmt) # support for using expressions as statements
 
-    def render_fn_stmt(self, stmt):
-        if not stmt.is_static:
-            self.write("local ")
-        self.write(f"function {stmt.name}(")
-        for i, arg in enumerate(stmt.args):
-            self.write(arg.name)
-            if i < len(stmt.args) - 1:
-                self.write(", ")
-        self.writeln(")")
-        self.indent += 1
-        self.render_stmts(stmt.block.stmts)
-        self.indent -= 1
-        self.writeln("end\n")
-
     def render_assign_stmt(self, stmt):
         if stmt.is_local: self.write("local ")
         for i, left in enumerate(stmt.lefts):
@@ -127,6 +113,17 @@ class LuaRender:
             self.write("(")
             self.render_expr(expr.expr)
             self.write(")")
+        elif isinstance(expr, LuaFunction):
+            self.write(f"function(")
+            for i, arg in enumerate(expr.args):
+                self.write(arg.name)
+                if i < len(expr.args) - 1:
+                    self.write(", ")
+            self.writeln(")")
+            self.indent += 1
+            self.render_stmts(expr.block.stmts)
+            self.indent -= 1
+            self.writeln("end\n")
         elif isinstance(expr, LuaTable):
             if len(expr.fields) == 0:
                 self.write("{}")

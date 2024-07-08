@@ -37,7 +37,7 @@ pub enum WorldLevel {
     underworld,
     undefined = 0xFF
 
-    fn from_string(s: string) Self {
+    pub fn from_string(s: string) Self {
         unsafe {
             $lua("function x() end");
         }

@@ -81,17 +81,7 @@ class Codegen:
 
             self.cur_block = LuaBlock()
             self.gen_decls(decl.decls)
-
-            module_fields = []
-            for sym in decl.sym.scope.syms:
-                if sym.access_modifier.is_public():
-                    module_fields.append(
-                        LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
-                    )
-            self.cur_block.add_stmt(
-                LuaAssignment([LuaIdent(decl.name)], [LuaTable(module_fields)],
-                              False)
-            )
+            self.export_public_symbols(decl.sym)
 
             mod_decls = self.cur_block
             self.cur_block = old_block
@@ -113,26 +103,30 @@ class Codegen:
         self.cur_block.add_stmt(lua_assign)
 
     def gen_enum_decl(self, decl):
-        fields = []
+        self.cur_block.add_stmt(LuaAssignment([LuaIdent(decl.sym.name)], []))
+        old_block = self.cur_block
+        self.cur_block = LuaBlock()
         for i, f in enumerate(decl.fields):
-            fields.append(LuaTableField(LuaIdent(f.name), LuaNumberLit(str(i))))
-        self.cur_block.add_stmt(
-            LuaAssignment([LuaIdent(decl.sym.name)], [LuaTable(fields)], False)
-        )
+            self.cur_block.add_stmt(
+                LuaAssignment([LuaSelector(LuaIdent(decl.name), f.name)],
+                              [LuaNumberLit(str(i))], False)
+            )
         self.switch_cur_sym(decl.sym)
         self.gen_decls(decl.decls)
+        self.export_public_symbols(decl.sym)
         self.switch_cur_sym()
+        old_block.add_stmt(self.cur_block)
+        self.cur_block = old_block
 
     def gen_fn_decl(self, decl):
         if not decl.has_body: return
         old_block = self.cur_block
         args = []
+        if decl.is_method:
+            args.append(LuaIdent("self"))
         for arg in decl.args:
             args.append(LuaIdent(arg.name))
-        luafn = LuaFunction(
-            decl.sym.cg_method_qualname(), args,
-            is_static = decl.sym.is_static()
-        )
+        luafn = LuaFunction(args, is_static = decl.sym.is_static())
         for arg in decl.args:
             if arg.default_value != None:
                 left = LuaIdent(arg.name)
@@ -148,7 +142,9 @@ class Codegen:
         self.gen_stmts(decl.stmts)
         self.cur_fn = None
         self.cur_block = old_block
-        self.cur_block.add_stmt(luafn)
+        self.cur_block.add_stmt(
+            LuaAssignment([LuaIdent(decl.sym.name)], [luafn])
+        )
 
     ## == Statements ============================================
 
@@ -269,3 +265,15 @@ class Codegen:
                 ret_expr = self.gen_expr(expr.expr)
             self.cur_block.add_stmt(LuaReturn(ret_expr))
             return LuaSkip()
+
+    def export_public_symbols(self, decl_sym):
+        exported_fields = []
+        for sym in decl_sym.scope.syms:
+            if sym.access_modifier.is_public():
+                exported_fields.append(
+                    LuaTableField(LuaIdent(sym.name), LuaIdent(sym.name))
+                )
+        self.cur_block.add_stmt(
+            LuaAssignment([LuaIdent(decl_sym.name)],
+                          [LuaTable(exported_fields)], False)
+        )
